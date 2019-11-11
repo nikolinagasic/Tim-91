@@ -4,19 +4,19 @@ import java.util.ArrayList;
 
 public class Lekar extends Korisnik{
     private String oblast;
-    private ArrayList<Pacijent> lista_pacijenata;
+    private ArrayList<Patient> lista_pacijenata;
     private ArrayList<Termin> lista_termina;        // zakazani termini pregleda/operacija
     private Klinika klinika;                     // klinika u kojoj je zaposlen
     private ArrayList<Godisnji_odmor> godisnji_odmor;
 
     public Lekar() {
         this.setUloga(Uloga.lekar);
-        lista_pacijenata = new ArrayList<Pacijent>();
+        lista_pacijenata = new ArrayList<Patient>();
         lista_termina = new ArrayList<Termin>();
         godisnji_odmor = new ArrayList<Godisnji_odmor>();
     }
 
-    public Lekar(String mail, String lozinka, String ime, String prezime, Uloga uloga, String oblast, ArrayList<Pacijent> lista_pacijenata, ArrayList<Termin> lista_termina, Klinika klinika, ArrayList<Godisnji_odmor> godisnji) {
+    public Lekar(String mail, String lozinka, String ime, String prezime, Uloga uloga, String oblast, ArrayList<Patient> lista_pacijenata, ArrayList<Termin> lista_termina, Klinika klinika, ArrayList<Godisnji_odmor> godisnji) {
         super(mail, lozinka, ime, prezime, uloga);
         this.oblast = oblast;
         this.lista_pacijenata = lista_pacijenata;
@@ -49,11 +49,11 @@ public class Lekar extends Korisnik{
         this.oblast = oblast;
     }
 
-    public ArrayList<Pacijent> getLista_pacijenata() {
+    public ArrayList<Patient> getLista_pacijenata() {
         return lista_pacijenata;
     }
 
-    public void setLista_pacijenata(ArrayList<Pacijent> lista_pacijenata) {
+    public void setLista_pacijenata(ArrayList<Patient> lista_pacijenata) {
         this.lista_pacijenata = lista_pacijenata;
     }
 

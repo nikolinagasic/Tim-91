@@ -1,17 +1,17 @@
 package rs.zis.app.zis.model;
 
-public class Pacijent extends Korisnik{
+public class Patient extends Korisnik{
     private String prebivaliste;
     private String grad;
     private String drzava;
     private long telefon;
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
-    public Pacijent() {
+    public Patient() {
         this.setUloga(Uloga.pacijent);
     }
 
-    public Pacijent(String mail, String lozinka, String ime, String prezime, Uloga uloga, String prebivaliste, String grad, String drzava, long telefon, long lbo) {
+    public Patient(String mail, String lozinka, String ime, String prezime, Uloga uloga, String prebivaliste, String grad, String drzava, long telefon, long lbo) {
         super(mail, lozinka, ime, prezime, uloga);
         this.prebivaliste = prebivaliste;
         this.grad = grad;
@@ -20,7 +20,7 @@ public class Pacijent extends Korisnik{
         this.lbo = lbo;
     }
 
-    public Pacijent(String mail, String lozinka, String ime, String prezime, Uloga uloga, String prebivaliste) {
+    public Patient(String mail, String lozinka, String ime, String prezime, Uloga uloga, String prebivaliste) {
         super(mail, lozinka, ime, prezime, uloga);
         this.prebivaliste = prebivaliste;
     }
