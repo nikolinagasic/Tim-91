@@ -1,4 +1,4 @@
-package rs.zis.app.zis.model;
+package rs.zis.app.zis.domain;
 
 public class Admin_klinike extends Korisnik{
     private Klinika klinika;        // klinika kojom upravlja

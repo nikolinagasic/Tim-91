@@ -1,4 +1,4 @@
-package rs.zis.app.zis.model;
+package rs.zis.app.zis.domain;
 
 public class Admin_KC extends Korisnik{
 

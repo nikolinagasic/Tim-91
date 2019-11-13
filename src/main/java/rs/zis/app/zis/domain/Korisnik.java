@@ -1,4 +1,4 @@
-package rs.zis.app.zis.model;
+package rs.zis.app.zis.domain;
 
 enum Uloga{
     lekar,
