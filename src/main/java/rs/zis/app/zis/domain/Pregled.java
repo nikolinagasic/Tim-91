@@ -1,4 +1,4 @@
-package rs.zis.app.zis.model;
+package rs.zis.app.zis.domain;
 
 public class Pregled {
     private long datum_vreme;
