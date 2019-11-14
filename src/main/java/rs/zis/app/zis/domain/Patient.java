@@ -1,11 +1,9 @@
 package rs.zis.app.zis.domain;
 
 import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Patient")
 public class Patient {
 
     @Id

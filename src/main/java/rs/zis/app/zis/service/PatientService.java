@@ -1,6 +1,6 @@
 package rs.zis.app.zis.service;
 
-import com.sun.tools.javac.util.List;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,9 @@ public class PatientService {
     @Autowired
     private PatientRepository patientRepository;
 
-    /*public List<Patient> findAll() {
+    public List<Patient> findAll() {
         return patientRepository.findAll();
-    }*/
+    }
 
     public Page<Patient> findAll(Pageable page) {
         return patientRepository.findAll(page);
