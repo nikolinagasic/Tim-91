@@ -1,7 +1,5 @@
 package rs.zis.app.zis.domain;
 
-import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 
@@ -22,17 +20,17 @@ public class Clinic {
     @Column(name = "description", nullable = true)
     private String description;
 
-    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ArrayList<Lekar> doctors=new ArrayList<Lekar>();
-
-    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ArrayList<Sala> rooms;
-
-    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ArrayList<Termin> free_term;
-
-    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ArrayList<Float> pricelist;
+//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private ArrayList<Lekar> doctors=new ArrayList<Lekar>();
+//
+//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private ArrayList<Sala> rooms;
+//
+//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private ArrayList<Termin> free_term;
+//
+//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private ArrayList<Float> pricelist;
 
     public Clinic() {
 
@@ -70,35 +68,35 @@ public class Clinic {
         this.description = description;
     }
 
-    public ArrayList<Lekar> getDoctors() {
-        return doctors;
-    }
-
-    public void setDoctors(ArrayList<Lekar> doctors) {
-        this.doctors = doctors;
-    }
-
-    public ArrayList<Sala> getRooms() {
-        return rooms;
-    }
-
-    public void setRooms(ArrayList<Sala> rooms) {
-        this.rooms = rooms;
-    }
-
-    public ArrayList<Termin> getFree_term() {
-        return free_term;
-    }
-
-    public void setFree_term(ArrayList<Termin> free_term) {
-        this.free_term = free_term;
-    }
-
-    public ArrayList<Float> getPricelist() {
-        return pricelist;
-    }
-
-    public void setPricelist(ArrayList<Float> pricelist) {
-        this.pricelist = pricelist;
-    }
+//    public ArrayList<Lekar> getDoctors() {
+//        return doctors;
+//    }
+//
+//    public void setDoctors(ArrayList<Lekar> doctors) {
+//        this.doctors = doctors;
+//    }
+//
+//    public ArrayList<Sala> getRooms() {
+//        return rooms;
+//    }
+//
+//    public void setRooms(ArrayList<Sala> rooms) {
+//        this.rooms = rooms;
+//    }
+//
+//    public ArrayList<Termin> getFree_term() {
+//        return free_term;
+//    }
+//
+//    public void setFree_term(ArrayList<Termin> free_term) {
+//        this.free_term = free_term;
+//    }
+//
+//    public ArrayList<Float> getPricelist() {
+//        return pricelist;
+//    }
+//
+//    public void setPricelist(ArrayList<Float> pricelist) {
+//        this.pricelist = pricelist;
+//    }
 }

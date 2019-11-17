@@ -3,11 +3,11 @@ package rs.zis.app.zis.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.repository.PatientRepository;
 
-import java.awt.print.Pageable;
 
 @Service
 public class PatientService {

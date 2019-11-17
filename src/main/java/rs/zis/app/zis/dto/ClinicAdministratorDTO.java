@@ -41,7 +41,7 @@ public class ClinicAdministratorDTO {
         this.city = administrator.getCity();
         this.country = administrator.getCountry();
         this.telephone = administrator.getTelephone();
-        this.clinic = administrator.getClinic();
+//        this.clinic = administrator.getClinic();
     }
 
     public Long getId() {

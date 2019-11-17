@@ -9,6 +9,7 @@ import rs.zis.app.zis.repository.ClinicCentreAdminRepository;
 
 import java.util.List;
 
+
 @Service
 public class ClinicCentreAdminService {
     @Autowired
@@ -41,9 +42,6 @@ public class ClinicCentreAdminService {
     public void remove(Long mail) {
         cc_adminRepository.deleteById(mail);
     }
-
-
-
 
 
 }

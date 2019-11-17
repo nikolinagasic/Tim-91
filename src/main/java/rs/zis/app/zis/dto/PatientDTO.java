@@ -11,13 +11,13 @@ public class PatientDTO {
     private String address;
     private String city;
     private String country;
-    private long telephone;
+    private String telephone;
     private long lbo;
 
     public PatientDTO() {
     }
 
-    public PatientDTO(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, long telephone, long lbo) {
+    public PatientDTO(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, String telephone, long lbo) {
         this.id = id;
         this.mail = mail;
         this.password = password;
@@ -75,7 +75,7 @@ public class PatientDTO {
         return country;
     }
 
-    public long getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 

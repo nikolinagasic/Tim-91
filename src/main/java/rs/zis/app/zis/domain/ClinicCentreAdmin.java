@@ -1,7 +1,5 @@
 package rs.zis.app.zis.domain;
 
-import org.springframework.data.annotation.Id;
-
 import javax.persistence.*;
 
 @Entity

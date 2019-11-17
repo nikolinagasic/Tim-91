@@ -2,11 +2,10 @@ package rs.zis.app.zis.repository;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import rs.zis.app.zis.domain.Patient;
-
-import java.awt.print.Pageable;
 
 /*
 * - Struktura naziva metode:   find____________By_________________

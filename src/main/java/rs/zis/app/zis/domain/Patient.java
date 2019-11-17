@@ -1,6 +1,5 @@
 package rs.zis.app.zis.domain;
 
-import org.springframework.data.annotation.Id;
 import javax.persistence.*;
 
 @Entity
@@ -10,7 +9,7 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "mail", nullable = false)
+    @Column(name = "mail", unique = true, nullable = false)
     private String mail;
 
     @Column(name = "password", nullable = false)
@@ -22,17 +21,17 @@ public class Patient {
     @Column(name = "lastName", nullable = false)
     private String lastName;
 
-    @Column(name = "address", unique = true, nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "country", nullable = false)
+    @Column(name = "country")
     private String country;
 
-    @Column(name = "telephone", nullable = false)
-    private long telephone;
+    @Column(name = "telephone")
+    private String telephone;
 
     @Column(name = "lbo", unique = true, nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
@@ -40,7 +39,7 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, long telephone, long lbo) {
+    public Patient(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, String telephone, long lbo) {
         this.id = id;
         this.mail = mail;
         this.password = password;
@@ -115,11 +114,11 @@ public class Patient {
         this.country = country;
     }
 
-    public long getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(long telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 
