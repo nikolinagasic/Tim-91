@@ -16,6 +16,7 @@ import rs.zis.app.zis.domain.Patient;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     Page<Patient> findAll(Pageable pageable);
+    Patient findOneById(long id);
     Patient findOneByMail(String mail);
     Patient findOneByLbo(long lbo);
 

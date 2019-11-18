@@ -5,15 +5,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
 
+@SuppressWarnings("SpellCheckingInspection")
 @Service
 public class PatientService {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthorityService authService;
 
     public List<Patient> findAll() {
         return patientRepository.findAll();
@@ -23,8 +33,23 @@ public class PatientService {
         return patientRepository.findAll(page);
     }
 
-    public Patient save(Patient patient) {
-        return patientRepository.save(patient);
+    public Patient save(PatientDTO patientDTO) {
+        Patient p = new Patient();
+        p.setMail(patientDTO.getMail());
+        p.setPassword(passwordEncoder.encode(patientDTO.getPassword()));
+        p.setFirstName(patientDTO.getFirstName());
+        p.setLastName(patientDTO.getLastName());
+        p.setAddress(patientDTO.getAddress());
+        p.setCity(patientDTO.getCity());
+        p.setCountry(patientDTO.getCountry());
+        p.setTelephone(patientDTO.getTelephone());
+        p.setLbo(patientDTO.getLbo());
+        p.setEnabled(false);                    // dok admin ne odobri
+        List<Authority> auth = authService.findByname("ROLE_PATIENT");
+        p.setAuthorities(auth);
+
+        p = this.patientRepository.save(p);
+        return p;
     }
 
     public void remove(Long id) {

@@ -5,28 +5,30 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.service.PatientService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@SuppressWarnings("SpellCheckingInspection")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/login/patient")
-public class PatientController {
+@RequestMapping("/patient")
+public class PatientController extends WebConfig {
 
     @Autowired
     private PatientService patientService;
 
-    @PostMapping(consumes = "application/json" /*, value = "/all"*/)
-    public ResponseEntity<Integer> savePatient(@RequestBody PatientDTO patientDTO) {
-//        System.out.println("usao sam u post i primio: " + patientDTO.getFirstName() + patientDTO.getLastName());
+    @Autowired
+    private PatientService customPatientService;
 
-        Patient patient = new Patient(patientDTO.getId(), patientDTO.getMail(), patientDTO.getPassword(),
-                patientDTO.getFirstName(), patientDTO.getLastName(), patientDTO.getAddress(), patientDTO.getCity(),
-                patientDTO.getCountry(), patientDTO.getTelephone(), patientDTO.getLbo());
+    @PostMapping(consumes = "application/json" , value = "/register")
+    public ResponseEntity<Integer> savePatient(@RequestBody PatientDTO patientDTO) {
+        System.out.println("usao sam u post i primio: " + patientDTO.getFirstName() + patientDTO.getLastName());
 
         Patient proveriLbo = patientService.findOneByLbo(patientDTO.getLbo());
         Patient proveriMail = patientService.findOneByMail(patientDTO.getMail());
@@ -37,11 +39,12 @@ public class PatientController {
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
         }
 
-        patient = patientService.save(patient);
+        Patient patient = patientService.save(patientDTO);
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
 
     @GetMapping(produces = "application/json", value = "/getAll")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<PatientDTO>> getPatient() {
         List<Patient> listPatient = patientService.findAll();
 
