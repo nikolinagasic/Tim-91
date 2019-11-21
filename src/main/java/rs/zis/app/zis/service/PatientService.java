@@ -44,7 +44,7 @@ public class PatientService {
         p.setCountry(patientDTO.getCountry());
         p.setTelephone(patientDTO.getTelephone());
         p.setLbo(patientDTO.getLbo());
-        p.setEnabled(false);                    // dok admin ne odobri
+        p.setEnabled(true);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
         List<Authority> auth = authService.findByname("ROLE_PATIENT");
         p.setAuthorities(auth);
 

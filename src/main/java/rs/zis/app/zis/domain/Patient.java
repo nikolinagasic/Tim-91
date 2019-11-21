@@ -182,19 +182,19 @@ public class Patient implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {          // banovanje (iskljucim njegov profil na neko vreme)
-        return false;
+        return true;
     }
 
     @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {  // ako password mora da se menja na neki period (tipa svakih 60 dana)
-        return false;
+        return true;
     }
 
     @JsonIgnore

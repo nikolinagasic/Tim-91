@@ -1,10 +1,17 @@
 package rs.zis.app.zis.domain;
 
+import org.joda.time.DateTime;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "ClinicAdministrator")
-public class ClinicAdministrator {
+public class ClinicAdministrator implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,41 +23,47 @@ public class ClinicAdministrator {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "firstName", nullable = false)
+    @Column(name = "firstName")
     private String firstName;
 
-    @Column(name = "lastName", nullable = false)
+    @Column(name = "lastName")
     private String lastName;
 
-    @Column(name = "address", unique = true, nullable = false)
+    @Column(name = "address")
     private String address;
 
-    @Column(name = "city", nullable = false)
+    @Column(name = "city")
     private String city;
 
-    @Column(name = "country", nullable = false)
+    @Column(name = "country")
     private String country;
 
-    @Column(name = "telephone", nullable = false)
+    @Column(name = "telephone")
     private long telephone;
 
-//    @Column(name = "clinic", unique = true, nullable = false)
-//    private Klinika clinic;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Clinic clinic;
+    @Column(name = "last_password_reset_date")
+    private Timestamp lastPasswordResetDate;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authority",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
+    private List<Authority> authorities;
 
     public ClinicAdministrator() {
     }
 
-    public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, long telephone, Klinika clinic) {
+    public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, Clinic clinic,Timestamp lastPasswordResetDate, List<Authority> authorities) {
         this.id = id;
         this.mail = mail;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address = address;
-        this.city = city;
-        this.country = country;
-        this.telephone = telephone;
-//        this.clinic = clinic;
+        this.clinic = clinic;
+        this.lastPasswordResetDate = lastPasswordResetDate;
+        this.authorities = authorities;
     }
 
     public Long getId() {
@@ -74,6 +87,8 @@ public class ClinicAdministrator {
     }
 
     public void setPassword(String password) {
+        Timestamp now = new Timestamp(DateTime.now().getMillis());
+        this.setLastPasswordResetDate(now);
         this.password = password;
     }
 
@@ -93,43 +108,51 @@ public class ClinicAdministrator {
         this.lastName = lastName;
     }
 
-    public String getAddress() {
-        return address;
+    public void setClinic(Clinic clinic) {
+        this.clinic = clinic;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public Clinic getClinic() {
+        return clinic;
     }
 
-    public String getCity() {
-        return city;
+    public Timestamp getLastPasswordResetDate() {
+        return lastPasswordResetDate;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
+        this.lastPasswordResetDate = lastPasswordResetDate;
+    }
+    public void setAuthorities(List<Authority> authorities) {
+        this.authorities = authorities;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.authorities;
+    }
+    @Override
+    public String getUsername() {
+        return this.mail;
     }
 
-    public String getCountry() {
-        return country;
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
     }
 
-    public long getTelephone() {
-        return telephone;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
     }
 
-    public void setTelephone(long telephone) {
-        this.telephone = telephone;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
-//    public Klinika getClinic() {
-//        return clinic;
-//    }
-//
-//    public void setClinic(Klinika clinic) {
-//        this.clinic = clinic;
-//    }
 }

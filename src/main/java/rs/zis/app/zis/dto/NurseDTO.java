@@ -1,29 +1,27 @@
 package rs.zis.app.zis.dto;
 
-import rs.zis.app.zis.domain.ClinicCentreAdmin;
+import rs.zis.app.zis.domain.*;
 
-public class ClinicCentreAdminDTO {
 
+public class NurseDTO {
     private Long id;
     private String mail;
     private String password;
 
-
-    public ClinicCentreAdminDTO() {
-
+    public NurseDTO() {
     }
 
-    public ClinicCentreAdminDTO(Long id, String mail, String password) {
+    public NurseDTO(Long id, String mail, String password) {
         this.id = id;
         this.mail = mail;
         this.password = password;
 
     }
 
-    public ClinicCentreAdminDTO(ClinicCentreAdmin cadmin) {
-        this.id = cadmin.getId();
-        this.mail = cadmin.getMail();
-        this.password = cadmin.getPassword();
+    public NurseDTO(Nurse nurse) {
+        this.id = nurse.getId();
+        this.mail = nurse.getMail();
+        this.password = nurse.getPassword();
     }
 
     public Long getId() {

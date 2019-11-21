@@ -5,13 +5,13 @@ public class Pregled {
     private long trajanje;
     private String tip_pregleda;
     private Sala sala;
-    private Lekar lekar;
+    private Doctor lekar;
     private float cena;
 
     public Pregled() {
     }
 
-    public Pregled(long datum_vreme, long trajanje, String tip_pregleda, Sala sala, Lekar lekar, float cena) {
+    public Pregled(long datum_vreme, long trajanje, String tip_pregleda, Sala sala, Doctor lekar, float cena) {
         this.datum_vreme = datum_vreme;
         this.trajanje = trajanje;
         this.tip_pregleda = tip_pregleda;
@@ -52,11 +52,11 @@ public class Pregled {
         this.sala = sala;
     }
 
-    public Lekar getLekar() {
+    public Doctor getLekar() {
         return lekar;
     }
 
-    public void setLekar(Lekar lekar) {
+    public void setLekar(Doctor lekar) {
         this.lekar = lekar;
     }
 

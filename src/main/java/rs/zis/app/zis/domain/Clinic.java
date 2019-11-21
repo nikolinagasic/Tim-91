@@ -2,6 +2,9 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Clinic")
@@ -20,9 +23,10 @@ public class Clinic {
     @Column(name = "description", nullable = true)
     private String description;
 
-//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private ArrayList<Lekar> doctors=new ArrayList<Lekar>();
-//
+    // inicijalizovati u konstruktoru
+    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
+
 //    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    private ArrayList<Sala> rooms;
 //
@@ -32,8 +36,15 @@ public class Clinic {
 //    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    private ArrayList<Float> pricelist;
 
-    public Clinic() {
+    public Clinic(Long id, String name, String address, String description, Set<ClinicAdministrator> clinic_admin) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.description = description;
+        this.clinic_admin = clinic_admin;
+    }
 
+    public Clinic() {
     }
 
     public Long getId() {

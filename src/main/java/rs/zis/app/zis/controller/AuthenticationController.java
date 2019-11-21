@@ -20,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import rs.zis.app.zis.auth.JwtAuthenticationRequest;
 import rs.zis.app.zis.domain.Patient;
@@ -49,9 +46,12 @@ public class AuthenticationController {
     @Autowired
     private PatientService userService;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @PostMapping(consumes = "application/json", value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
                                       HttpServletResponse response) throws AuthenticationException, IOException {
+        System.out.println("primio sam: "+authenticationRequest.getUsername()+
+                "-------"+authenticationRequest.getPassword());
+
         final Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()));

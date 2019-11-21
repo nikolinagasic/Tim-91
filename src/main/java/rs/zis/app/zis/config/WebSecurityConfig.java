@@ -65,6 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 // NAVODIM PUTANJE KOJIMA SVI MOGU DA PRISTUPE (white list-a)
                 .authorizeRequests().antMatchers("/auth/**")
                 .permitAll().antMatchers("/patient/register**")
+                .permitAll().antMatchers("/clinicAdministrator/**")
+                .permitAll().antMatchers("/ccadmin/**")
                 .permitAll().antMatchers("/api/foo").permitAll()
 
                 // svaki zahtev mora biti autorizovan
