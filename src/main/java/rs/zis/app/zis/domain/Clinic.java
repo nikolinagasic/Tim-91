@@ -1,20 +1,20 @@
 package rs.zis.app.zis.domain;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Clinic")
-public class Clinic {
+public class Clinic implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "mail", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "address", nullable = false)
@@ -26,15 +26,6 @@ public class Clinic {
     // inicijalizovati u konstruktoru
     @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
-
-//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private ArrayList<Sala> rooms;
-//
-//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private ArrayList<Termin> free_term;
-//
-//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private ArrayList<Float> pricelist;
 
     public Clinic(Long id, String name, String address, String description, Set<ClinicAdministrator> clinic_admin) {
         this.id = id;
@@ -79,35 +70,40 @@ public class Clinic {
         this.description = description;
     }
 
-//    public ArrayList<Lekar> getDoctors() {
-//        return doctors;
-//    }
-//
-//    public void setDoctors(ArrayList<Lekar> doctors) {
-//        this.doctors = doctors;
-//    }
-//
-//    public ArrayList<Sala> getRooms() {
-//        return rooms;
-//    }
-//
-//    public void setRooms(ArrayList<Sala> rooms) {
-//        this.rooms = rooms;
-//    }
-//
-//    public ArrayList<Termin> getFree_term() {
-//        return free_term;
-//    }
-//
-//    public void setFree_term(ArrayList<Termin> free_term) {
-//        this.free_term = free_term;
-//    }
-//
-//    public ArrayList<Float> getPricelist() {
-//        return pricelist;
-//    }
-//
-//    public void setPricelist(ArrayList<Float> pricelist) {
-//        this.pricelist = pricelist;
-//    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getName();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

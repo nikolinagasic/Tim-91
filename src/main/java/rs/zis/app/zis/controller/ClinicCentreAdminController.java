@@ -4,17 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.ClinicAdministrator;
 import rs.zis.app.zis.domain.ClinicCentreAdmin;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.dto.ClinicAdministratorDTO;
 import rs.zis.app.zis.dto.ClinicCentreAdminDTO;
+import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
-import rs.zis.app.zis.service.ClinicAdministratorService;
-import rs.zis.app.zis.service.ClinicCentreAdminService;
-import rs.zis.app.zis.service.CustomCCAdmin;
-import rs.zis.app.zis.service.DoctorService;
+import rs.zis.app.zis.service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,18 +22,19 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 @RestController
 @RequestMapping(value = "/ccadmin")
-public class ClinicCentreAdminController {
+public class ClinicCentreAdminController extends WebConfig
+{
 
-    @Autowired
-    private ClinicCentreAdminService ccadminservice;
     @Autowired
     private ClinicAdministratorService clinicAdministratorService;
     @Autowired
     private ClinicCentreAdminService clinicCentreAdminService;
+    @Autowired
+    private ClinicService clinicservice;
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
     public ResponseEntity<Integer> saveClinicAdministrator(@RequestBody ClinicAdministratorDTO clinicAdministratorDTO) {
-        System.out.println("usao sam u post i primio: " + clinicAdministratorDTO.getMail());
+       // System.out.println("usao sam u post i primio: " + clinicAdministratorDTO.getMail());
         ClinicAdministrator proveriMail = clinicAdministratorService.findOneByMail(clinicAdministratorDTO.getMail());
         if(proveriMail != null)
             System.out.println("primio sam:" +proveriMail.getMail());
@@ -49,7 +49,7 @@ public class ClinicCentreAdminController {
 
     @PostMapping(consumes = "application/json" , value = "/register_ccadmin")
     public ResponseEntity<Integer> saveClinicCentreAdministrator(@RequestBody ClinicCentreAdminDTO clinicCentreAdminDTO) {
-        System.out.println("usao sam u post i primio: " + clinicCentreAdminDTO.getMail());
+       // System.out.println("usao sam u post i primio: " + clinicCentreAdminDTO.getMail());
         ClinicCentreAdmin proveriMail = clinicCentreAdminService.findOneByMail(clinicCentreAdminDTO.getMail());
         if(proveriMail != null)
             System.out.println("primio sam:" +proveriMail.getMail());
@@ -61,19 +61,28 @@ public class ClinicCentreAdminController {
         ClinicCentreAdmin clinicCentreAdmin = clinicCentreAdminService.save(clinicCentreAdminDTO);
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
-  /*  @PostMapping(consumes = "application/json")
-    public ResponseEntity<ClinicCentreAdminDTO> saveCAdmin(@RequestBody ClinicCentreAdminDTO adminDTO) {
-        ClinicCentreAdmin admin = new ClinicCentreAdmin(adminDTO.getId(),adminDTO.getMail(),adminDTO.getPassword(),
-                adminDTO.isPredefined(),adminDTO.getFirstName(),adminDTO.getLastName());
 
-        admin = ccadminservice.save(admin);
-        return new ResponseEntity<>(new ClinicCentreAdminDTO(admin), HttpStatus.CREATED);
+    @PostMapping(consumes = "application/json" , value = "/register_clinic")
+    public ResponseEntity<Integer> saveClinic(@RequestBody ClinicDTO clinicDTO){
+        System.out.println("usao sam u post i primio: " + clinicDTO.getName());
+        Clinic proveriName = clinicservice.findOneByName(clinicDTO.getName());
+        if(proveriName != null)
+            System.out.println("primio sam:"+proveriName.getName());
+
+        if(proveriName != null)
+            return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
+
+        Clinic clinic = clinicservice.save(clinicDTO);
+        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+
+
     }
-*/
+
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<ClinicCentreAdminDTO> getAdmin(@PathVariable Long id) {
 
-        ClinicCentreAdmin admin = ccadminservice.findOne(id);
+        ClinicCentreAdmin admin = clinicCentreAdminService.findOne(id);
 
         if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -86,7 +95,7 @@ public class ClinicCentreAdminController {
     @GetMapping(value = "/all")
     public ResponseEntity<List<ClinicCentreAdminDTO>> getAllCentreAdmin() {
 
-        List<ClinicCentreAdmin> admins = ccadminservice.findAll();
+        List<ClinicCentreAdmin> admins = clinicCentreAdminService.findAll();
 
         // convert admins to DTOs
         List<ClinicCentreAdminDTO> adminsDTO = new ArrayList<>();
@@ -97,30 +106,13 @@ public class ClinicCentreAdminController {
         return new ResponseEntity<>(adminsDTO, HttpStatus.OK);
     }
 
-    /*@PutMapping(consumes = "application/json")
-    public ResponseEntity<ClinicCentreAdmin> updateCentreAdmin(@RequestBody ClinicCentreAdminDTO adminDTO) {
-
-        // a admin must exist
-        ClinicCentreAdmin admin = ccadminservice.findOne(adminDTO.getId());
-
-        if (admin == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        admin.setFirstName(adminDTO.getFirstName());
-        admin.setLastName(adminDTO.getLastName());
-
-        admin = ccadminservice.save(admin);
-        return new ResponseEntity<>(new ClinicCentreAdminDTO(admin), HttpStatus.OK);
-    }*/
-
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCCAdmin(@PathVariable Long id) {
 
-        ClinicCentreAdmin admin = ccadminservice.findOne(id);
+        ClinicCentreAdmin admin = clinicCentreAdminService.findOne(id);
 
         if (admin != null) {
-            ccadminservice.remove(id);
+            clinicCentreAdminService.remove(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
