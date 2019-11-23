@@ -41,6 +41,7 @@ import java.util.List;
             Nurse d = new Nurse();
             d.setMail(nurseDTO.getMail());
             d.setPassword(passwordEncoder.encode(nurseDTO.getPassword()));
+            d.setEnabled(true);
             List<Authority> auth = authService.findByname("ROLE_NURSE");
             d.setAuthorities(auth);
 

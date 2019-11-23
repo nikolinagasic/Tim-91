@@ -41,6 +41,7 @@ public class ClinicAdministratorService implements UserDetailsService {
         ClinicAdministrator a = new ClinicAdministrator();
         a.setMail(clinicAdministartorDTO.getMail());
         a.setPassword(passwordEncoder.encode(clinicAdministartorDTO.getPassword()));
+        a.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_CLINIC_ADMINISTRATOR");
         a.setAuthorities(auth);
 

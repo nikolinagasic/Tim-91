@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import rs.zis.app.zis.auth.RestAuthenticationEntryPoint;
 import rs.zis.app.zis.auth.TokenAuthenticationFilter;
 import rs.zis.app.zis.security.TokenUtils;
-import rs.zis.app.zis.service.CustomPatientService;
+import rs.zis.app.zis.service.*;
 
 @SuppressWarnings("SpellCheckingInspection")
 @Configuration
@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     }
 
     @Autowired
-    private CustomPatientService jwtUserDetailsService;
+    private CustomUserService jwtUserDetailsService;
 
     // Neautorizovani pristup zasticenim resursima
     @Autowired
@@ -62,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 // za neautorizovane zahteve posalji 401 gresku
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
 
-                // NAVODIM PUTANJE KOJIMA SVI MOGU DA PRISTUPE (white list-a)
+                // NAVODIM PUTANJE KOJIMA SVI MOGU DA PRISTUPE (white list)
                 .authorizeRequests().antMatchers("/auth/**")
                 .permitAll().antMatchers("/patient/register**")
                 .permitAll().antMatchers("/clinicAdministrator/**")

@@ -13,16 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Doctor")
-public class Doctor implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "mail", nullable = false)
-    private String mail;
-
-    @Column(name = "password", nullable = false)
-    private String password;
+public class Doctor extends User {
 
     @Column(name = "firstName")
     private String firstName;
@@ -42,57 +33,19 @@ public class Doctor implements UserDetails {
   //  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
  //   private Set<Godisnji_odmor> vacation;
 
-    @Column(name = "last_password_reset_date")
-    private Timestamp lastPasswordResetDate;
-
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
-    private List<Authority> authorities;
-
     public Doctor() {
      //   appointmentList = new HashSet<Termin>();
      //   vacation = new HashSet<Godisnji_odmor>();
     }
 
     public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Termin> appointmentList, Clinic clinic, Set<Godisnji_odmor> vacation,Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        this.mail = mail;
-        this.password = password;
+        super(mail, password, true, lastPasswordResetDate, authorities);
         this.firstName = firstName;
         this.lastName = lastName;
         this.field = field;
      //   this.appointmentList = appointmentList;
         this.clinic = clinic;
      //   this.vacation = vacation;
-        this.lastPasswordResetDate = lastPasswordResetDate;
-        this.authorities = authorities;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        Timestamp now = new Timestamp(DateTime.now().getMillis());
-        this.setLastPasswordResetDate(now);
-        this.password = password;
     }
 
     public String getFirstName() {
@@ -142,44 +95,5 @@ public class Doctor implements UserDetails {
         this.vacation = vacation;
     }
 */
-    public Timestamp getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
-
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
-    public void setAuthorities(List<Authority> authorities) {
-        this.authorities = authorities;
-    }
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.mail;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 
 }

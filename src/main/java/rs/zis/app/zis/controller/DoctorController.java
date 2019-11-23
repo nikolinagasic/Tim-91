@@ -20,8 +20,6 @@ public class DoctorController {
     @Autowired
     private DoctorService doctorService;
 
-    @Autowired
-    private DoctorService customDoctorService;
     @GetMapping(produces = "application/json", value = "/getAll")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctor() {

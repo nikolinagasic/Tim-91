@@ -5,14 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.ClinicAdministrator;
-import rs.zis.app.zis.domain.ClinicCentreAdmin;
-import rs.zis.app.zis.domain.Doctor;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicAdministratorDTO;
 import rs.zis.app.zis.dto.ClinicCentreAdminDTO;
 import rs.zis.app.zis.dto.ClinicDTO;
-import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.service.*;
 
 import java.util.ArrayList;
@@ -31,14 +27,12 @@ public class ClinicCentreAdminController extends WebConfig
     private ClinicCentreAdminService clinicCentreAdminService;
     @Autowired
     private ClinicService clinicservice;
+    @Autowired
+    private UserService userService;
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
     public ResponseEntity<Integer> saveClinicAdministrator(@RequestBody ClinicAdministratorDTO clinicAdministratorDTO) {
-       // System.out.println("usao sam u post i primio: " + clinicAdministratorDTO.getMail());
-        ClinicAdministrator proveriMail = clinicAdministratorService.findOneByMail(clinicAdministratorDTO.getMail());
-        if(proveriMail != null)
-            System.out.println("primio sam:" +proveriMail.getMail());
-
+        User proveriMail = userService.findOneByMail(clinicAdministratorDTO.getMail());
         if(proveriMail != null){
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
         }
@@ -49,11 +43,7 @@ public class ClinicCentreAdminController extends WebConfig
 
     @PostMapping(consumes = "application/json" , value = "/register_ccadmin")
     public ResponseEntity<Integer> saveClinicCentreAdministrator(@RequestBody ClinicCentreAdminDTO clinicCentreAdminDTO) {
-       // System.out.println("usao sam u post i primio: " + clinicCentreAdminDTO.getMail());
-        ClinicCentreAdmin proveriMail = clinicCentreAdminService.findOneByMail(clinicCentreAdminDTO.getMail());
-        if(proveriMail != null)
-            System.out.println("primio sam:" +proveriMail.getMail());
-
+        User proveriMail = userService.findOneByMail(clinicCentreAdminDTO.getMail());
         if(proveriMail != null){
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
         }
@@ -66,9 +56,6 @@ public class ClinicCentreAdminController extends WebConfig
     public ResponseEntity<Integer> saveClinic(@RequestBody ClinicDTO clinicDTO){
         System.out.println("usao sam u post i primio: " + clinicDTO.getName());
         Clinic proveriName = clinicservice.findOneByName(clinicDTO.getName());
-        if(proveriName != null)
-            System.out.println("primio sam:"+proveriName.getName());
-
         if(proveriName != null)
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
 

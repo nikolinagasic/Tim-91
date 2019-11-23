@@ -53,6 +53,7 @@ public class ClinicCentreAdminService {
         a.setMail(clinicCentreAdminDTO.getMail());
         a.setPassword(passwordEncoder.encode(clinicCentreAdminDTO.getPassword()));
         a.setPredefined(false);
+        a.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_CLINIC_CENTRE_ADMINISTRATOR");
         a.setAuthorities(auth);
 

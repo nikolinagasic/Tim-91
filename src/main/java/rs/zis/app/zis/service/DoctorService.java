@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Authority;
-import rs.zis.app.zis.domain.ClinicCentreAdmin;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @SuppressWarnings("SpellCheckingInspection")
 @Service
-public class DoctorService implements UserDetailsService {
+public class DoctorService {
 
     @Autowired
     private DoctorRepository doctorRepository;
@@ -41,6 +40,7 @@ public class DoctorService implements UserDetailsService {
         Doctor d = new Doctor();
         d.setMail(doctorDTO.getMail());
         d.setPassword(passwordEncoder.encode(doctorDTO.getPassword()));
+        d.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
 
@@ -60,14 +60,5 @@ public class DoctorService implements UserDetailsService {
         return doctorRepository.findDoctorByLastName(lastName);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
-        Doctor d = doctorRepository.findOneByMail(mail);
-        if (d == null) {
-            throw new UsernameNotFoundException(String.format("No user found with email '%mail'.", mail));
-        } else {
-            return (UserDetails) d;
-        }
-    }
 }
 
