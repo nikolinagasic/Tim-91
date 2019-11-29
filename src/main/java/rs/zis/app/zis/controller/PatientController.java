@@ -7,6 +7,7 @@ import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.User;
 import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.PatientService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import rs.zis.app.zis.service.UserService;
@@ -25,6 +26,9 @@ public class PatientController extends WebConfig {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @PostMapping(consumes = "application/json" , value = "/register")
     public ResponseEntity<PatientDTO> savePatient(@RequestBody PatientDTO patientDTO) {
@@ -56,8 +60,11 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
-    @GetMapping(produces = "application/json", value = "getByMail/{mail}")
-    public ResponseEntity<PatientDTO> getPatientByMail(@PathVariable String mail) {
+    // 'http://localhost:8081/patient/getByToken/dksamd8sajidn328d8i32jd82'
+    @GetMapping(produces = "application/json", value = "/getByToken/{token}")
+    public ResponseEntity<PatientDTO> getPatientByMail(@PathVariable("token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+
         Patient patient = patientService.findOneByMail(mail);
         if(patient != null)
             System.out.println(patient.getFirstName() + " " + patient.getLastName());
