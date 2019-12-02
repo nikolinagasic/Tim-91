@@ -11,7 +11,6 @@ import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
-
 @SuppressWarnings("SpellCheckingInspection")
 @Service
 public class PatientService {

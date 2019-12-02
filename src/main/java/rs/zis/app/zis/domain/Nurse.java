@@ -1,13 +1,7 @@
 package rs.zis.app.zis.domain;
 
-import org.joda.time.DateTime;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +15,9 @@ public class Nurse extends User{
     @Column(name = "lastName")
     private String lastName;
 
+    @Column(name= "role")
+    private String role;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;                     // klinika u kojoj je zaposlen
 
@@ -28,6 +25,7 @@ public class Nurse extends User{
  //   private Set<Godisnji_odmor> vacation;
 
     public Nurse() {
+        this.role = "nurse";
       //  vacation = new HashSet<Godisnji_odmor>();
     }
 
@@ -36,7 +34,16 @@ public class Nurse extends User{
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;
+        this.role = "nurse";
       //  this.vacation = vacation;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getFirstName() {

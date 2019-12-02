@@ -1,14 +1,10 @@
 package rs.zis.app.zis.domain;
 
-import org.joda.time.DateTime;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "ClinicAdministrator")
 public class ClinicAdministrator extends User {
@@ -31,10 +27,14 @@ public class ClinicAdministrator extends User {
     @Column(name = "telephone")
     private long telephone;
 
+    @Column(name= "role")
+    private String role;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;
 
     public ClinicAdministrator() {
+        this.role = "cadmin";
     }
 
     public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, Clinic clinic,Timestamp lastPasswordResetDate, List<Authority> authorities) {
@@ -42,6 +42,15 @@ public class ClinicAdministrator extends User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;
+        this.role = "cadmin";
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getFirstName() {

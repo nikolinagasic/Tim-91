@@ -30,7 +30,11 @@ public class Patient extends User {
     @Column(name = "lbo", unique = true, nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
+    @Column(name= "role")
+    private String role;
+
     public Patient() {
+        this.role = "patient";
     }
 
     public Patient(String mail, String password, String firstName, String lastName, String address,
@@ -44,6 +48,15 @@ public class Patient extends User {
         this.country = country;
         this.telephone = telephone;
         this.lbo = lbo;
+        this.role = "patient";
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getFirstName() { return firstName; }

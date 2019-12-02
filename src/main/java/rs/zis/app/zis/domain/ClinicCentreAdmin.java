@@ -1,13 +1,10 @@
 package rs.zis.app.zis.domain;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "ClinicCentreAdmin")
 public class ClinicCentreAdmin extends User {
@@ -21,8 +18,11 @@ public class ClinicCentreAdmin extends User {
     @Column(name = "lastName")
     private String lastName;
 
-    public ClinicCentreAdmin() {
+    @Column(name= "role")
+    private String role;
 
+    public ClinicCentreAdmin() {
+        this.role = "ccadmin";
     }
 
     public ClinicCentreAdmin(Long id, String mail, String password, boolean predefined, String firstName, String lastName, Timestamp lastPasswordResetDate, List<Authority> authorities) {
@@ -30,6 +30,15 @@ public class ClinicCentreAdmin extends User {
         this.predefined = predefined;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = "ccadmin";
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public boolean isPredefined() {

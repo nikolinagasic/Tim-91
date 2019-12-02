@@ -60,16 +60,5 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
-    // 'http://localhost:8081/patient/getByToken/dksamd8sajidn328d8i32jd82'
-    @GetMapping(produces = "application/json", value = "/getByToken/{token}")
-    public ResponseEntity<PatientDTO> getPatientByMail(@PathVariable("token") String token) {
-        String mail = tokenUtils.getUsernameFromToken(token);
-
-        Patient patient = patientService.findOneByMail(mail);
-        if(patient != null)
-            System.out.println(patient.getFirstName() + " " + patient.getLastName());
-        return new ResponseEntity<>(new PatientDTO(patient), HttpStatus.OK);
-    }
-
 
 }
