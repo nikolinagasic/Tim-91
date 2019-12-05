@@ -49,6 +49,9 @@ public class ClinicCentreAdminController extends WebConfig
         }
 
         ClinicCentreAdmin clinicCentreAdmin = clinicCentreAdminService.save(clinicCentreAdminDTO);
+        //posalji mejl
+
+
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
 
