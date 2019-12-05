@@ -4,10 +4,13 @@ import java.io.IOException;
 import javax.print.Doc;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +29,8 @@ import rs.zis.app.zis.service.*;
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
+
+    private Logger logger = LoggerFactory.getLogger(PatientController.class);
 
     @Autowired
     private TokenUtils tokenUtils;
@@ -49,7 +54,13 @@ public class AuthenticationController {
     private NurseService nurse_service;
 
     @Autowired
+    private UserService user_service;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping(consumes = "application/json", value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -146,4 +157,37 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping(value = "/forgetPassword/{mail}/{ime}/{prezime}")
+    public ResponseEntity<?> getPatientByMail(@PathVariable("mail") String mail, @PathVariable("ime") String ime,
+                                        @PathVariable("prezime") String prezime) {
+
+        User user = user_service.findOneByMail(mail);
+        if(user == null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+
+        boolean patient = patientService.checkFirstLastName(mail, ime, prezime);
+        boolean nurse = nurse_service.checkFirstLastName(mail, ime, prezime);
+        boolean doctor = doctor_service.checkFirstLastName(mail, ime, prezime);
+        boolean cadmin = c_admin_service.checkFirstLastName(mail, ime, prezime);
+        boolean ccadmin = cc_admin_service.checkFirstLastName(mail, ime, prezime);
+
+        if(patient || nurse || doctor || cadmin || ccadmin){
+            String new_pass = ime + "123";
+            user.setPassword(new_pass);
+            user_service.save(user);
+
+            try{
+                notificationService.SendNotification(mail, "billypiton43@gmail.com",
+                        "PSW - naslov", "Uspesna registracija");
+            }catch (MailException e){
+                logger.info("Error Sending Mail:" + e.getMessage());
+            }
+
+            return new ResponseEntity<>("ok", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+    }
 }

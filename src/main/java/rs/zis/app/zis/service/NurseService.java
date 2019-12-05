@@ -70,4 +70,19 @@ import java.util.List;
                 return (UserDetails) n;
             }
         }
+
+        public boolean checkFirstLastName(String mail, String firstName, String lastName){
+            Nurse nurse = nurseRepository.findOneByMail(mail);
+            if(nurse != null){
+                if(nurse.getFirstName().equals(firstName) && nurse.getLastName().equals(lastName)){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            else{
+                return false;
+            }
+        }
     }

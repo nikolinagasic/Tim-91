@@ -67,4 +67,19 @@ public class ClinicAdministratorService implements UserDetailsService {
             return (UserDetails) d;
         }
     }
+
+    public boolean checkFirstLastName(String mail, String firstName, String lastName){
+        ClinicAdministrator cadmin = clinicAdministartorRepository.findOneByMail(mail);
+        if(cadmin != null){
+            if(cadmin.getFirstName().equals(firstName) && cadmin.getLastName().equals(lastName)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
 }

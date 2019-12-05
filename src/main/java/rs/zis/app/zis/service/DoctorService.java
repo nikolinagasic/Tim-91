@@ -13,6 +13,7 @@ import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
+import javax.print.Doc;
 import java.util.List;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -58,6 +59,21 @@ public class DoctorService {
 
     public List<Doctor> findDoctorByLastName(String lastName) {
         return doctorRepository.findDoctorByLastName(lastName);
+    }
+
+    public boolean checkFirstLastName(String mail, String firstName, String lastName){
+        Doctor doctor = doctorRepository.findOneByMail(mail);
+        if(doctor != null){
+            if(doctor.getFirstName().equals(firstName) && doctor.getLastName().equals(lastName)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
     }
 
 }

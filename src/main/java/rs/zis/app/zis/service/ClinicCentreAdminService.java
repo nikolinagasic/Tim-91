@@ -64,5 +64,19 @@ public class ClinicCentreAdminService {
         cc_adminRepository.deleteById(mail);
     }
 
+    public boolean checkFirstLastName(String mail, String firstName, String lastName){
+        ClinicCentreAdmin ccadmin = cc_adminRepository.findOneByMail(mail);
+        if(ccadmin != null){
+            if(ccadmin.getFirstName().equals(firstName) && ccadmin.getLastName().equals(lastName)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
 
 }

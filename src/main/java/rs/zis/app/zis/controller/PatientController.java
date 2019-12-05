@@ -57,7 +57,8 @@ public class PatientController extends WebConfig {
         //slati mejl korisniku
         try{
             System.out.println("usao sam u pisanje mejla ");
-            notificationService.SendNotification(patientDTO);
+            notificationService.SendNotification(patientDTO.getMail(), "billypiton43@gmail.com",
+                    "PSW - naslov", "Uspesna registracija");
         }catch (MailException e){
             logger.info("Error Sending Mail:" + e.getMessage());
         }

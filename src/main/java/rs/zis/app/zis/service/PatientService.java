@@ -66,4 +66,19 @@ public class PatientService {
     public List<Patient> findPatientByLastName(String lastName) {
         return patientRepository.findPatientByLastName(lastName);
     }
+
+    public boolean checkFirstLastName(String mail, String firstName, String lastName){
+        Patient patient = patientRepository.findOneByMail(mail);
+        if(patient != null){
+            if(patient.getFirstName().equals(firstName) && patient.getLastName().equals(lastName)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
 }

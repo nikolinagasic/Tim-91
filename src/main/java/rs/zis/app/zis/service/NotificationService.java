@@ -7,6 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.dto.PatientDTO;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Service
 public class NotificationService {
 
@@ -17,17 +18,14 @@ public class NotificationService {
         this.javaMailSender=javaMailSender;
     }
 
-    public void SendNotification(PatientDTO patientDTO) throws MailException {
-        System.out.println("OVDE SAM ");
+    public void SendNotification(String to, String from, String subject, String textBody) throws MailException {
         SimpleMailMessage mail= new SimpleMailMessage();
         //mail.setTo(patientDTO.getMail());
-        mail.setTo("billypiton43@gmail.com");
-        mail.setFrom("billypiton43@gmail.com");
-        mail.setSubject("PSW");
-        mail.setText("Usepsna registracija");
-        System.out.println("OVDE SAM1 ");
+        mail.setTo(to);
+        mail.setFrom(from);
+        mail.setSubject(subject);
+        mail.setText(textBody);
         javaMailSender.send(mail);
-        System.out.println("OVDE SAM 2");
     }
 
 }
