@@ -173,13 +173,21 @@ public class AuthenticationController {
         boolean ccadmin = cc_admin_service.checkFirstLastName(mail, ime, prezime);
 
         if(patient || nurse || doctor || cadmin || ccadmin){
-            String new_pass = ime + "123";
+            String new_pass = ime.toLowerCase();
+            int brojac = 1;
+            while(new_pass.length() < 8){
+                new_pass = new_pass + Integer.toString(brojac);
+                brojac++;
+            }
             user.setPassword(new_pass);
             user_service.save(user);
 
+            String body = "Поштовани, Ваша лозинка је промењена. Исту можете променити на личном профилу.\n"
+                    + "Тренутна лозинка је: " + new_pass;
+
             try{
-                notificationService.SendNotification(mail, "billypiton43@gmail.com",
-                        "PSW - naslov", "Uspesna registracija");
+                notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
+                        "Promena lozinke", body);
             }catch (MailException e){
                 logger.info("Error Sending Mail:" + e.getMessage());
             }
