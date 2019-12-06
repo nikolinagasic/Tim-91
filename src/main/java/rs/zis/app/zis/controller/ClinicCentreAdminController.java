@@ -1,14 +1,18 @@
 package rs.zis.app.zis.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicAdministratorDTO;
 import rs.zis.app.zis.dto.ClinicCentreAdminDTO;
 import rs.zis.app.zis.dto.ClinicDTO;
+import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.service.*;
 
 import java.util.ArrayList;
@@ -21,6 +25,8 @@ import java.util.List;
 public class ClinicCentreAdminController extends WebConfig
 {
 
+    private Logger logger = LoggerFactory.getLogger(ClinicCentreAdminController.class);
+
     @Autowired
     private ClinicAdministratorService clinicAdministratorService;
     @Autowired
@@ -29,6 +35,10 @@ public class ClinicCentreAdminController extends WebConfig
     private ClinicService clinicservice;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PatientService patientService;
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
     public ResponseEntity<Integer> saveClinicAdministrator(@RequestBody ClinicAdministratorDTO clinicAdministratorDTO) {
@@ -67,6 +77,58 @@ public class ClinicCentreAdminController extends WebConfig
 
 
     }
+
+    //trazim listu svih zahteva za registraciju
+    @GetMapping(value = "/requests")
+    public ResponseEntity<List<PatientDTO>> getAllRequest() {
+
+        List<User> users = userService.findAll();
+        List<PatientDTO> request = new ArrayList<>();
+
+        for(User u:users){
+            if((u.isEnabled())==false){//to znaci da pacijent nije registrovan
+                PatientDTO pd = new PatientDTO(patientService.findOneById(u.getId()));
+                request.add(pd);
+            }
+        }
+
+        return new ResponseEntity<>(request, HttpStatus.OK);
+    }
+
+    //odobravanje ili ne zahteva za registraciju
+    // 'http://localhost:8081/ccadmin/accept/nesto@gmail.com/br'
+    //br=1(zahtev odobren),br=2(zahtev odbijen)
+    @GetMapping( value = "accept/{mail}/{br}")
+    public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br){
+         if(br==1){
+             User u= userService.findOneByMail(mail);
+             u.setEnabled(true); //sada je registrovan
+             userService.save(u);
+             try{
+                 System.out.println("usao sam u pisanje mejla ");
+                 notificationService.SendNotification(mail,"Zahtev za registraciju prihvacen!");
+             }catch (MailException e){
+                 logger.info("Error Sending Mail:" + e.getMessage());
+                 return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+             }
+         }else{
+             User u= userService.findOneByMail(mail);
+             patientService.remove(u.getId()); //brisem pacijenta iz baze
+             userService.remove(u.getId());    //brisem ga i iz liste usera
+             try{
+                 System.out.println("usao sam u pisanje mejla ");
+                 notificationService.SendNotification(mail,"Zahtev odbijen!");
+             }catch (MailException e){
+                 logger.info("Error Sending Mail:" + e.getMessage());
+                 return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+             }
+
+         }
+
+
+        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+    }
+
 
 
     @GetMapping(value = "/{id}")

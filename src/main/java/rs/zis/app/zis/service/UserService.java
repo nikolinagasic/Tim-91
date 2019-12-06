@@ -36,4 +36,6 @@ public class UserService {
     public User findOneByMail(String mail) {
         return userRepository.findOneByMail(mail);
     }
+
+    public User save(User u) {return userRepository.save(u);}
 }

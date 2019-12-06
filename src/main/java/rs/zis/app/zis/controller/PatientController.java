@@ -53,11 +53,11 @@ public class PatientController extends WebConfig {
             return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);  // mejl nije okej (na nivou svih korisika)
         }
 
-        Patient patient = patientService.save(patientDTO);
+        Patient patient = patientService.save(patientDTO); //sacuvam u registerService
         //slati mejl korisniku
         try{
             System.out.println("usao sam u pisanje mejla ");
-            notificationService.SendNotification(patientDTO);
+            notificationService.SendNotification(patientDTO.getMail(),"Lepa si");
         }catch (MailException e){
             logger.info("Error Sending Mail:" + e.getMessage());
         }

@@ -17,14 +17,14 @@ public class NotificationService {
         this.javaMailSender=javaMailSender;
     }
 
-    public void SendNotification(PatientDTO patientDTO) throws MailException {
+    public void SendNotification(String email,String message) throws MailException {
         System.out.println("OVDE SAM ");
         SimpleMailMessage mail= new SimpleMailMessage();
-        //mail.setTo(patientDTO.getMail());
+        //mail.setTo(email);
         mail.setTo("billypiton43@gmail.com");
         mail.setFrom("billypiton43@gmail.com");
         mail.setSubject("PSW");
-        mail.setText("Usepsna registracija");
+        mail.setText(message);
         System.out.println("OVDE SAM1 ");
         javaMailSender.send(mail);
         System.out.println("OVDE SAM 2");
