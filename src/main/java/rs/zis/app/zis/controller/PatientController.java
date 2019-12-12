@@ -54,14 +54,7 @@ public class PatientController extends WebConfig {
         }
 
         Patient patient = patientService.save(patientDTO); //sacuvam u registerService
-        //slati mejl korisniku
-        try{
-            System.out.println("usao sam u pisanje mejla ");
-            notificationService.SendNotification(patientDTO.getMail(),"Lepa si");
-        }catch (MailException e){
-            logger.info("Error Sending Mail:" + e.getMessage());
-        }
-
+        
         return new ResponseEntity<>(patientDTO, HttpStatus.CREATED);     // sve okej
     }
 

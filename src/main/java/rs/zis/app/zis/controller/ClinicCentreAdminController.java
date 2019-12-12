@@ -102,21 +102,28 @@ public class ClinicCentreAdminController extends WebConfig
     public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br){
          if(br==1){
              User u= userService.findOneByMail(mail);
-             u.setEnabled(true); //sada je registrovan
-             userService.save(u);
-             try{
-                 System.out.println("usao sam u pisanje mejla ");
-                 notificationService.SendNotification(mail,"Zahtev za registraciju prihvacen!");
-             }catch (MailException e){
-                 logger.info("Error Sending Mail:" + e.getMessage());
-                 return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+             if(u==null){
+                 System.out.println("USER JE NULL");
+             }else {
+                 //System.out.println("PODACI:" + u.getId());
+                 u.setEnabled(true); //sada je registrovan
+                 userService.save(u);
+                // System.out.println("sacuvao sam izasao");
+                 try {
+                     //System.out.println("usao sam u pisanje mejla ");
+                     notificationService.SendNotification(mail, "Zahtev prihvacen");
+                 } catch (MailException e) {
+                     logger.info("Error Sending Mail:" + e.getMessage());
+                     return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+                 }
              }
          }else{
+            // System.out.println("KLIKNUTO NA ODBIJ"+mail+br);
              User u= userService.findOneByMail(mail);
-             patientService.remove(u.getId()); //brisem pacijenta iz baze
              userService.remove(u.getId());    //brisem ga i iz liste usera
+
              try{
-                 System.out.println("usao sam u pisanje mejla ");
+                 //System.out.println("usao sam u pisanje mejla ");
                  notificationService.SendNotification(mail,"Zahtev odbijen!");
              }catch (MailException e){
                  logger.info("Error Sending Mail:" + e.getMessage());
