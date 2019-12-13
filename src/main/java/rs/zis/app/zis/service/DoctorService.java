@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Doctor;
+import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
@@ -59,6 +60,8 @@ public class DoctorService {
     public List<Doctor> findDoctorByLastName(String lastName) {
         return doctorRepository.findDoctorByLastName(lastName);
     }
+
+    public Doctor findOneById(Long id){return doctorRepository.findOneById(id); }
 
 }
 
