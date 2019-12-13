@@ -16,7 +16,7 @@ import rs.zis.app.zis.service.DoctorService;
 import java.util.ArrayList;
 import java.util.List;
 @RestController
-@RequestMapping("/login/doctor")
+@RequestMapping("/doctor")
 public class DoctorController {
     @Autowired
     private DoctorService doctorService;
@@ -41,8 +41,9 @@ public class DoctorController {
         return new ResponseEntity<>(new DoctorDTO(doctor), HttpStatus.OK);
     }
 
-    @PostMapping(consumes = "application/json" , value = "/changeAttribute/{changedName}/{newValue}/{email}")
-    public ResponseEntity<Integer> changeAttributes(@PathVariable("email") String mail, @PathVariable("changedName") String changed, @PathVariable("newValue") String value) {
+    @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{email}")
+    public ResponseEntity<Integer> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("email") String mail) {
+        System.out.println("usao sam ovde CHANGE" + changed + " " + value);
         Doctor d= doctorService.findOneByMail(mail);
         if(d==null){
             System.out.println("Nema ga");
