@@ -9,10 +9,7 @@ import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.*;
-import rs.zis.app.zis.dto.ClinicAdministratorDTO;
-import rs.zis.app.zis.dto.ClinicCentreAdminDTO;
-import rs.zis.app.zis.dto.ClinicDTO;
-import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.service.*;
 
 import java.util.ArrayList;
@@ -39,6 +36,8 @@ public class ClinicCentreAdminController extends WebConfig
     private PatientService patientService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private DiagnosisService diagnosisService;
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
     public ResponseEntity<Integer> saveClinicAdministrator(@RequestBody ClinicAdministratorDTO clinicAdministratorDTO) {
@@ -134,6 +133,17 @@ public class ClinicCentreAdminController extends WebConfig
 
 
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+    }
+
+    //trazim sifarnik-listu svih dijagnoza i lekova
+    @GetMapping(value = "/diagnosis")
+    public ResponseEntity<List<DiagnosisDTO>> getAllDiagnosis() {
+
+        List<DiagnosisDTO> diagnosisListDTO = new ArrayList<>();
+
+        
+
+        return new ResponseEntity<>(diagnosisListDTO, HttpStatus.OK);
     }
 
 

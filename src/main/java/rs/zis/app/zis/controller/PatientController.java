@@ -54,7 +54,7 @@ public class PatientController extends WebConfig {
         }
 
         Patient patient = patientService.save(patientDTO); //sacuvam u registerService
-        
+
         return new ResponseEntity<>(patientDTO, HttpStatus.CREATED);     // sve okej
     }
 
