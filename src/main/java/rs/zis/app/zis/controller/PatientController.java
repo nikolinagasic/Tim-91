@@ -11,6 +11,7 @@ import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.User;
 import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.security.TokenUtils;
+import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.NotificationService;
 import rs.zis.app.zis.service.PatientService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +30,9 @@ public class PatientController extends WebConfig {
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private CustomUserService customUserService;
 
     @Autowired
     private UserService userService;
@@ -67,7 +71,7 @@ public class PatientController extends WebConfig {
     }
 
     @GetMapping(produces = "application/json", value = "/getAll")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<PatientDTO>> getPatient() {
         List<Patient> listPatient = patientService.findAll();
 
@@ -78,5 +82,53 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
+    //@PreAuthorize("hasRole('PATIENT')")
+    @PostMapping(value = "/changeAttribute/{naziv}/{vrednost}/{mail}")
+    public ResponseEntity<?> changeAttribute(@PathVariable("naziv") String naziv,
+                                             @PathVariable("vrednost") String vrednost,
+                                             @PathVariable("mail") String mail) {
+        System.out.println("primio change: naziv{"+naziv+"}, vrednost{"+vrednost+"}, mail{"+mail+"}");
+        Patient patient = patientService.findOneByMail(mail);
+        if (patient == null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
 
+        if(naziv.equals("ime")){
+            patient.setFirstName(vrednost);
+        }
+        else if(naziv.equals("prezime")){
+            patient.setLastName(vrednost);
+        }
+        else if(naziv.equals("adresa")){
+            patient.setAddress(vrednost);
+        }
+        else if(naziv.equals("grad")){
+            patient.setCity(vrednost);
+        }
+        else if(naziv.equals("drzava")){
+            patient.setCountry(vrednost);
+        }
+        else if(naziv.equals("telefon")){
+            patient.setTelephone(vrednost);
+        }
+
+        patientService.update(patient);
+        PatientDTO patientDTO = new PatientDTO(patient);
+        return new ResponseEntity<>(patientDTO, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('PATIENT')")
+    @PostMapping(consumes = "text/plain", value = "/changePassword")
+    public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
+        //System.out.println("Pass: " + password + ", token: " +token);
+        String mail = tokenUtils.getUsernameFromToken(token);
+        
+        boolean flag_ok = customUserService.changePassword(mail, password);
+        if(flag_ok) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

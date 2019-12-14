@@ -25,7 +25,7 @@ import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "unchecked"})
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
@@ -78,8 +78,12 @@ public class AuthenticationController {
             System.out.println("Nisu dobri kredencijali [BadCredentialsException]");
             return new ResponseEntity("Bad credencials", HttpStatus.BAD_REQUEST);
         }
-        // Ubaci username + password u kontext
+
+        // Ubaci username + password u kontext (otvori sesiju)
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+        String username = currentUser.getName();
+        System.out.println("cp1 user: "+ username);
 
         Patient pat = patientService.findOneByMail(mail);
         Doctor doc = doctor_service.findOneByMail(mail);
@@ -92,6 +96,10 @@ public class AuthenticationController {
             Patient user = (Patient) authentication.getPrincipal();
             String jwt = tokenUtils.generateToken(user.getUsername());
             int expiresIn = tokenUtils.getExpiredIn();
+
+            Authentication currentser = SecurityContextHolder.getContext().getAuthentication();
+            String usernam = currentser.getName();
+            System.out.println("cp2 user: "+ usernam);
 
             // Vrati token kao odgovor na uspesno autentifikaciju
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
@@ -115,7 +123,9 @@ public class AuthenticationController {
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
         }
         else if(ccadmin != null){
+            System.out.println("u adminu sam");
             ClinicCentreAdmin user = (ClinicCentreAdmin) authentication.getPrincipal();
+            System.out.println("ime: " + user.getFirstName());
             String jwt = tokenUtils.generateToken(user.getUsername());
             int expiresIn = tokenUtils.getExpiredIn();
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
@@ -186,7 +196,7 @@ public class AuthenticationController {
                     + "Тренутна лозинка је: " + new_pass;
 
             try{
-                notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
+                notificationService.SendNotification(mail, "billypiton43@gmail.com",
                         "Promena lozinke", body);
             }catch (MailException e){
                 logger.info("Error Sending Mail:" + e.getMessage());

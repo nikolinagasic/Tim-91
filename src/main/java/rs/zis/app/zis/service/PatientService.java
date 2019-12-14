@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.PatientDTO;
@@ -14,6 +18,7 @@ import rs.zis.app.zis.repository.PatientRepository;
 @SuppressWarnings("SpellCheckingInspection")
 @Service
 public class PatientService {
+
 
     @Autowired
     private PatientRepository patientRepository;
@@ -67,17 +72,19 @@ public class PatientService {
         return patientRepository.findPatientByLastName(lastName);
     }
 
-    public boolean checkFirstLastName(String mail, String firstName, String lastName){
+    public Patient update(Patient patient){
+        return patientRepository.save(patient);
+    }
+
+    public boolean checkFirstLastName(String mail, String firstName, String lastName) {
         Patient patient = patientRepository.findOneByMail(mail);
-        if(patient != null){
-            if(patient.getFirstName().equals(firstName) && patient.getLastName().equals(lastName)){
+        if (patient != null) {
+            if (patient.getFirstName().equals(firstName) && patient.getLastName().equals(lastName)) {
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
-        }
-        else{
+        } else {
             return false;
         }
     }

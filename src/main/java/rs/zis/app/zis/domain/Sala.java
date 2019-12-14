@@ -1,23 +1,24 @@
 package rs.zis.app.zis.domain;
 
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class Sala {
-    private Tip_termina tip;
+    private String tip_termina;
     private int ID;
 
     public Sala() {
     }
 
-    public Sala(Tip_termina tip, int ID) {
-        this.tip = tip;
+    public Sala(String tip, int ID) {
+        this.tip_termina = tip;
         this.ID = ID;
     }
 
-    public Tip_termina getTip() {
-        return tip;
+    public String getTip_termina() {
+        return tip_termina;
     }
 
-    public void setTip(Tip_termina tip) {
-        this.tip = tip;
+    public void setTip_termina(String tip_termina) {
+        this.tip_termina = tip_termina;
     }
 
     public int getID() {

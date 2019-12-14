@@ -2,6 +2,7 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,14 +23,15 @@ public class Doctor extends User {
     @Column(name= "role")
     private String role;
 
-  //  @ManyToMany(mappedBy = "appointments", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  //  private Set<Termin> appointmentList; // zakazani termini pregleda/operacija
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Clinic clinic;                     // klinika u kojoj je zaposlen
+    private Clinic clinic;
 
-  //  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
- //   private Set<Godisnji_odmor> vacation;
+    // zakazani termini pregleda/operacija
+  //  @ManyToMany(mappedBy = "appointments", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  //  private Set<Termin> appointmentList;
+
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Vacation> vacation = new HashSet<Vacation>();
 
     public Doctor() {
      //   appointmentList = new HashSet<Termin>();
@@ -37,13 +39,12 @@ public class Doctor extends User {
         this.role = "doctor";
     }
 
-    public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Termin> appointmentList, Clinic clinic, Set<Godisnji_odmor> vacation,Timestamp lastPasswordResetDate, List<Authority> authorities) {
+    public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Termin> appointmentList, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
         super(mail, password, true, lastPasswordResetDate, authorities);
         this.firstName = firstName;
         this.lastName = lastName;
         this.field = field;
      //   this.appointmentList = appointmentList;
-        this.clinic = clinic;
         this.role = "doctor";
      //   this.vacation = vacation;
     }
