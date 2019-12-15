@@ -23,6 +23,7 @@ public class TipPregledaController extends WebConfig {
     @GetMapping(produces = "application/json", value = "/getAll")
     // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TipPregledaDTO>> getAll() {
+        System.out.println("usao u ispis");
         List<TipPregleda> listPregleda = tipPregledaService.findAll();
 
         ArrayList<TipPregledaDTO> listDTO = new ArrayList<>();
@@ -34,6 +35,7 @@ public class TipPregledaController extends WebConfig {
 
     @PostMapping(consumes = "application/json", value = "/save")
     public ResponseEntity<?> saveType(@RequestBody TipPregledaDTO typeDTO) {
+        System.out.println("usao da doda");
         TipPregleda tip = tipPregledaService.save(typeDTO);
         if(tip == null){
             return new ResponseEntity<>("greska", HttpStatus.CONFLICT);

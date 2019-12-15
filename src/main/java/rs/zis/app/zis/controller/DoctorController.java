@@ -11,6 +11,8 @@ import rs.zis.app.zis.domain.Nurse;
 import rs.zis.app.zis.domain.User;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.NurseDTO;
+import rs.zis.app.zis.security.TokenUtils;
+import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.DoctorService;
 
 import java.util.ArrayList;
@@ -20,6 +22,10 @@ import java.util.List;
 public class DoctorController {
     @Autowired
     private DoctorService doctorService;
+    @Autowired
+    private CustomUserService customUserService;
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @GetMapping(produces = "application/json", value = "/getAll")
     @PreAuthorize("hasRole('ADMIN')")
@@ -42,23 +48,38 @@ public class DoctorController {
     }
 
     @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{email}")
-    public ResponseEntity<Integer> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("email") String mail) {
+    public ResponseEntity<?> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("email") String mail) {
         System.out.println("usao sam ovde CHANGE" + changed + " " + value);
         Doctor d= doctorService.findOneByMail(mail);
         if(d==null){
             System.out.println("Nema ga");
         }else {
-            if (changed == "ime") {
+            if (changed.equals("ime")) {
                 d.setFirstName(value);
                 System.out.println(d.getFirstName());
-            } else if (changed == "prezime") {
+            } else if (changed.equals("prezime")) {
                 d.setLastName(value);
                 System.out.println(d.getLastName());
-            } else if (changed == "oblast") {
+            } else if (changed.equals("oblast")) {
                 d.setField(value);
             } else
                 System.out.println("Greska");
         }
-            return new ResponseEntity<>(0, HttpStatus.OK);     // 0 -> sve okej
+        doctorService.update(d);
+        DoctorDTO doctorDTO = new DoctorDTO(d);
+        return new ResponseEntity<>(doctorDTO, HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('DOCTOR')")
+    @PostMapping(consumes = "text/plain", value = "/changePassword")
+    public ResponseEntity<?> changePassword(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+
+        boolean flag_ok = customUserService.changePassword(mail, password);
+        if(flag_ok) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
