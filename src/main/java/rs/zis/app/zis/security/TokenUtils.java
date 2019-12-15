@@ -23,10 +23,10 @@ public class TokenUtils {
     @Value("somesecret")
     public String SECRET;
 
-    @Value("300000")
+    @Value("600000000")
     private int EXPIRES_IN;             // koliko mi dugo vazi ovaj token
 
-    @Value("Authorization")
+    @Value("Auth-Token")
     private String AUTH_HEADER;
 
     static final String AUDIENCE_UNKNOWN = "unknown";
@@ -144,8 +144,13 @@ public class TokenUtils {
     public String getToken(HttpServletRequest request) {
         String authHeader = getAuthHeaderFromHeader(request);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
+        if (authHeader != null) {
+            if(authHeader.startsWith("Bearer ")){           // ovde sam menjao (moze i ne mora poceti sa "Bearer ")
+                return authHeader.substring(7);
+            }
+            else{
+                return authHeader;
+            }
         }
 
         return null;

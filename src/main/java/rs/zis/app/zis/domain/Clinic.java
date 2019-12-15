@@ -4,11 +4,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.print.Doc;
 import java.util.*;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "Clinic")
-public class Clinic implements UserDetails {
+public class Clinic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,22 +22,54 @@ public class Clinic implements UserDetails {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "description", nullable = true)
+    @Column(name = "description")
     private String description;
 
-    // inicijalizovati u konstruktoru
-    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
+    @Column(name = "rating")
+    private String rating;
 
-    public Clinic(Long id, String name, String address, String description, Set<ClinicAdministrator> clinic_admin) {
+    @Column(name = "location")
+    private String location;
+
+    // hocu da se formira medjutabela (clinic_doctor) koja ce namapirati ID klinike na ID doktora
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Doctor> doctor = new HashSet<Doctor>();
+
+//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)v
+//    private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
+
+    public Clinic(Long id, String name, String address, String description, Set<ClinicAdministrator> clinic_admin,
+                  Set<Doctor> doctor, String location) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;
-        this.clinic_admin = clinic_admin;
+//        this.clinic_admin = clinic_admin;
+        this.doctor = doctor;
+        this.location = location;
     }
 
     public Clinic() {
+    }
+
+    public Set<Doctor> getDoctor() {
+        return doctor;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Long getId() {
@@ -68,42 +102,6 @@ public class Clinic implements UserDetails {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.getName();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 
 }

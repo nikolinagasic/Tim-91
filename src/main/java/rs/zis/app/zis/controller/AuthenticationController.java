@@ -4,10 +4,13 @@ import java.io.IOException;
 import javax.print.Doc;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,10 +25,12 @@ import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "unchecked"})
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
+
+    private Logger logger = LoggerFactory.getLogger(PatientController.class);
 
     @Autowired
     private TokenUtils tokenUtils;
@@ -49,7 +54,13 @@ public class AuthenticationController {
     private NurseService nurse_service;
 
     @Autowired
+    private UserService user_service;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping(consumes = "application/json", value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -67,8 +78,12 @@ public class AuthenticationController {
             System.out.println("Nisu dobri kredencijali [BadCredentialsException]");
             return new ResponseEntity("Bad credencials", HttpStatus.BAD_REQUEST);
         }
-        // Ubaci username + password u kontext
+
+        // Ubaci username + password u kontext (otvori sesiju)
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+        String username = currentUser.getName();
+        System.out.println("cp1 user: "+ username);
 
         Patient pat = patientService.findOneByMail(mail);
         Doctor doc = doctor_service.findOneByMail(mail);
@@ -81,6 +96,10 @@ public class AuthenticationController {
             Patient user = (Patient) authentication.getPrincipal();
             String jwt = tokenUtils.generateToken(user.getUsername());
             int expiresIn = tokenUtils.getExpiredIn();
+
+            Authentication currentser = SecurityContextHolder.getContext().getAuthentication();
+            String usernam = currentser.getName();
+            System.out.println("cp2 user: "+ usernam);
 
             // Vrati token kao odgovor na uspesno autentifikaciju
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
@@ -104,7 +123,9 @@ public class AuthenticationController {
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
         }
         else if(ccadmin != null){
+            System.out.println("u adminu sam");
             ClinicCentreAdmin user = (ClinicCentreAdmin) authentication.getPrincipal();
+            System.out.println("ime: " + user.getFirstName());
             String jwt = tokenUtils.generateToken(user.getUsername());
             int expiresIn = tokenUtils.getExpiredIn();
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
@@ -146,4 +167,45 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping(value = "/forgetPassword/{mail}/{ime}/{prezime}")
+    public ResponseEntity<?> getPatientByMail(@PathVariable("mail") String mail, @PathVariable("ime") String ime,
+                                        @PathVariable("prezime") String prezime) {
+
+        User user = user_service.findOneByMail(mail);
+        if(user == null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+
+        boolean patient = patientService.checkFirstLastName(mail, ime, prezime);
+        boolean nurse = nurse_service.checkFirstLastName(mail, ime, prezime);
+        boolean doctor = doctor_service.checkFirstLastName(mail, ime, prezime);
+        boolean cadmin = c_admin_service.checkFirstLastName(mail, ime, prezime);
+        boolean ccadmin = cc_admin_service.checkFirstLastName(mail, ime, prezime);
+
+        if(patient || nurse || doctor || cadmin || ccadmin){
+            String new_pass = ime.toLowerCase();
+            int brojac = 1;
+            while(new_pass.length() < 8){
+                new_pass = new_pass + Integer.toString(brojac);
+                brojac++;
+            }
+            user.setPassword(new_pass);
+            user_service.save(user);
+
+            String body = "Поштовани, Ваша лозинка је промењена. Исту можете променити на личном профилу.\n"
+                    + "Тренутна лозинка је: " + new_pass;
+
+            try{
+                notificationService.SendNotification(mail, "billypiton43@gmail.com",
+                        "Promena lozinke", body);
+            }catch (MailException e){
+                logger.info("Error Sending Mail:" + e.getMessage());
+            }
+
+            return new ResponseEntity<>("ok", HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+    }
 }
