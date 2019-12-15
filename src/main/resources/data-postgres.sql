@@ -10,3 +10,6 @@ insert into clinic_centre_admin (first_name, last_name, predefined, role, id)
     values ('Admin', 'Admin', true, 'ccadmin', 1);
 
 insert into user_authority (user_id, authority_id) values (1, 1);
+
+insert into tip_pregleda (name) values ('stomatologija');
+insert into tip_pregleda (name) values ('kardiologija');
