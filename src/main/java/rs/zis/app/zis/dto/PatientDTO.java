@@ -11,13 +11,15 @@ public class PatientDTO {
     private String address;
     private String city;
     private String country;
-    private long telephone;
+    private String telephone;
     private long lbo;
+    private String role;
 
     public PatientDTO() {
     }
 
-    public PatientDTO(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, long telephone, long lbo) {
+    public PatientDTO(Long id, String mail, String password, String firstName, String lastName, String address, String city,
+                      String country, String telephone, long lbo, String role) {
         this.id = id;
         this.mail = mail;
         this.password = password;
@@ -28,6 +30,7 @@ public class PatientDTO {
         this.country = country;
         this.telephone = telephone;
         this.lbo = lbo;
+        this.role = role;
     }
 
     public PatientDTO(Patient patient) {
@@ -41,6 +44,7 @@ public class PatientDTO {
         this.country = patient.getCountry();
         this.telephone = patient.getTelephone();
         this.lbo = patient.getLbo();
+        this.role = patient.getRole();
     }
 
     public Long getId() {
@@ -75,11 +79,15 @@ public class PatientDTO {
         return country;
     }
 
-    public long getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
     public long getLbo() {
         return lbo;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

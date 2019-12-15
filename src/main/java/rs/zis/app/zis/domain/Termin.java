@@ -1,19 +1,16 @@
 package rs.zis.app.zis.domain;
 
-enum Tip_termina{
-    operacija,
-    pregled
-}
+@SuppressWarnings("SpellCheckingInspection")
 public class Termin {
     private long pocetak;
     private long kraj;
     private String sala;
-    private Tip_termina tip;
+    private String tip;
 
     public Termin() {
     }
 
-    public Termin(long pocetak, long kraj, String sala, Tip_termina tip) {
+    public Termin(long pocetak, long kraj, String sala, String tip) {
         this.pocetak = pocetak;
         this.kraj = kraj;
         this.sala = sala;
@@ -44,11 +41,11 @@ public class Termin {
         this.sala = sala;
     }
 
-    public Tip_termina getTip() {
+    public String getTip() {
         return tip;
     }
 
-    public void setTip(Tip_termina tip) {
+    public void setTip(String tip) {
         this.tip = tip;
     }
 }

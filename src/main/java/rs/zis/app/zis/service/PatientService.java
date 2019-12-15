@@ -1,30 +1,59 @@
 package rs.zis.app.zis.service;
 
-import com.sun.tools.javac.util.List;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+
+import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
-import java.awt.print.Pageable;
-
+@SuppressWarnings("SpellCheckingInspection")
 @Service
 public class PatientService {
+
 
     @Autowired
     private PatientRepository patientRepository;
 
-    /*public List<Patient> findAll() {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthorityService authService;
+
+    public List<Patient> findAll() {
         return patientRepository.findAll();
-    }*/
+    }
 
     public Page<Patient> findAll(Pageable page) {
         return patientRepository.findAll(page);
     }
 
-    public Patient save(Patient patient) {
-        return patientRepository.save(patient);
+    public Patient save(PatientDTO patientDTO) {
+        Patient p = new Patient();
+        p.setMail(patientDTO.getMail());
+        p.setPassword(passwordEncoder.encode(patientDTO.getPassword()));
+        p.setFirstName(patientDTO.getFirstName());
+        p.setLastName(patientDTO.getLastName());
+        p.setAddress(patientDTO.getAddress());
+        p.setCity(patientDTO.getCity());
+        p.setCountry(patientDTO.getCountry());
+        p.setTelephone(patientDTO.getTelephone());
+        p.setLbo(patientDTO.getLbo());
+        p.setEnabled(true);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
+        List<Authority> auth = authService.findByname("ROLE_PATIENT");
+        p.setAuthorities(auth);
+
+        p = this.patientRepository.save(p);
+        return p;
     }
 
     public void remove(Long id) {
@@ -41,5 +70,22 @@ public class PatientService {
 
     public List<Patient> findPatientByLastName(String lastName) {
         return patientRepository.findPatientByLastName(lastName);
+    }
+
+    public Patient update(Patient patient){
+        return patientRepository.save(patient);
+    }
+
+    public boolean checkFirstLastName(String mail, String firstName, String lastName) {
+        Patient patient = patientRepository.findOneByMail(mail);
+        if (patient != null) {
+            if (patient.getFirstName().equals(firstName) && patient.getLastName().equals(lastName)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

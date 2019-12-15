@@ -1,22 +1,13 @@
 package rs.zis.app.zis.domain;
 
-import org.springframework.data.annotation.Id;
+import java.sql.Timestamp;
 
 import javax.persistence.*;
+import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Entity
-@Table(name = "Patient")
-public class Patient {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "mail", nullable = false)
-    private String mail;
-
-    @Column(name = "password", nullable = false)
-    private String password;
+public class Patient extends User {
 
     @Column(name = "firstName", nullable = false)
     private String firstName;
@@ -24,28 +15,32 @@ public class Patient {
     @Column(name = "lastName", nullable = false)
     private String lastName;
 
-    @Column(name = "address", unique = true, nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "country", nullable = false)
+    @Column(name = "country")
     private String country;
 
-    @Column(name = "telephone", nullable = false)
-    private long telephone;
+    @Column(name = "telephone")
+    private String telephone;
 
     @Column(name = "lbo", unique = true, nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
+    @Column(name= "role")
+    private String role;
+
     public Patient() {
+        this.role = "patient";
     }
 
-    public Patient(Long id, String mail, String password, String firstName, String lastName, String address, String city, String country, long telephone, long lbo) {
-        this.id = id;
-        this.mail = mail;
-        this.password = password;
+    public Patient(String mail, String password, String firstName, String lastName, String address,
+                   String city, String country, String telephone, long lbo, boolean enabled,
+                   Timestamp lastPasswordResetDate, List<Authority> authorities) {
+        super(mail, password, enabled, lastPasswordResetDate, authorities);
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -53,30 +48,15 @@ public class Patient {
         this.country = country;
         this.telephone = telephone;
         this.lbo = lbo;
+        this.role = "patient";
     }
 
-    public Long getId() {
-        return id;
+    public String getRole() {
+        return role;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getFirstName() { return firstName; }
@@ -117,11 +97,11 @@ public class Patient {
         this.country = country;
     }
 
-    public long getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(long telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 

@@ -1,32 +1,134 @@
 package rs.zis.app.zis.controller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.mail.MailException;
+import org.springframework.web.bind.annotation.*;
+import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.domain.User;
 import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.security.TokenUtils;
+import rs.zis.app.zis.service.CustomUserService;
+import rs.zis.app.zis.service.NotificationService;
 import rs.zis.app.zis.service.PatientService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import rs.zis.app.zis.service.UserService;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@SuppressWarnings("SpellCheckingInspection")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/login/patient")
-public class PatientController {
+@RequestMapping("/patient")
+public class PatientController extends WebConfig {
+
+    private Logger logger = LoggerFactory.getLogger(PatientController.class);
 
     @Autowired
     private PatientService patientService;
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<PatientDTO> savePatient(@RequestBody PatientDTO patientDTO) {
-        Patient patient = new Patient(patientDTO.getId(), patientDTO.getMail(), patientDTO.getPassword(),
-                patientDTO.getFirstName(), patientDTO.getLastName(), patientDTO.getAddress(), patientDTO.getCity(),
-                patientDTO.getCountry(), patientDTO.getTelephone(), patientDTO.getLbo());
+    @Autowired
+    private CustomUserService customUserService;
 
-        patient = patientService.save(patient);
-        return new ResponseEntity<>(new PatientDTO(patient), HttpStatus.CREATED);
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TokenUtils tokenUtils;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @PostMapping(consumes = "application/json" , value = "/register")
+    public ResponseEntity<PatientDTO> savePatient(@RequestBody PatientDTO patientDTO) {
+        System.out.println("usao sam u post i primio: " + patientDTO.getFirstName() + patientDTO.getLastName());
+
+        Patient proveriLbo = patientService.findOneByLbo(patientDTO.getLbo());
+        if(proveriLbo != null){
+            return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);       // lbo nije okej
+        }
+
+        User proveriMail = userService.findOneByMail(patientDTO.getMail());
+        if(proveriMail != null){
+            return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);  // mejl nije okej (na nivou svih korisika)
+        }
+
+        Patient patient = patientService.save(patientDTO);
+        //slati mejl korisniku
+        try{
+            System.out.println("usao sam u pisanje mejla ");
+            notificationService.SendNotification(patientDTO.getMail(), "billypiton43@gmail.com",
+                    "PSW - naslov", "Uspesna registracija");
+        }catch (MailException e){
+            logger.info("Error Sending Mail:" + e.getMessage());
+        }
+
+        return new ResponseEntity<>(patientDTO, HttpStatus.CREATED);     // sve okej
     }
 
+    @GetMapping(produces = "application/json", value = "/getAll")
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PatientDTO>> getPatient() {
+        List<Patient> listPatient = patientService.findAll();
 
+        ArrayList<PatientDTO> listDTO = new ArrayList<>();
+        for (Patient p: listPatient) {
+            listDTO.add(new PatientDTO(p));
+        }
+        return new ResponseEntity<>(listDTO, HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasRole('PATIENT')")
+    @PostMapping(value = "/changeAttribute/{naziv}/{vrednost}/{mail}")
+    public ResponseEntity<?> changeAttribute(@PathVariable("naziv") String naziv,
+                                             @PathVariable("vrednost") String vrednost,
+                                             @PathVariable("mail") String mail) {
+        System.out.println("primio change: naziv{"+naziv+"}, vrednost{"+vrednost+"}, mail{"+mail+"}");
+        Patient patient = patientService.findOneByMail(mail);
+        if (patient == null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+
+        if(naziv.equals("ime")){
+            patient.setFirstName(vrednost);
+        }
+        else if(naziv.equals("prezime")){
+            patient.setLastName(vrednost);
+        }
+        else if(naziv.equals("adresa")){
+            patient.setAddress(vrednost);
+        }
+        else if(naziv.equals("grad")){
+            patient.setCity(vrednost);
+        }
+        else if(naziv.equals("drzava")){
+            patient.setCountry(vrednost);
+        }
+        else if(naziv.equals("telefon")){
+            patient.setTelephone(vrednost);
+        }
+
+        patientService.update(patient);
+        PatientDTO patientDTO = new PatientDTO(patient);
+        return new ResponseEntity<>(patientDTO, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('PATIENT')")
+    @PostMapping(consumes = "text/plain", value = "/changePassword")
+    public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
+        //System.out.println("Pass: " + password + ", token: " +token);
+        String mail = tokenUtils.getUsernameFromToken(token);
+        
+        boolean flag_ok = customUserService.changePassword(mail, password);
+        if(flag_ok) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
