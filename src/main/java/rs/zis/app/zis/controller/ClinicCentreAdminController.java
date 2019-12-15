@@ -140,12 +140,29 @@ public class ClinicCentreAdminController extends WebConfig
     public ResponseEntity<List<DiagnosisDTO>> getAllDiagnosis() {
 
         List<DiagnosisDTO> diagnosisListDTO = new ArrayList<>();
-
-        
+        List<Diagnosis> diagnosisList = diagnosisService.findAll();
+        for(Diagnosis d: diagnosisList){
+            DiagnosisDTO dto=new DiagnosisDTO(d);
+            diagnosisListDTO.add(dto);
+        }
 
         return new ResponseEntity<>(diagnosisListDTO, HttpStatus.OK);
     }
 
+
+    //cuvam u bazi azuriran sifarnik koji je poslat sa fronta
+    @PostMapping(consumes = "application/json" , value = "/savediagnosis")
+    public ResponseEntity<Integer> saveDiagnosis(@RequestBody List<DiagnosisDTO> listDTO){
+         Diagnosis diag = new Diagnosis();
+         for(DiagnosisDTO d:listDTO){
+             diag.setCure_password(d.getCure_password());
+             diag.setCure_name(d.getCure_name());
+             diag.setDiagnosis_password(d.getDiagnosis_password());
+             diag.setDiagnosis_name(d.getDiagnosis_name());
+             diagnosisService.save(diag);
+         }
+        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+    }
 
 
     @GetMapping(value = "/{id}")
