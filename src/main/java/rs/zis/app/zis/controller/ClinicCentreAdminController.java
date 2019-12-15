@@ -108,7 +108,7 @@ public class ClinicCentreAdminController extends WebConfig
                  userService.save(u);
                 // System.out.println("sacuvao sam izasao");
                  try {
-                     //System.out.println("usao sam u pisanje mejla ");
+                     //System.out.println("usao sam u pisanje mejla ")
                      notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
                              "PSW", "Zahtev prihvacen");
                  } catch (MailException e) {
@@ -155,12 +155,25 @@ public class ClinicCentreAdminController extends WebConfig
     @PostMapping(consumes = "application/json" , value = "/savediagnosis")
     public ResponseEntity<Integer> saveDiagnosis(@RequestBody List<DiagnosisDTO> listDTO){
          Diagnosis diag = new Diagnosis();
+         boolean change= true;
          for(DiagnosisDTO d:listDTO){
-             diag.setCure_password(d.getCure_password());
-             diag.setCure_name(d.getCure_name());
-             diag.setDiagnosis_password(d.getDiagnosis_password());
-             diag.setDiagnosis_name(d.getDiagnosis_name());
-             diagnosisService.save(diag);
+            // Diagnosis temp=diagnosisService.findOneByCurePassword(d.getCure_password());
+            /* if(temp.getCure_password().equals(d.getCure_password())){
+                 if(temp.getDiagnosis_password().equals(d.getDiagnosis_password())){
+                    System.out.println("isti je element");
+                 }else{
+                     change=true;
+                 }
+             }else{
+                 change=true;
+             }*/
+           if(change){
+               diag.setCure_password(d.getCure_password());
+               diag.setCure_name(d.getCure_name());
+               diag.setDiagnosis_password(d.getDiagnosis_password());
+               diag.setDiagnosis_name(d.getDiagnosis_name());
+               diagnosisService.save(diag);
+           }
          }
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
