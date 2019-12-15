@@ -69,6 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .permitAll().antMatchers("/clinicAdministrator/**")
                 .permitAll().antMatchers("/ccadmin/**")
                 .permitAll().antMatchers("/type/**")
+                .permitAll().antMatchers("/doctor/**")
                 .permitAll().antMatchers("/api/foo").permitAll()
 
                 // svaki zahtev mora biti autorizovan

@@ -48,7 +48,7 @@ public class PatientService {
         p.setCountry(patientDTO.getCountry());
         p.setTelephone(patientDTO.getTelephone());
         p.setLbo(patientDTO.getLbo());
-        p.setEnabled(true);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
+        p.setEnabled(false);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
         List<Authority> auth = authService.findByname("ROLE_PATIENT");
         p.setAuthorities(auth);
 
@@ -67,6 +67,8 @@ public class PatientService {
     public Patient findOneByLbo(long lbo) {
         return patientRepository.findOneByLbo(lbo);
     }
+
+    public Patient findOneById(Long id){return patientRepository.findOneById(id); }
 
     public List<Patient> findPatientByLastName(String lastName) {
         return patientRepository.findPatientByLastName(lastName);

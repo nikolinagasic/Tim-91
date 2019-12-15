@@ -7,10 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.*;
-import rs.zis.app.zis.dto.ClinicAdministratorDTO;
-import rs.zis.app.zis.dto.DoctorDTO;
-import rs.zis.app.zis.dto.NurseDTO;
-import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.service.*;
 
 import java.util.ArrayList;
@@ -55,6 +52,17 @@ public class ClinicAdministratorController extends WebConfig {
         Nurse nurse = nurseService.save(nurseDTO);
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
+    @GetMapping( value = "/doctor_list")
+    public  ResponseEntity<List<Doctor>> doctorList() {
+        List<Doctor> doctors = doctorService.findAll();
+        List<Doctor> doc = new ArrayList<>();
 
+        for(Doctor d:doctors) {
+            if ((d.isEnabled()) == true) {
+                doc.add(d);
+            }
+        }
+        return new ResponseEntity<>(doc,HttpStatus.CREATED);
+    }
 
 }

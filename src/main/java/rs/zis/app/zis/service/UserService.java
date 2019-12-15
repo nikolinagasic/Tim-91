@@ -37,7 +37,5 @@ public class UserService {
         return userRepository.findOneByMail(mail);
     }
 
-    public User save(User s){
-        return userRepository.save(s);
-    }
+    public User save(User u) {return userRepository.save(u);}
 }

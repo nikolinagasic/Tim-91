@@ -56,7 +56,7 @@ public class PatientController extends WebConfig {
         if(proveriMail != null){
             return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);  // mejl nije okej (na nivou svih korisika)
         }
-
+      
         Patient patient = patientService.save(patientDTO);
         //slati mejl korisniku
         try{
@@ -66,6 +66,7 @@ public class PatientController extends WebConfig {
         }catch (MailException e){
             logger.info("Error Sending Mail:" + e.getMessage());
         }
+        Patient patient = patientService.save(patientDTO); //sacuvam u registerService
 
         return new ResponseEntity<>(patientDTO, HttpStatus.CREATED);     // sve okej
     }

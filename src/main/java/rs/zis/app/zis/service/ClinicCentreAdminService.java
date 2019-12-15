@@ -41,7 +41,7 @@ public class ClinicCentreAdminService {
         return cc_adminRepository.findOneByMail(mail);
     }
 
-    public List<ClinicCentreAdmin> findByLastName(String lastName) {
+    public List<ClinicCentreAdmin> findAllByLastName(String lastName) {
         return cc_adminRepository.findAllByLastName(lastName);
     }
 
