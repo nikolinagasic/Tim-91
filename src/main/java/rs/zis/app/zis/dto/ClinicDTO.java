@@ -6,18 +6,22 @@ public class ClinicDTO {
 
     private long id;
     private String name;
+    private double rating;         // ocena klinike
     private String address;
     private String description;
+    private double price;       // cena pregleda
 
     public ClinicDTO() {
 
     }
 
-    public ClinicDTO(long id, String name, String address, String description) {
+    public ClinicDTO(long id, String name, String address, String description, double rating, double price) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;
+        this.rating = rating;
+        this.price = price;
     }
 
     public ClinicDTO(Clinic c) {
@@ -25,6 +29,23 @@ public class ClinicDTO {
         this.name = c.getName();
         this.address = c.getAddress();
         this.description = c.getDescription();
+        this.rating = c.getRating();
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public long getId() {

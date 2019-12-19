@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
 @Table(name = "Doctor")
-public class Doctor extends User {
+public class Doctor extends Users {
 
     @Column(name = "firstName")
     private String firstName;
@@ -24,14 +24,16 @@ public class Doctor extends User {
     private String role;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private TipPregleda tip;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;
 
-    // zakazani termini pregleda/operacija
-  //  @ManyToMany(mappedBy = "appointments", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  //  private Set<Termin> appointmentList;
-
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Vacation> vacation = new HashSet<Vacation>();
+    private Set<Vacation> vacation = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<DoctorTerms> busy_terms = new HashSet<>();
 
     public Doctor() {
      //   appointmentList = new HashSet<Termin>();
@@ -39,14 +41,37 @@ public class Doctor extends User {
         this.role = "doctor";
     }
 
-    public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Termin> appointmentList, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
+    public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
         super(mail, password, true, lastPasswordResetDate, authorities);
         this.firstName = firstName;
         this.lastName = lastName;
         this.field = field;
-     //   this.appointmentList = appointmentList;
         this.role = "doctor";
      //   this.vacation = vacation;
+    }
+
+    public TipPregleda getTip() {
+        return tip;
+    }
+
+    public void setTip(TipPregleda tip) {
+        this.tip = tip;
+    }
+
+    public Set<Vacation> getVacation() {
+        return vacation;
+    }
+
+    public void setVacation(Set<Vacation> vacation) {
+        this.vacation = vacation;
+    }
+
+    public Set<DoctorTerms> getBusy_terms() {
+        return busy_terms;
+    }
+
+    public void setBusy_terms(Set<DoctorTerms> busy_terms) {
+        this.busy_terms = busy_terms;
     }
 
     public String getRole() {

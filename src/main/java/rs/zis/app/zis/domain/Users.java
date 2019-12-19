@@ -12,8 +12,7 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name="Users")
-public class User implements UserDetails {
+public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,11 +36,11 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private List<Authority> authorities;
 
-    public User() {
+    public Users() {
     }
 
-    public User(String mail, String password, boolean enabled, Timestamp lastPasswordResetDate,
-                        List<Authority> authorities) {
+    public Users(String mail, String password, boolean enabled, Timestamp lastPasswordResetDate,
+                 List<Authority> authorities) {
         this.mail = mail;
         this.password = password;
         this.enabled = enabled;

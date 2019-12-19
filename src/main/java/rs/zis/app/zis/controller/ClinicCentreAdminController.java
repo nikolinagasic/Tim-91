@@ -40,7 +40,7 @@ public class ClinicCentreAdminController extends WebConfig
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
     public ResponseEntity<Integer> saveClinicAdministrator(@RequestBody ClinicAdministratorDTO clinicAdministratorDTO) {
-        User proveriMail = userService.findOneByMail(clinicAdministratorDTO.getMail());
+        Users proveriMail = userService.findOneByMail(clinicAdministratorDTO.getMail());
         if(proveriMail != null){
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
         }
@@ -51,7 +51,7 @@ public class ClinicCentreAdminController extends WebConfig
 
     @PostMapping(consumes = "application/json" , value = "/register_ccadmin")
     public ResponseEntity<Integer> saveClinicCentreAdministrator(@RequestBody ClinicCentreAdminDTO clinicCentreAdminDTO) {
-        User proveriMail = userService.findOneByMail(clinicCentreAdminDTO.getMail());
+        Users proveriMail = userService.findOneByMail(clinicCentreAdminDTO.getMail());
         if(proveriMail != null){
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
         }
@@ -80,10 +80,10 @@ public class ClinicCentreAdminController extends WebConfig
     @GetMapping(value = "/requests")
     public ResponseEntity<List<PatientDTO>> getAllRequest() {
 
-        List<User> users = userService.findAll();
+        List<Users> users = userService.findAll();
         List<PatientDTO> request = new ArrayList<>();
 
-        for(User u:users){
+        for(Users u:users){
             if((u.isEnabled())==false){//to znaci da pacijent nije registrovan
                 PatientDTO pd = new PatientDTO(patientService.findOneById(u.getId()));
                 request.add(pd);
@@ -98,8 +98,8 @@ public class ClinicCentreAdminController extends WebConfig
     //br=1(zahtev odobren),br=2(zahtev odbijen)
     @GetMapping( value = "accept/{mail}/{br}")
     public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br){
-         if(br==1){
-             User u= userService.findOneByMail(mail);
+            if(br==1){
+             Users u= userService.findOneByMail(mail);
              if(u==null){
                  System.out.println("USER JE NULL");
              }else {
@@ -109,7 +109,7 @@ public class ClinicCentreAdminController extends WebConfig
                 // System.out.println("sacuvao sam izasao");
                  try {
                      //System.out.println("usao sam u pisanje mejla ");
-                     notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
+                     notificationService.SendNotification(mail, "billypiton43@gmail.com",
                              "PSW", "Zahtev prihvacen");
                  } catch (MailException e) {
                      logger.info("Error Sending Mail:" + e.getMessage());
@@ -118,12 +118,12 @@ public class ClinicCentreAdminController extends WebConfig
              }
          }else{
             // System.out.println("KLIKNUTO NA ODBIJ"+mail+br);
-             User u= userService.findOneByMail(mail);
+             Users u= userService.findOneByMail(mail);
              userService.remove(u.getId());    //brisem ga i iz liste usera
 
              try{
                  //System.out.println("usao sam u pisanje mejla ");
-                 notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
+                 notificationService.SendNotification(mail, "billypiton43@gmail.com",
                          "PSW", "Zahtev odbijen");
              }catch (MailException e){
                  logger.info("Error Sending Mail:" + e.getMessage());

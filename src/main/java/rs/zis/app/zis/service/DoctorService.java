@@ -3,21 +3,17 @@ package rs.zis.app.zis.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.domain.TipPregleda;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
-import javax.print.Doc;
 import java.util.List;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Service
 public class DoctorService {
 
@@ -77,6 +73,10 @@ public class DoctorService {
         }
     }
     public Doctor findOneById(Long id){return doctorRepository.findOneById(id); }
+
+    public List<Doctor> findDoctorByType(TipPregleda tp){
+        return doctorRepository.findAllByTip(tp);
+    }
 
 }
 

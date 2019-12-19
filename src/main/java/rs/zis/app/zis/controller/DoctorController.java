@@ -3,14 +3,10 @@ package rs.zis.app.zis.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.Nurse;
-import rs.zis.app.zis.domain.User;
 import rs.zis.app.zis.dto.DoctorDTO;
-import rs.zis.app.zis.dto.NurseDTO;
 import rs.zis.app.zis.service.DoctorService;
 
 import java.util.ArrayList;

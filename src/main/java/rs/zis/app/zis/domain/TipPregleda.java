@@ -1,6 +1,8 @@
 package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
 @Entity
@@ -12,6 +14,9 @@ public class TipPregleda {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "tip",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Doctor> doctors = new ArrayList<Doctor>();
 
     public TipPregleda(Long id, String name) {
         this.id = id;
