@@ -72,4 +72,14 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaKlinika, HttpStatus.OK);
     }
 
+    @GetMapping (produces = "application/json", value = "/getDoctorsByClinic/{clinic_name}")
+    public ResponseEntity<?> getDoctorsInClinic(@PathVariable("clinic_name") String clinic_name){
+        List<Doctor> listaDoktora = clinicService.findDoctorsByClinic(clinic_name);
+        List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
+        for (Doctor d : listaDoktora) {
+            listaDoktoraDTO.add(new DoctorDTO(d));
+        }
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
 }

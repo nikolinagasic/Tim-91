@@ -23,6 +23,9 @@ public class Doctor extends Users {
     @Column(name= "role")
     private String role;
 
+    @Column(name= "rating")     // prosecna ocena
+    private double rating;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private TipPregleda tip;
 
@@ -48,6 +51,14 @@ public class Doctor extends Users {
         this.field = field;
         this.role = "doctor";
      //   this.vacation = vacation;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     public TipPregleda getTip() {

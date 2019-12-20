@@ -12,8 +12,8 @@ insert into clinic_centre_admin (first_name, last_name, predefined, role, id)
 insert into user_authority (user_id, authority_id) values (1, 1);
 
 -- inicijalni tipovi pregleda
-insert into tip_pregleda (name) values ('стоматологија');
-insert into tip_pregleda (name) values ('кардиологија');
+insert into tip_pregleda (name) values ('Стоматологија');
+insert into tip_pregleda (name) values ('Кардиологија');
 
 
 
@@ -25,18 +25,18 @@ insert into clinic (address, description, location, name, rating)
 --d1
 insert into users (enabled, last_password_reset_date, mail, password)
     values (true, '2017-10-01 21:58:58.508-07', 'doctor@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (field, first_name, last_name, role, id, clinic_id, tip_id)
-    values ('Polje', 'Marko', 'Markovic', 'doctor', 1, 1, 1);
+insert into doctor (field, first_name, last_name, role, rating, id, clinic_id, tip_id)
+    values ('Polje', 'Marko', 'Markovic', 'doctor', 7.4, 1, 1, 1);
 --d2
 insert into users (enabled, last_password_reset_date, mail, password)
     values (true, '2017-10-01 21:58:58.508-07', 'doctor1@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (field, first_name, last_name, role, id, clinic_id, tip_id)
-    values ('Polje', 'Marinko', 'Marinkovic', 'doctor', 2, 2, 1);
+insert into doctor (field, first_name, last_name, role, rating, id, clinic_id, tip_id)
+    values ('Polje', 'Marinko', 'Marinkovic', 'doctor', 4.5, 2, 2, 1);
 -- d3
 insert into users (enabled, last_password_reset_date, mail, password)
     values (true, '2017-10-01 21:58:58.508-07', 'doctor3@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (field, first_name, last_name, role, id, clinic_id, tip_id)
-    values ('Polje', 'Marinko', 'Marinkovic', 'doctor', 3, 1, 2);
+insert into doctor (field, first_name, last_name, role, rating, id, clinic_id, tip_id)
+    values ('Polje', 'Milos', 'Bojanic', 'doctor', 8.2, 3, 1, 2);
 -- d1
 insert into clinic_doctors (clinic_id, doctors_id) values (1,1);
 insert into user_authority (user_id, authority_id) values (2, 5);

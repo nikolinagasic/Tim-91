@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.TipPregleda;
@@ -28,4 +29,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
 //    @Query("select d from Doctor d where d.tip = ?1")
     List<Doctor> findAllByTip(TipPregleda tp);
+
+    List<Doctor> findAllByClinic(Clinic c);
 }

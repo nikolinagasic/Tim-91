@@ -56,7 +56,6 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
-    // TODO 1 - trazenje klinika po datim kriterijumima
     public List<Clinic> searchClinic(long datum, String tip, int ocena){
         // 1) return: doktori koji su datog tipa
         List<Doctor> doctorsType;
@@ -98,6 +97,19 @@ public class ClinicService implements UserDetailsService {
         retList.addAll(retSet);
 
         return  retList;
+    }
+
+    // TODO 3 - vratiti sve doktore koji rade u datoj klinici
+    public List<Doctor> findDoctorsByClinic(String clinic_name){
+        List<Doctor> retList = new ArrayList<>();
+        Clinic clinic = findOneByName(clinic_name);
+        if(clinic != null) {
+            for (Doctor doctor: doctorService.findAllByClinic(clinic)) {
+                retList.add(doctor);
+            }
+        }
+
+        return retList;
     }
 
     @Override

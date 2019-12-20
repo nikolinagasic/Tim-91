@@ -6,11 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Authority;
+import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.TipPregleda;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
@@ -76,6 +78,24 @@ public class DoctorService {
 
     public List<Doctor> findDoctorByType(TipPregleda tp){
         return doctorRepository.findAllByTip(tp);
+    }
+
+    public List<Doctor> findAllByClinic(Clinic c) { return doctorRepository.findAllByClinic(c); }
+
+    // TODO 4 Pretraziti doktore na osnovu zadatih kriterijuma
+    public List<DoctorDTO> searchDoctors(List<DoctorDTO> lista_lekara, String ime, String prezime, double ocena) {
+        List<DoctorDTO> retList = new ArrayList<>();
+        for (DoctorDTO doctorDTO: lista_lekara) {
+            if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+                if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+                    if(doctorDTO.getRating() >= ocena){
+                        retList.add(doctorDTO);
+                    }
+                }
+            }
+        }
+
+        return retList;
     }
 
 }

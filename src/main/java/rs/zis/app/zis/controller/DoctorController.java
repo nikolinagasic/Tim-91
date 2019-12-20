@@ -5,15 +5,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.service.DoctorService;
 
 import java.util.ArrayList;
 import java.util.List;
+@SuppressWarnings("SpellCheckingInspection")
 @RestController
 @RequestMapping("/doctor")
-public class DoctorController {
+public class DoctorController extends WebConfig {
     @Autowired
     private DoctorService doctorService;
 
@@ -57,4 +59,21 @@ public class DoctorController {
         }
             return new ResponseEntity<>(0, HttpStatus.OK);     // 0 -> sve okej
     }
+
+
+    // NAPOMENA: moram poslati i celu listu, da bih znao sta treba da pretrazim (da ne pretrazuje medju svim lekarima)
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "searchDoctors/{ime}/{prezime}/{ocena}")
+    public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("ime") String ime,
+                                                @PathVariable("prezime") String prezime,
+                                                    @PathVariable("ocena") double ocena) {
+        if(ime.equals("~")){
+            ime = "";
+        }if(prezime.equals("~")){
+            prezime = "";
+        }
+
+        List<DoctorDTO> listaDoktoraDTO = doctorService.searchDoctors(listaLekara, ime, prezime, ocena);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
 }
