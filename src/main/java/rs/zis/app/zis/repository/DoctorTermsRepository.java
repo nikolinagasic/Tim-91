@@ -12,7 +12,7 @@ import java.util.List;
 public interface DoctorTermsRepository extends JpaRepository<DoctorTerms, Long> {
     Page<DoctorTerms> findAll(Pageable pageable);
     DoctorTerms findOneById(long id);
-    DoctorTerms findOneByDate(long date);
+    List<DoctorTerms> findAllByDate(long date);
 
     // vraca sve termine za tog doktora
     List<DoctorTerms> findAllByDoctor(Doctor d);

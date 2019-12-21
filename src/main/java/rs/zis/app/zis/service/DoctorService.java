@@ -82,7 +82,6 @@ public class DoctorService {
 
     public List<Doctor> findAllByClinic(Clinic c) { return doctorRepository.findAllByClinic(c); }
 
-    // TODO 4 Pretraziti doktore na osnovu zadatih kriterijuma
     public List<DoctorDTO> searchDoctors(List<DoctorDTO> lista_lekara, String ime, String prezime, double ocena) {
         List<DoctorDTO> retList = new ArrayList<>();
         for (DoctorDTO doctorDTO: lista_lekara) {

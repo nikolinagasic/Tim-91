@@ -2,6 +2,7 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,12 +36,10 @@ public class Doctor extends Users {
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Vacation> vacation = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<DoctorTerms> busy_terms = new HashSet<>();
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private Set<DoctorTerms> busy_terms = new HashSet<>();
 
     public Doctor() {
-     //   appointmentList = new HashSet<Termin>();
-     //   vacation = new HashSet<Godisnji_odmor>();
         this.role = "doctor";
     }
 
@@ -75,14 +74,6 @@ public class Doctor extends Users {
 
     public void setVacation(Set<Vacation> vacation) {
         this.vacation = vacation;
-    }
-
-    public Set<DoctorTerms> getBusy_terms() {
-        return busy_terms;
-    }
-
-    public void setBusy_terms(Set<DoctorTerms> busy_terms) {
-        this.busy_terms = busy_terms;
     }
 
     public String getRole() {

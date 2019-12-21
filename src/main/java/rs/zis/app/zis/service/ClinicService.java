@@ -12,13 +12,12 @@ import rs.zis.app.zis.domain.TipPregleda;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 
-import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation"})
 @Service
 public class ClinicService implements UserDetailsService {
 
@@ -72,9 +71,8 @@ public class ClinicService implements UserDetailsService {
             List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d);
             if(!doctorTerm.isEmpty()){          // ima zauzetih termina taj doca
                 System.out.println("doktor [z]: " + d.getFirstName() + " " + d.getLastName());
-                DoctorTerms dt = doctorTermsService.findOneByDate(datum);  // proveravam da li ima nesto tog dana
-                // TODO 2 - proveriti sve satnice
-
+//                DoctorTerms dt = doctorTermsService.findAllByDate(datum);  // proveravam da li ima nesto tog dana
+                // TODO proveriti da li su sve satnice zauzete
 
 
             }
@@ -88,7 +86,7 @@ public class ClinicService implements UserDetailsService {
         for (Doctor d : slobodni_doktori) {
             Long id = d.getClinic().getId();
             Clinic clinic = findOneById(id);
-            if(clinic.getRating() >= ocena){
+            if(clinic.getRating() == ocena){
                 retSet.add(clinic);
             }
         }
@@ -99,7 +97,6 @@ public class ClinicService implements UserDetailsService {
         return  retList;
     }
 
-    // TODO 3 - vratiti sve doktore koji rade u datoj klinici
     public List<Doctor> findDoctorsByClinic(String clinic_name){
         List<Doctor> retList = new ArrayList<>();
         Clinic clinic = findOneByName(clinic_name);

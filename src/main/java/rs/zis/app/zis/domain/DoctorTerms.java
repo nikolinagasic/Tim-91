@@ -1,8 +1,6 @@
 package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
@@ -13,25 +11,70 @@ public class DoctorTerms {
     private Long id;
 
     @Column(name = "date", nullable = false)
-    private String date;
+    private long date;
 
     @Column(name = "start_term", nullable = false)
-    private String start_term;
+    private int start_term;
 
     @Column(name = "end_term", nullable = false)
-    private String end_term;
+    private int end_term;
 
     // formira se medjutabela koja mi odslikava koji je doktor zauzet u kom terminu
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="doctor_id", referencedColumnName="id")
     private Doctor doctor;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="patient_id", referencedColumnName="id")
+    private Patient patient;
+
+    // potrebno za logicko brisanje
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     public DoctorTerms() {
+        this.active = true;
     }
 
-    public DoctorTerms(Long id, String date, String start_term, String end_term) {
+    public DoctorTerms(Long id, long date, int start_term, int end_term, Doctor doctor, Patient patient, boolean active) {
         this.id = id;
         this.date = date;
         this.start_term = start_term;
+        this.end_term = end_term;
+        this.doctor = doctor;
+        this.patient = patient;
+        this.active = active;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public int getStart_term() {
+        return start_term;
+    }
+
+    public void setStart_term(int start_term) {
+        this.start_term = start_term;
+    }
+
+    public int getEnd_term() {
+        return end_term;
+    }
+
+    public void setEnd_term(int end_term) {
         this.end_term = end_term;
     }
 
@@ -43,35 +86,19 @@ public class DoctorTerms {
         this.doctor = doctor;
     }
 
-    public Long getId() {
-        return id;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
-    public String getDate() {
-        return date;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getStart_term() {
-        return start_term;
-    }
-
-    public void setStart_term(String start_term) {
-        this.start_term = start_term;
-    }
-
-    public String getEnd_term() {
-        return end_term;
-    }
-
-    public void setEnd_term(String end_term) {
-        this.end_term = end_term;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

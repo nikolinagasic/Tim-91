@@ -34,12 +34,19 @@ public class DoctorTermsService {
         doctorTermsRepository.deleteById(id);
     }
 
+    public void removeLogical(Long id) {
+        DoctorTerms doctorTerms = findOneById(id);
+        if(doctorTerms != null){
+            doctorTerms.setActive(false);
+        }
+    }
+
     public DoctorTerms findOneById(Long id) {
         return doctorTermsRepository.findOneById(id);
     }
 
-    public DoctorTerms findOneByDate(Long date) {
-        return doctorTermsRepository.findOneByDate(date);
+    public List<DoctorTerms> findAllByDate(Long date) {
+        return doctorTermsRepository.findAllByDate(date);
     }
 
     public List<DoctorTerms> findAllByDoctor(Doctor doctor){
