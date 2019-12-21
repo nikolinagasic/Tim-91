@@ -97,5 +97,28 @@ public class DoctorService {
         return retList;
     }
 
+    public List<DoctorDTO> filterDoctor(List<DoctorDTO> lista_lekara, String ocOd, String ocDo){
+        List<DoctorDTO> retList = new ArrayList<>();
+        double ocenaOd, ocenaDo;
+        if(ocOd.equals("min")){
+            ocenaOd = 0;
+        }else{
+            ocenaOd = Double.parseDouble(ocOd);
+        }
+        if(ocDo.equals("max")){
+            ocenaDo = Double.MAX_VALUE;
+        }else{
+            ocenaDo = Double.parseDouble(ocDo);
+        }
+
+        for (DoctorDTO doctorDTO: lista_lekara) {
+            if(doctorDTO.getRating() >= ocenaOd && doctorDTO.getRating() <= ocenaDo){
+                retList.add(doctorDTO);
+            }
+        }
+
+        return retList;
+    }
+
 }
 

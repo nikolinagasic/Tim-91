@@ -76,4 +76,14 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
+    @PostMapping(produces = "application/json", consumes = "application/json",
+            value = "getFilterDoctor/{ocenaOd}/{ocenaDo}")
+    public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara,
+                                           @PathVariable("ocenaOd") String ocenaOd,
+                                           @PathVariable("ocenaDo") String ocenaDo){
+
+        List<DoctorDTO> listaDoktoraDTO = doctorService.filterDoctor(listaLekara, ocenaOd, ocenaDo);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
 }
