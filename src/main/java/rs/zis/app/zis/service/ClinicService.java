@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
 @Service
 public class ClinicService implements UserDetailsService {
 
@@ -103,6 +103,45 @@ public class ClinicService implements UserDetailsService {
         if(clinic != null) {
             for (Doctor doctor: doctorService.findAllByClinic(clinic)) {
                 retList.add(doctor);
+            }
+        }
+
+        return retList;
+    }
+
+    public List<ClinicDTO> filterClinic(String cOd, String cDo, String ocOd, String ocDo, String naziv, List<ClinicDTO> listaKlinika){
+        double cenaOd, cenaDo, ocenaOd, ocenaDo;
+        if(cOd.equals("min")){
+            cenaOd = 0;
+        }else{
+            cenaOd = Double.parseDouble(cOd);
+        }
+        if(cDo.equals("max")){
+            cenaDo = Double.MAX_VALUE;
+        }else{
+            cenaDo = Double.parseDouble(cDo);
+        }
+        if(ocOd.equals("min")){
+            ocenaOd = 0;
+        }else{
+            ocenaOd = Double.parseDouble(ocOd);
+        }
+        if(ocDo.equals("max")){
+            ocenaDo = Double.MAX_VALUE;
+        }else{
+            ocenaDo = Double.parseDouble(ocDo);
+        }
+        if(naziv.equals("~")){
+            naziv = "";
+        }
+        List<ClinicDTO> retList = new ArrayList<>();
+        for (ClinicDTO clinicDTO : listaKlinika) {
+            if(clinicDTO.getPrice() >= cenaOd && clinicDTO.getPrice() <= cenaDo){
+                if(clinicDTO.getRating() >= ocenaOd && clinicDTO.getRating() <= ocenaDo){
+                    if(clinicDTO.getName().toLowerCase().contains(naziv.toLowerCase())){
+                        retList.add(clinicDTO);
+                    }
+                }
             }
         }
 

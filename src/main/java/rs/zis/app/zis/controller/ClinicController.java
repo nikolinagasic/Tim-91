@@ -3,10 +3,7 @@ package rs.zis.app.zis.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
@@ -80,6 +77,19 @@ public class ClinicController extends WebConfig {
             listaDoktoraDTO.add(new DoctorDTO(d));
         }
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", consumes = "application/json" ,
+            value = "/getFilterClinic/{cenaOd}/{cenaDo}/{ocenaOd}/{ocenaDo}/{naziv}")
+    public ResponseEntity<?> getDoctorsInClinic(@RequestBody List<ClinicDTO> lKlinika,
+                                                @PathVariable("cenaOd") String cenaOd,
+                                                @PathVariable("cenaDo") String cenaDo,
+                                                @PathVariable("ocenaOd") String ocenaOd,
+                                                @PathVariable("ocenaDo") String ocenaDo,
+                                                @PathVariable("naziv") String naziv){
+        System.out.println(cenaOd + "-" + cenaDo + ", " + ocenaOd + "-" + ocenaDo + ", " + naziv);
+        List<ClinicDTO> listaKlinikaDTO = clinicService.filterClinic(cenaOd, cenaDo, ocenaOd, ocenaDo, naziv, lKlinika);
+        return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
 
 }
