@@ -97,6 +97,10 @@ public class DoctorService {
         return retList;
     }
 
+    public Doctor findDoctorByFirstNameAndLastName(String ime, String prezime) {
+        return doctorRepository.findDoctorByFirstNameAndLastName(ime, prezime);
+    }
+
     public List<DoctorDTO> filterDoctor(List<DoctorDTO> lista_lekara, String ocOd, String ocDo){
         List<DoctorDTO> retList = new ArrayList<>();
         double ocenaOd, ocenaDo;

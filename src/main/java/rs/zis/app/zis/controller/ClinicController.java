@@ -47,15 +47,11 @@ public class ClinicController extends WebConfig {
                                        @PathVariable("type") String tip,
                                        @PathVariable("rating") int ocena) {
         System.out.println("datum: " + datum + ", tip: " + tip + ", ocena: " + ocena);
-        List<Clinic> listaKlinika = clinicService.searchClinic(datum, tip, ocena);
-        if(listaKlinika == null) {
+        List<ClinicDTO> listaKlinikaDTO = clinicService.searchClinic(datum, tip, ocena);
+        if(listaKlinikaDTO == null) {
             return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
         }
 
-        List<ClinicDTO> listaKlinikaDTO = new ArrayList<>();
-        for (Clinic c: listaKlinika) {
-            listaKlinikaDTO.add(new ClinicDTO(c));
-        }
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
 

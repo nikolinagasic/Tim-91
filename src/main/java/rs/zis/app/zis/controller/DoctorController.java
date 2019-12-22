@@ -7,17 +7,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Doctor;
+import rs.zis.app.zis.domain.DoctorTerms;
 import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.service.DoctorService;
+import rs.zis.app.zis.service.DoctorTermsService;
 
 import java.util.ArrayList;
 import java.util.List;
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
 @RestController
 @RequestMapping("/doctor")
 public class DoctorController extends WebConfig {
     @Autowired
     private DoctorService doctorService;
+
+    @Autowired
+    private DoctorTermsService doctorTermsService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
     @PreAuthorize("hasRole('ADMIN')")
@@ -52,9 +58,11 @@ public class DoctorController extends WebConfig {
             } else if (changed == "prezime") {
                 d.setLastName(value);
                 System.out.println(d.getLastName());
-            } else if (changed == "oblast") {
-                d.setField(value);
-            } else
+            }
+//            else if (changed == "oblast") {
+//                d.setField(value);
+//            }
+            else
                 System.out.println("Greska");
         }
             return new ResponseEntity<>(0, HttpStatus.OK);     // 0 -> sve okej
@@ -62,7 +70,7 @@ public class DoctorController extends WebConfig {
 
 
     // NAPOMENA: moram poslati i celu listu, da bih znao sta treba da pretrazim (da ne pretrazuje medju svim lekarima)
-    @PostMapping(produces = "application/json", consumes = "application/json", value = "searchDoctors/{ime}/{prezime}/{ocena}")
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "/searchDoctors/{ime}/{prezime}/{ocena}")
     public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("ime") String ime,
                                                 @PathVariable("prezime") String prezime,
                                                     @PathVariable("ocena") double ocena) {
@@ -77,13 +85,25 @@ public class DoctorController extends WebConfig {
     }
 
     @PostMapping(produces = "application/json", consumes = "application/json",
-            value = "getFilterDoctor/{ocenaOd}/{ocenaDo}")
+            value = "/getFilterDoctor/{ocenaOd}/{ocenaDo}")
     public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara,
                                            @PathVariable("ocenaOd") String ocenaOd,
                                            @PathVariable("ocenaDo") String ocenaDo){
 
         List<DoctorDTO> listaDoktoraDTO = doctorService.filterDoctor(listaLekara, ocenaOd, ocenaDo);
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getTermini/{ime}/{prezime}")
+    public ResponseEntity<?> getTermine(@PathVariable String ime, @PathVariable String prezime) {
+        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(ime, prezime);
+        List<DoctorTerms> listTerms = doctorTermsService.getTermine(doctor);
+        List<DoctorTermsDTO> listaTerminaDTO = new ArrayList<>();
+        for (DoctorTerms doctorTerms : listTerms) {
+            listaTerminaDTO.add(new DoctorTermsDTO(doctorTerms));
+        }
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
 }

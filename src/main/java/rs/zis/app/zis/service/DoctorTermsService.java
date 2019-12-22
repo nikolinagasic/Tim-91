@@ -14,8 +14,10 @@ import rs.zis.app.zis.domain.DoctorTerms;
 import rs.zis.app.zis.repository.DoctorRepository;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 @Service
 public class DoctorTermsService {
 
@@ -54,4 +56,13 @@ public class DoctorTermsService {
     }
 
     public DoctorTerms save(DoctorTerms u) {return doctorTermsRepository.save(u);}
+
+
+    // TODO vratiti sve slobodne termine od tog doktora
+    public List<DoctorTerms> getTermine(Doctor doctor){
+        List<DoctorTerms> retList = new ArrayList<>();
+
+
+        return retList;
+    }
 }

@@ -55,16 +55,17 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
-    public List<Clinic> searchClinic(long datum, String tip, int ocena){
+    public List<ClinicDTO> searchClinic(long datum, String tip, int ocena){
         // 1) return: doktori koji su datog tipa
         List<Doctor> doctorsType;
         if(tip.equals("Сви типови")){
             doctorsType = doctorService.findAll();
         }
         else {
-            TipPregleda tipPregleda = tipPregledaService.findOneByName(tip.toLowerCase());
+            TipPregleda tipPregleda = tipPregledaService.findOneByName(tip);
             doctorsType = doctorService.findDoctorByType(tipPregleda);
         }
+
         // 2) return: doktori koji imaju slobodnih termina u tom danu
         List<Doctor> slobodni_doktori = new ArrayList<>();
         for (Doctor d : doctorsType) {          // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
@@ -74,24 +75,38 @@ public class ClinicService implements UserDetailsService {
 //                DoctorTerms dt = doctorTermsService.findAllByDate(datum);  // proveravam da li ima nesto tog dana
                 // TODO proveriti da li su sve satnice zauzete
 
-
             }
             else{                               // nema zauzetih
                 slobodni_doktori.add(d);        // odmah ga upisi u listu
             }
         }
 
-        // 3)
-        Set<Clinic> retSet = new HashSet<>();
+        // 3) return: klinike u kojima rade slobodni doktori
+        Set<ClinicDTO> retSet = new HashSet<>();
         for (Doctor d : slobodni_doktori) {
             Long id = d.getClinic().getId();
             Clinic clinic = findOneById(id);
             if(clinic.getRating() == ocena){
-                retSet.add(clinic);
+                ClinicDTO clinicDTO = new ClinicDTO(clinic);
+                clinicDTO.setPrice(d.getPrice());                   // uzmi cenu doktora
+
+                // prolazim kroz sve dodate, da bih stavio cenu najjeftinijeg doktora
+                boolean flag = false;           // flag da li ova cena nije najniza za tu kliniku
+                for (ClinicDTO cDTO : retSet) {
+                    if(cDTO.getId() == clinicDTO.getId()){
+                        if(cDTO.getPrice() < clinicDTO.getPrice()){     // imam vec nizu cenu za tu kliniku
+                            flag = true;                        // flag = true -> nemoj dodavati ovu kliniku sa visom cenom (clinicDTO)
+                        }
+                    }
+                }
+
+                if(!flag){
+                    retSet.add(clinicDTO);       // dodaj u listu klinika
+                }
             }
         }
 
-        List<Clinic> retList = new ArrayList<>();
+        List<ClinicDTO> retList = new ArrayList<>();
         retList.addAll(retSet);
 
         return  retList;

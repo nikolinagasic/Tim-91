@@ -18,8 +18,8 @@ public class Doctor extends Users {
     @Column(name = "lastName")
     private String lastName;
 
-    @Column(name = "field")
-    private String field;
+    @Column(name = "price")
+    private double price;           // cena pregleda
 
     @Column(name= "role")
     private String role;
@@ -43,13 +43,20 @@ public class Doctor extends Users {
         this.role = "doctor";
     }
 
-    public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
+    public Doctor(String mail, String password, String firstName, String lastName, double price, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
         super(mail, password, true, lastPasswordResetDate, authorities);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.field = field;
         this.role = "doctor";
      //   this.vacation = vacation;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public double getRating() {
@@ -100,13 +107,6 @@ public class Doctor extends Users {
         this.lastName = lastName;
     }
 
-    public String getField() {
-        return field;
-    }
-
-    public void setField(String field) {
-        this.field = field;
-    }
 /*    public Set<Termin> getAppointmentList() {
         return appointmentList;
     }
