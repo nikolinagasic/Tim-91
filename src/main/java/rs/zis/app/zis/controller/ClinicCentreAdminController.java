@@ -108,7 +108,8 @@ public class ClinicCentreAdminController extends WebConfig
                  userService.save(u);
                 // System.out.println("sacuvao sam izasao");
                  try {
-                     //System.out.println("usao sam u pisanje mejla ");
+                     //System.out.println("usao sam u pisanje mejla ")
+
                      notificationService.SendNotification(mail, "billypiton43@gmail.com",
                              "PSW", "Zahtev prihvacen");
                  } catch (MailException e) {
