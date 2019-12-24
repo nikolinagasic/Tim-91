@@ -7,7 +7,7 @@ import java.util.List;
 
 @SuppressWarnings("SpellCheckingInspection")
 @Entity
-public class Patient extends User {
+public class Patient extends Users {
 
     @Column(name = "firstName", nullable = false)
     private String firstName;

@@ -5,6 +5,9 @@ import rs.zis.app.zis.domain.*;
 
 public class DoctorDTO {
     private Long id;
+    private String firstName;
+    private String lastName;
+    private double rating;
     private String mail;
     private String password;
     private String role;
@@ -12,11 +15,14 @@ public class DoctorDTO {
     public DoctorDTO() {
     }
 
-    public DoctorDTO(Long id, String mail, String password, String role) {
+    public DoctorDTO(Long id, String firstName, String lastName,String mail, String password, String role, double rating) {
         this.id = id;
         this.mail = mail;
         this.password = password;
         this.role = role;
+        this.rating = rating;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public DoctorDTO(Doctor doctor) {
@@ -24,6 +30,9 @@ public class DoctorDTO {
         this.mail = doctor.getMail();
         this.password = doctor.getPassword();
         this.role = doctor.getRole();
+        this.rating = doctor.getRating();
+        this.firstName = doctor.getFirstName();
+        this.lastName = doctor.getLastName();
     }
 
     public Long getId() {
@@ -40,5 +49,17 @@ public class DoctorDTO {
 
     public String getRole() {
         return role;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public double getRating() {
+        return rating;
     }
 }

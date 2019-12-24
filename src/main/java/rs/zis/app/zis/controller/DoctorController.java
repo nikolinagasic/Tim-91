@@ -3,29 +3,34 @@ package rs.zis.app.zis.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.Nurse;
-import rs.zis.app.zis.domain.User;
+import rs.zis.app.zis.domain.DoctorTerms;
 import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.NurseDTO;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.DoctorService;
+import rs.zis.app.zis.service.DoctorTermsService;
 
 import java.util.ArrayList;
 import java.util.List;
+@SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
 @RestController
 @RequestMapping("/doctor")
-public class DoctorController {
+public class DoctorController extends WebConfig {
     @Autowired
     private DoctorService doctorService;
     @Autowired
     private CustomUserService customUserService;
     @Autowired
     private TokenUtils tokenUtils;
+
+    @Autowired
+    private DoctorTermsService doctorTermsService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
     @PreAuthorize("hasRole('ADMIN')")
@@ -60,9 +65,11 @@ public class DoctorController {
             } else if (changed.equals("prezime")) {
                 d.setLastName(value);
                 System.out.println(d.getLastName());
-            } else if (changed.equals("oblast")) {
-                d.setField(value);
-            } else
+            }
+//            else if (changed == "oblast") {
+//                d.setField(value);
+//            }
+            else
                 System.out.println("Greska");
         }
         doctorService.update(d);
@@ -82,4 +89,43 @@ public class DoctorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
+    // NAPOMENA: moram poslati i celu listu, da bih znao sta treba da pretrazim (da ne pretrazuje medju svim lekarima)
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "/searchDoctors/{ime}/{prezime}/{ocena}")
+    public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("ime") String ime,
+                                                @PathVariable("prezime") String prezime,
+                                                    @PathVariable("ocena") double ocena) {
+        if(ime.equals("~")){
+            ime = "";
+        }if(prezime.equals("~")){
+            prezime = "";
+        }
+
+        List<DoctorDTO> listaDoktoraDTO = doctorService.searchDoctors(listaLekara, ime, prezime, ocena);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", consumes = "application/json",
+            value = "/getFilterDoctor/{ocenaOd}/{ocenaDo}")
+    public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara,
+                                           @PathVariable("ocenaOd") String ocenaOd,
+                                           @PathVariable("ocenaDo") String ocenaDo){
+
+        List<DoctorDTO> listaDoktoraDTO = doctorService.filterDoctor(listaLekara, ocenaOd, ocenaDo);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getTermini/{ime}/{prezime}")
+    public ResponseEntity<?> getTermine(@PathVariable String ime, @PathVariable String prezime) {
+        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(ime, prezime);
+        List<DoctorTerms> listTerms = doctorTermsService.getTermine(doctor);
+        List<DoctorTermsDTO> listaTerminaDTO = new ArrayList<>();
+        for (DoctorTerms doctorTerms : listTerms) {
+            listaTerminaDTO.add(new DoctorTermsDTO(doctorTerms));
+        }
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
 }

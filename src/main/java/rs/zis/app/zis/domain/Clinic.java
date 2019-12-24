@@ -1,10 +1,6 @@
 package rs.zis.app.zis.domain;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import javax.print.Doc;
 import java.util.*;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -16,7 +12,7 @@ public class Clinic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "address", nullable = false)
@@ -26,14 +22,14 @@ public class Clinic {
     private String description;
 
     @Column(name = "rating")
-    private String rating;
+    private double rating;
 
     @Column(name = "location")
     private String location;
 
     // hocu da se formira medjutabela (clinic_doctor) koja ce namapirati ID klinike na ID doktora
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Doctor> doctor = new HashSet<Doctor>();
+    private Set<Doctor> doctors = new HashSet<Doctor>();
 
 //    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)v
 //    private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
@@ -45,22 +41,22 @@ public class Clinic {
         this.address = address;
         this.description = description;
 //        this.clinic_admin = clinic_admin;
-        this.doctor = doctor;
+        this.doctors = doctor;
         this.location = location;
     }
 
     public Clinic() {
     }
 
-    public Set<Doctor> getDoctor() {
-        return doctor;
+    public Set<Doctor> getDoctors() {
+        return doctors;
     }
 
-    public String getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 

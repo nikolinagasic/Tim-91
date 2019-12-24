@@ -7,7 +7,7 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "ClinicAdministrator")
-public class ClinicAdministrator extends User {
+public class ClinicAdministrator extends Users {
 
     @Column(name = "firstName")
     private String firstName;

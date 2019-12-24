@@ -1,7 +1,6 @@
 package rs.zis.app.zis.controller;
 
 import java.io.IOException;
-import javax.print.Doc;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -62,28 +62,27 @@ public class AuthenticationController {
     @Autowired
     private NotificationService notificationService;
 
+    @SuppressWarnings("RedundantThrows")
     @PostMapping(consumes = "application/json", value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
                                       HttpServletResponse response) throws AuthenticationException, IOException{
 
         String mail = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();
-        System.out.println("mejl: "+mail);
-        System.out.println("password: "+password);
         Authentication authentication = null;
         try {
             authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(mail, password));
         }catch (BadCredentialsException e){
             System.out.println("Nisu dobri kredencijali [BadCredentialsException]");
-            return new ResponseEntity("Bad credencials", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Bad credencials", HttpStatus.CONFLICT);
+        }catch (DisabledException e){
+            System.out.println("Korisnik jos nije prihvacen [DisabledException]");
+            return new ResponseEntity("Disabled exception", HttpStatus.CONFLICT);
         }
 
-        // Ubaci username + password u kontext (otvori sesiju)
+        // Ubaci username + password u kontext
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
-        String username = currentUser.getName();
-        System.out.println("cp1 user: "+ username);
 
         Patient pat = patientService.findOneByMail(mail);
         Doctor doc = doctor_service.findOneByMail(mail);
@@ -96,10 +95,6 @@ public class AuthenticationController {
             Patient user = (Patient) authentication.getPrincipal();
             String jwt = tokenUtils.generateToken(user.getUsername());
             int expiresIn = tokenUtils.getExpiredIn();
-
-            Authentication currentser = SecurityContextHolder.getContext().getAuthentication();
-            String usernam = currentser.getName();
-            System.out.println("cp2 user: "+ usernam);
 
             // Vrati token kao odgovor na uspesno autentifikaciju
             return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
@@ -134,6 +129,13 @@ public class AuthenticationController {
             System.out.println("Doslo je do greske u prijavi");
             return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
         }
+    }
+
+    @PostMapping(value = "/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Auth-Token") String token){
+        SecurityContextHolder.getContext().setAuthentication(null);
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     // 'http://localhost:8081/patient/getByToken/dksamd8sajidn328d8i32jd82'
@@ -171,8 +173,8 @@ public class AuthenticationController {
     public ResponseEntity<?> getPatientByMail(@PathVariable("mail") String mail, @PathVariable("ime") String ime,
                                         @PathVariable("prezime") String prezime) {
 
-        User user = user_service.findOneByMail(mail);
-        if(user == null){
+        Users users = user_service.findOneByMail(mail);
+        if(users == null){
             return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
         }
 
@@ -189,8 +191,8 @@ public class AuthenticationController {
                 new_pass = new_pass + Integer.toString(brojac);
                 brojac++;
             }
-            user.setPassword(new_pass);
-            user_service.save(user);
+            users.setPassword(passwordEncoder.encode(new_pass));
+            user_service.save(users);
 
             String body = "Поштовани, Ваша лозинка је промењена. Исту можете променити на личном профилу.\n"
                     + "Тренутна лозинка је: " + new_pass;
