@@ -109,7 +109,7 @@ public class ClinicCentreAdminController extends WebConfig
                 // System.out.println("sacuvao sam izasao");
                  try {
                      //System.out.println("usao sam u pisanje mejla ")
-                     notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
+                     notificationService.SendNotification(mail, "billypiton43@gmail.com",
                              "PSW", "Zahtev prihvacen");
                  } catch (MailException e) {
                      logger.info("Error Sending Mail:" + e.getMessage());
@@ -123,7 +123,7 @@ public class ClinicCentreAdminController extends WebConfig
 
              try{
                  //System.out.println("usao sam u pisanje mejla ");
-                 notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
+                 notificationService.SendNotification(mail, "billypiton43@gmail.com",
                          "PSW", "Zahtev odbijen");
              }catch (MailException e){
                  logger.info("Error Sending Mail:" + e.getMessage());
