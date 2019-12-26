@@ -121,4 +121,11 @@ public class PatientController extends WebConfig {
             return new ResponseEntity<>("neuspesno", HttpStatus.NOT_FOUND);
         }
     }
+
+    @PreAuthorize("hasRole('PATIENT')")
+    @GetMapping(produces = "application/json", value = "/getPat")
+    public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        return new ResponseEntity<>(patientService.findOneByMail(mail), HttpStatus.OK);
+    }
 }
