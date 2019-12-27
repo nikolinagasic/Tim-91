@@ -54,6 +54,7 @@ public class CustomUserService implements UserDetailsService {
 
         // hesovanje lozinke pre cuvanja u bazi
         users.setPassword(passwordEncoder.encode(password));
+        users.setFirstLogin(false);
         userRepository.save(users);
         return true;
     }

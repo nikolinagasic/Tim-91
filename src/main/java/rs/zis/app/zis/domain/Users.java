@@ -30,6 +30,9 @@ public class Users implements UserDetails {
     @Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate;
 
+    @Column(name = "first_login")
+    private boolean firstLogin;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -40,12 +43,13 @@ public class Users implements UserDetails {
     }
 
     public Users(String mail, String password, boolean enabled, Timestamp lastPasswordResetDate,
-                 List<Authority> authorities) {
+                 List<Authority> authorities, boolean firstLogin) {
         this.mail = mail;
         this.password = password;
         this.enabled = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.authorities = authorities;
+        this.firstLogin = firstLogin;
     }
 
     public Long getId() {
@@ -88,6 +92,14 @@ public class Users implements UserDetails {
 
     public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
+    }
+
+    public void setFirstLogin(boolean firstLogin) {
+        this.firstLogin = firstLogin;
     }
 
     @Override

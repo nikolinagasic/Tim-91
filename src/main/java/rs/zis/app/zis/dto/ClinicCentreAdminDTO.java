@@ -8,17 +8,18 @@ public class ClinicCentreAdminDTO {
     private String mail;
     private String password;
     private String role;
-
+    private boolean firstLogin;
 
     public ClinicCentreAdminDTO() {
 
     }
 
-    public ClinicCentreAdminDTO(Long id, String mail, String password, String role) {
+    public ClinicCentreAdminDTO(Long id, String mail, String password, String role, boolean firstLogin) {
         this.id = id;
         this.mail = mail;
         this.password = password;
         this.role = role;
+        this.firstLogin = firstLogin;
     }
 
     public ClinicCentreAdminDTO(ClinicCentreAdmin cadmin) {
@@ -26,6 +27,7 @@ public class ClinicCentreAdminDTO {
         this.mail = cadmin.getMail();
         this.password = cadmin.getPassword();
         this.role = cadmin.getRole();
+        this.firstLogin = cadmin.isFirstLogin();
     }
 
     public Long getId() {
@@ -42,5 +44,9 @@ public class ClinicCentreAdminDTO {
 
     public String getRole() {
         return role;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
     }
 }
