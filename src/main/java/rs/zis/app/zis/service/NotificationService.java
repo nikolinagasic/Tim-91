@@ -5,7 +5,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.dto.PatientDTO;
+
 
 @SuppressWarnings("SpellCheckingInspection")
 @Service
@@ -24,6 +24,14 @@ public class NotificationService {
         mail.setTo(to);
         mail.setFrom(from);
         mail.setSubject(subject);
+       /* String tb="\"<html>\\n\" +\n" +
+                "                    \"<body>\\n\" +\n" +
+                "                    \"\\n\" +\n" +
+                "                    \"<a href=\\\"http://localhost:3000/#/login\\\">\\n\" +\n" +
+                "                    \"This is a link</a>\\n\" +\n" +
+                "                    \"\\n\" +\n" +
+                "                    \"</body>\\n\" +\n" +
+                "                    \"</html>\"";*/
         mail.setText(textBody);
         javaMailSender.send(mail);
     }

@@ -94,10 +94,12 @@ public class ClinicCentreAdminController extends WebConfig
     }
 
     //odobravanje ili ne zahteva za registraciju
-    // 'http://localhost:8081/ccadmin/accept/nesto@gmail.com/br'
+    // 'http://localhost:8081/ccadmin/accept/nesto@gmail.com/br/razlog'
     //br=1(zahtev odobren),br=2(zahtev odbijen)
-    @GetMapping( value = "accept/{mail}/{br}")
-    public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br){
+    //razlog je neki string
+    @GetMapping( value = "accept/{mail}/{br}/{reason}")
+    public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br,
+                                                  @PathVariable("reason") String reason ){
          if(br==1){
              User u= userService.findOneByMail(mail);
              if(u==null){
@@ -108,9 +110,12 @@ public class ClinicCentreAdminController extends WebConfig
                  userService.save(u);
                 // System.out.println("sacuvao sam izasao");
                  try {
-                     //System.out.println("usao sam u pisanje mejla ");
-                     notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
-                             "PSW", "Zahtev prihvacen");
+                     //System.out.println("usao sam u pisanje mejla ")
+                     String tb="Postovani," + "\n" +
+                                "Vas zahtev za registraciju je prihvacen! Aktivirajte vas nalog prijavom na sledecem linku"+"\n"+
+                                "http://localhost:3000/#/login";
+                     notificationService.SendNotification(mail, "billypiton43@gmail.com",
+                             "PSW", tb);
                  } catch (MailException e) {
                      logger.info("Error Sending Mail:" + e.getMessage());
                      return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
@@ -123,8 +128,8 @@ public class ClinicCentreAdminController extends WebConfig
 
              try{
                  //System.out.println("usao sam u pisanje mejla ");
-                 notificationService.SendNotification("billypiton43@gmail.com", "billypiton43@gmail.com",
-                         "PSW", "Zahtev odbijen");
+                 notificationService.SendNotification(mail, "billypiton43@gmail.com",
+                         "PSW", reason);
              }catch (MailException e){
                  logger.info("Error Sending Mail:" + e.getMessage());
                  return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
@@ -164,6 +169,30 @@ public class ClinicCentreAdminController extends WebConfig
          }
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
+
+
+    //cuvam azuriran profil admina koji je poslat sa fronta
+    @PostMapping(value = "/changeAttribute/{naziv}/{vrednost}/{mail}")
+    public ResponseEntity<?> changeAttribute(@PathVariable("naziv") String naziv,
+                                             @PathVariable("vrednost") String vrednost,
+                                             @PathVariable("mail") String mail) {
+        System.out.println("primio change: naziv{"+naziv+"}, vrednost{"+vrednost+"}, mail{"+mail+"}");
+        ClinicCentreAdmin clinicCentreAdmin = clinicCentreAdminService.findOneByMail(mail);
+        if (clinicCentreAdmin == null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+
+        if(naziv.equals("ime")){
+           clinicCentreAdmin.setFirstName(vrednost);
+        }
+        else if(naziv.equals("prezime")) {
+            clinicCentreAdmin.setLastName(vrednost);
+        }
+        clinicCentreAdminService.update(clinicCentreAdmin);
+        ClinicCentreAdminDTO clinicCentreAdminDTO = new ClinicCentreAdminDTO(clinicCentreAdmin);
+        return new ResponseEntity<>(clinicCentreAdminDTO, HttpStatus.OK);
+    }
+
 
 
     @GetMapping(value = "/{id}")
