@@ -92,7 +92,7 @@ public class DoctorService {
         for (DoctorDTO doctorDTO: lista_lekara) {
             if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
                 if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
-                    if(doctorDTO.getRating() >= ocena){
+                    if(doctorDTO.getRating() == ocena){
                         retList.add(doctorDTO);
                     }
                 }

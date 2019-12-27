@@ -29,8 +29,9 @@ public class Nurse extends Users {
       //  vacation = new HashSet<Godisnji_odmor>();
     }
 
-    public Nurse(String mail, String password, String firstName, String lastName, Clinic clinic, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password,true, lastPasswordResetDate, authorities);
+    public Nurse(String mail, String password, String firstName, String lastName, Clinic clinic, Set<Vacation> vacation,
+                 Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+        super(mail, password,true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;

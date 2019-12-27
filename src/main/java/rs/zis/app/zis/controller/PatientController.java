@@ -107,7 +107,6 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(patientDTO, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('PATIENT')")
     @PostMapping(consumes = "text/plain", value = "/changePassword")
     public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
         //System.out.println("Pass: " + password + ", token: " +token);
@@ -120,5 +119,12 @@ public class PatientController extends WebConfig {
         else{
             return new ResponseEntity<>("neuspesno", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PreAuthorize("hasRole('PATIENT')")
+    @GetMapping(produces = "application/json", value = "/getPat")
+    public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        return new ResponseEntity<>(patientService.findOneByMail(mail), HttpStatus.OK);
     }
 }

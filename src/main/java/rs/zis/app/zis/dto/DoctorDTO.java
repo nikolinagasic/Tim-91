@@ -11,11 +11,13 @@ public class DoctorDTO {
     private String mail;
     private String password;
     private String role;
+    private boolean firstLogin;
 
     public DoctorDTO() {
     }
 
-    public DoctorDTO(Long id, String firstName, String lastName,String mail, String password, String role, double rating) {
+    public DoctorDTO(Long id, String firstName, String lastName,String mail, String password, String role, double rating,
+                     boolean firstLogin) {
         this.id = id;
         this.mail = mail;
         this.password = password;
@@ -23,6 +25,7 @@ public class DoctorDTO {
         this.rating = rating;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.firstLogin = firstLogin;
     }
 
     public DoctorDTO(Doctor doctor) {
@@ -33,6 +36,7 @@ public class DoctorDTO {
         this.rating = doctor.getRating();
         this.firstName = doctor.getFirstName();
         this.lastName = doctor.getLastName();
+        this.firstLogin = doctor.isFirstLogin();
     }
 
     public Long getId() {
@@ -61,5 +65,9 @@ public class DoctorDTO {
 
     public double getRating() {
         return rating;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
     }
 }
