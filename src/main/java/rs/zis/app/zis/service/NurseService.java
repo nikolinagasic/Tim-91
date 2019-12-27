@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Nurse;
+import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.NurseDTO;
 import rs.zis.app.zis.repository.NurseRepository;
 
@@ -70,6 +71,10 @@ import java.util.List;
                 return (UserDetails) n;
             }
         }
+        public Nurse update(Nurse nurse){
+            return nurseRepository.save(nurse);
+        }
+
 
         public boolean checkFirstLastName(String mail, String firstName, String lastName){
             Nurse nurse = nurseRepository.findOneByMail(mail);
