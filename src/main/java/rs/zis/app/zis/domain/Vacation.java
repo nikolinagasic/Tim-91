@@ -14,7 +14,7 @@ public class Vacation {
     @Column(name = "endVacation", nullable = false)
     private long kraj;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Doctor doctor;
 
     public Vacation() {

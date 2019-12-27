@@ -2,14 +2,15 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
 @Table(name = "Doctor")
-public class Doctor extends User {
+public class Doctor extends Users {
 
     @Column(name = "firstName")
     private String firstName;
@@ -17,36 +18,69 @@ public class Doctor extends User {
     @Column(name = "lastName")
     private String lastName;
 
-    @Column(name = "field")
-    private String field;
+    @Column(name = "price")
+    private double price;           // cena pregleda
 
     @Column(name= "role")
     private String role;
 
+    @Column(name= "rating")     // prosecna ocena
+    private double rating;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private TipPregleda tip;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;
 
-    // zakazani termini pregleda/operacija
-  //  @ManyToMany(mappedBy = "appointments", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  //  private Set<Termin> appointmentList;
-
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Vacation> vacation = new HashSet<Vacation>();
+    private Set<Vacation> vacation = new HashSet<>();
+
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private Set<DoctorTerms> busy_terms = new HashSet<>();
 
     public Doctor() {
-     //   appointmentList = new HashSet<Termin>();
-     //   vacation = new HashSet<Godisnji_odmor>();
         this.role = "doctor";
     }
 
-    public Doctor(String mail, String password, String firstName, String lastName, String field, Set<Termin> appointmentList, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
+    public Doctor(String mail, String password, String firstName, String lastName, double price, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
         super(mail, password, true, lastPasswordResetDate, authorities);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.field = field;
-     //   this.appointmentList = appointmentList;
         this.role = "doctor";
      //   this.vacation = vacation;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public TipPregleda getTip() {
+        return tip;
+    }
+
+    public void setTip(TipPregleda tip) {
+        this.tip = tip;
+    }
+
+    public Set<Vacation> getVacation() {
+        return vacation;
+    }
+
+    public void setVacation(Set<Vacation> vacation) {
+        this.vacation = vacation;
     }
 
     public String getRole() {
@@ -73,13 +107,6 @@ public class Doctor extends User {
         this.lastName = lastName;
     }
 
-    public String getField() {
-        return field;
-    }
-
-    public void setField(String field) {
-        this.field = field;
-    }
 /*    public Set<Termin> getAppointmentList() {
         return appointmentList;
     }

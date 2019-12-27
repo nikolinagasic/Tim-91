@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Nurse")
-public class Nurse extends User{
+public class Nurse extends Users {
 
     @Column(name = "firstName")
     private String firstName;

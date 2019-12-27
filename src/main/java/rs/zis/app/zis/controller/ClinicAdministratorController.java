@@ -3,7 +3,6 @@ package rs.zis.app.zis.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.*;
@@ -31,7 +30,7 @@ public class ClinicAdministratorController extends WebConfig {
 
     @PostMapping(consumes = "application/json" , value = "/registerDoctor")
     public ResponseEntity<Integer> saveDoctor(@RequestBody DoctorDTO doctorDTO) {
-        User proveriMail = userService.findOneByMail(doctorDTO.getMail());
+        Users proveriMail = userService.findOneByMail(doctorDTO.getMail());
         if(proveriMail != null){
             System.out.println("Adresa \""+proveriMail.getMail()+"\" nije jedinstvena u sistemu");
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
@@ -43,7 +42,7 @@ public class ClinicAdministratorController extends WebConfig {
 
     @PostMapping(consumes = "application/json" , value = "/registerNurse")
     public ResponseEntity<Integer> saveNurse(@RequestBody NurseDTO nurseDTO) {
-        User proveriMail = userService.findOneByMail(nurseDTO.getMail());
+        Users proveriMail = userService.findOneByMail(nurseDTO.getMail());
         if(proveriMail != null){
             System.out.println("Adresa \""+proveriMail.getMail()+"\" nije jedinstvena u sistemu");
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej

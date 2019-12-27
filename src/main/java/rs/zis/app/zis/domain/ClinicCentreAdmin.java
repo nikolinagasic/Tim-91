@@ -7,7 +7,7 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "ClinicCentreAdmin")
-public class ClinicCentreAdmin extends User {
+public class ClinicCentreAdmin extends Users {
 
     @Column(name= "predefined")
     private boolean predefined;

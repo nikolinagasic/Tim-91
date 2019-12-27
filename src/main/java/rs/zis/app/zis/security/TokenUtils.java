@@ -14,7 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import rs.zis.app.zis.domain.Patient;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "WeakerAccess"})
 @Component
 public class TokenUtils {
     @Value("zis")

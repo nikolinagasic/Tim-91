@@ -21,6 +21,7 @@ public class NotificationService {
     public void SendNotification(String to, String from, String subject, String textBody) throws MailException {
         SimpleMailMessage mail= new SimpleMailMessage();
         //mail.setTo(patientDTO.getMail());
+
         mail.setTo(to);
         mail.setFrom(from);
         mail.setSubject(subject);
