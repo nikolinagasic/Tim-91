@@ -39,8 +39,8 @@ public class Patient extends Users {
 
     public Patient(String mail, String password, String firstName, String lastName, String address,
                    String city, String country, String telephone, long lbo, boolean enabled,
-                   Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password, enabled, lastPasswordResetDate, authorities);
+                   Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+        super(mail, password, enabled, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;

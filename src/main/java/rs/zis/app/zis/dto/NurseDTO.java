@@ -8,15 +8,17 @@ public class NurseDTO {
     private String mail;
     private String password;
     private String role;
+    private boolean firstLogin;
 
     public NurseDTO() {
     }
 
-    public NurseDTO(Long id, String mail, String password, String role) {
+    public NurseDTO(Long id, String mail, String password, String role, boolean firstLogin) {
         this.id = id;
         this.mail = mail;
         this.password = password;
         this.role = role;
+        this.firstLogin = firstLogin;
     }
 
     public NurseDTO(Nurse nurse) {
@@ -24,6 +26,7 @@ public class NurseDTO {
         this.mail = nurse.getMail();
         this.password = nurse.getPassword();
         this.role = nurse.getRole();
+        this.firstLogin = nurse.isFirstLogin();
     }
 
     public Long getId() {
@@ -40,5 +43,9 @@ public class NurseDTO {
 
     public String getRole() {
         return role;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
     }
 }

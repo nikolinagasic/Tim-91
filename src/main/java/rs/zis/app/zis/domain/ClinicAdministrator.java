@@ -37,8 +37,9 @@ public class ClinicAdministrator extends Users {
         this.role = "cadmin";
     }
 
-    public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, Clinic clinic,Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password, true, lastPasswordResetDate, authorities);
+    public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, Clinic clinic,
+                               Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+        super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;

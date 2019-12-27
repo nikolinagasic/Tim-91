@@ -25,8 +25,9 @@ public class ClinicCentreAdmin extends Users {
         this.role = "ccadmin";
     }
 
-    public ClinicCentreAdmin(Long id, String mail, String password, boolean predefined, String firstName, String lastName, Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password, true, lastPasswordResetDate, authorities);
+    public ClinicCentreAdmin(Long id, String mail, String password, boolean predefined, String firstName, String lastName,
+                             Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+        super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.predefined = predefined;
         this.firstName = firstName;
         this.lastName = lastName;

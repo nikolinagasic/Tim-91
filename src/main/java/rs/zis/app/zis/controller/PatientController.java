@@ -107,7 +107,6 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(patientDTO, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('PATIENT')")
     @PostMapping(consumes = "text/plain", value = "/changePassword")
     public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
         //System.out.println("Pass: " + password + ", token: " +token);
