@@ -46,12 +46,12 @@ public class PatientController extends WebConfig {
     public ResponseEntity<PatientDTO> savePatient(@RequestBody PatientDTO patientDTO) {
         System.out.println("usao sam u post i primio: " + patientDTO.getFirstName() + patientDTO.getLastName());
 
-        Patient proveriLbo = patientService.findOneByLbo(patientDTO.getLbo());
+        Patient proveriLbo = patientService.findAllByLbo(patientDTO.getLbo());
         if(proveriLbo != null){
             return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);       // lbo nije okej
         }
 
-        Users proveriMail = userService.findOneByMail(patientDTO.getMail());
+        Users proveriMail = userService.findAllByMail(patientDTO.getMail());
         if(proveriMail != null){
             return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);  // mejl nije okej (na nivou svih korisika)
         }

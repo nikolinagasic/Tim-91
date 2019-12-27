@@ -18,7 +18,7 @@ public class Users implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "mail", unique = true, nullable = false)
+    @Column(name = "mail", unique = false, nullable = false)
     private String mail;
 
     @Column(name = "password", nullable = false)
@@ -33,6 +33,9 @@ public class Users implements UserDetails {
     @Column(name = "first_login")
     private boolean firstLogin;
 
+    @Column(name = "active")                // za logicko brisanje
+    private boolean active;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -40,6 +43,7 @@ public class Users implements UserDetails {
     private List<Authority> authorities;
 
     public Users() {
+        this.active = true;
     }
 
     public Users(String mail, String password, boolean enabled, Timestamp lastPasswordResetDate,
@@ -50,6 +54,7 @@ public class Users implements UserDetails {
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.authorities = authorities;
         this.firstLogin = firstLogin;
+        this.active = true;
     }
 
     public Long getId() {
@@ -100,6 +105,14 @@ public class Users implements UserDetails {
 
     public void setFirstLogin(boolean firstLogin) {
         this.firstLogin = firstLogin;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override

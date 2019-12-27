@@ -84,7 +84,7 @@ public class ClinicCentreAdminController extends WebConfig
         List<PatientDTO> request = new ArrayList<>();
 
         for(Users u:users){
-            if((u.isEnabled())==false){//to znaci da pacijent nije registrovan
+            if((u.isEnabled())==false && u.isActive()){         //to znaci da pacijent nije registrovan
                 PatientDTO pd = new PatientDTO(patientService.findOneById(u.getId()));
                 request.add(pd);
             }
@@ -104,7 +104,7 @@ public class ClinicCentreAdminController extends WebConfig
        
 
             if(br==1){
-             Users u= userService.findOneByMail(mail);
+             Users u= userService.findAllByMail(mail);
              if(u==null){
                  System.out.println("USER JE NULL");
              }else {
@@ -129,8 +129,8 @@ public class ClinicCentreAdminController extends WebConfig
          }else{
             // System.out.println("KLIKNUTO NA ODBIJ"+mail+br);
              Users u= userService.findOneByMail(mail);
-             userService.remove(u.getId());    //brisem ga i iz liste usera
-
+             userService.deleteLogical(u.getId());       // brisem ga logicki
+//             userService.remove(u.getId());    //brisem ga i iz liste usera
              try{
                  //System.out.println("usao sam u pisanje mejla ");
                  notificationService.SendNotification(mail, "billypiton43@gmail.com",

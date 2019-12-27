@@ -27,7 +27,7 @@ public class Patient extends Users {
     @Column(name = "telephone")
     private String telephone;
 
-    @Column(name = "lbo", unique = true, nullable = false)
+    @Column(name = "lbo", unique = false, nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
     @Column(name= "role")
@@ -35,6 +35,7 @@ public class Patient extends Users {
 
     public Patient() {
         this.role = "patient";
+        this.setActive(true);
     }
 
     public Patient(String mail, String password, String firstName, String lastName, String address,

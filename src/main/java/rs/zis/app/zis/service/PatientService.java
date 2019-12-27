@@ -1,5 +1,6 @@
 package rs.zis.app.zis.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.domain.Users;
 import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
@@ -30,7 +32,15 @@ public class PatientService {
     private AuthorityService authService;
 
     public List<Patient> findAll() {
-        return patientRepository.findAll();
+        List<Patient> tmpList = patientRepository.findAll();
+        List<Patient> retList = new ArrayList<>();
+        for (Patient patient : tmpList) {
+            if(patient.isActive()){
+                retList.add(patient);
+            }
+        }
+
+        return retList;
     }
 
     public Page<Patient> findAll(Pageable page) {
@@ -48,8 +58,8 @@ public class PatientService {
         p.setCountry(patientDTO.getCountry());
         p.setTelephone(patientDTO.getTelephone());
         p.setLbo(patientDTO.getLbo());
-        // TODO promeniti na false
-        p.setEnabled(true);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
+        p.setEnabled(false);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
+        p.setFirstLogin(true);
         List<Authority> auth = authService.findByname("ROLE_PATIENT");
         p.setAuthorities(auth);
 
@@ -67,6 +77,17 @@ public class PatientService {
 
     public Patient findOneByLbo(long lbo) {
         return patientRepository.findOneByLbo(lbo);
+    }
+
+    public Patient findAllByLbo(long lbo) {
+        List<Patient> patientList = patientRepository.findAllByLbo(lbo);
+        for (Patient patient : patientList) {
+            if(patient.isActive()){
+                return patient;
+            }
+        }
+
+        return null;
     }
 
     public Patient findOneById(Long id){return patientRepository.findOneById(id); }
