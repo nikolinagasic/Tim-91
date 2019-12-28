@@ -5,10 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TipPregleda;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 
@@ -47,6 +44,9 @@ public class ClinicService implements UserDetailsService {
 
         c = this.clinicRepository.save(c);
         return c;
+    }
+    public Clinic update(Clinic clinic){
+        return clinicRepository.save(clinic);
     }
 
     public Clinic findOneByName(String name) {

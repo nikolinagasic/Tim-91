@@ -21,7 +21,7 @@ public class TipPregledaController extends WebConfig {
     private TipPregledaService tipPregledaService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
-    // @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<TipPregledaDTO>> getAll() {
         System.out.println("usao u ispis");
         List<TipPregleda> listPregleda = tipPregledaService.findAll();

@@ -33,7 +33,7 @@ public class DoctorController extends WebConfig {
     private DoctorTermsService doctorTermsService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctor() {
         List<Doctor> listDoctor = doctorService.findAll();
 

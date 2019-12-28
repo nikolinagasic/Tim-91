@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
+import rs.zis.app.zis.domain.ClinicAdministrator;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Vacation;
+import rs.zis.app.zis.dto.ClinicAdministratorDTO;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.service.ClinicService;
@@ -87,5 +89,36 @@ public class ClinicController extends WebConfig {
         List<ClinicDTO> listaKlinikaDTO = clinicService.filterClinic(cenaOd, cenaDo, ocenaOd, ocenaDo, naziv, lKlinika);
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
+    @GetMapping (produces = "application/json", value = "/getOne/{name}")
+    //@PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<?> getClinicByName(@PathVariable("name") String name) {
+        System.out.println("ime klinike: " + name);
+        Clinic pronadjiKliniku = clinicService.findOneByName(name);
+        if(pronadjiKliniku == null) {
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(new ClinicDTO(pronadjiKliniku), HttpStatus.OK);
+    }
 
+    //@PreAuthorize("hasRole('CADMIN')")
+    @PostMapping(value = "/changeAttribute/{naziv}/{vrednost}/{name}")
+    public ResponseEntity<?> changeAttribute(@PathVariable("naziv") String naziv,
+                                             @PathVariable("vrednost") String vrednost,
+                                             @PathVariable("name") String name) {
+        System.out.println("primio change: naziv{"+naziv+"}, vrednost{"+vrednost+"}, name{"+name+"}");
+        Clinic clinic = clinicService.findOneByName(name);
+        if (clinic == null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+
+        if(naziv.equals("adresa")){
+            clinic.setAddress(vrednost);
+        }
+        else if(naziv.equals("opis")){
+            clinic.setDescription(vrednost);
+        }
+
+        clinicService.update(clinic);
+        return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+    }
 }
