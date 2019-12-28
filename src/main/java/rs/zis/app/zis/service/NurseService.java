@@ -30,6 +30,9 @@ import java.util.List;
         @Autowired
         private AuthorityService authService;
 
+        @Autowired
+        private ClinicService clinicService;
+
         public List<Nurse> findAll() {
             return nurseRepository.findAll();
         }
@@ -43,6 +46,7 @@ import java.util.List;
             d.setMail(nurseDTO.getMail());
             d.setPassword(passwordEncoder.encode(nurseDTO.getPassword()));
             d.setEnabled(true);
+            d.setClinic(clinicService.findOneByName(nurseDTO.getClinic()));
             List<Authority> auth = authService.findByname("ROLE_NURSE");
             d.setAuthorities(auth);
 
