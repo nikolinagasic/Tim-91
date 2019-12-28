@@ -30,6 +30,11 @@ public class DoctorService {
     @Autowired
     private AuthorityService authService;
 
+    @Autowired
+    private ClinicService clinicService;
+    @Autowired
+    private TipPregledaService tipPregledaService;
+
     public List<Doctor> findAll() {
         return doctorRepository.findAll();
     }
@@ -42,6 +47,8 @@ public class DoctorService {
         Doctor d = new Doctor();
         d.setMail(doctorDTO.getMail());
         d.setPassword(passwordEncoder.encode(doctorDTO.getPassword()));
+        d.setClinic(clinicService.findOneByName(doctorDTO.getClinic()));
+        d.setTip(tipPregledaService.findOneByName(doctorDTO.getTip()));
         d.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);

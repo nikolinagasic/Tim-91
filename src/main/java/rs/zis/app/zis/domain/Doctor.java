@@ -43,11 +43,13 @@ public class Doctor extends Users {
         this.role = "doctor";
     }
 
-    public Doctor(String mail, String password, String firstName, String lastName, double price, Set<Vacation> vacation,
+    public Doctor(String mail, String password, String firstName, String lastName, Clinic clinic, TipPregleda tip, double price, Set<Vacation> vacation,
                   Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
         super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
+        this.clinic = clinic;
+        this.tip = tip;
         this.role = "doctor";
      //   this.vacation = vacation;
     }
