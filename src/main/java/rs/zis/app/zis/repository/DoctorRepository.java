@@ -26,6 +26,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     // ?1 uzima 1. parametar
     @Query("select d from Doctor d where d.lastName = ?1")
     List<Doctor> findDoctorByLastName(String lastName);
+    List<Doctor> findDoctorByClinic(Clinic clinic);
 
     Doctor findDoctorByFirstNameAndLastName(String firstName, String lastName);
 //    @Query("select d from Doctor d where d.tip = ?1")

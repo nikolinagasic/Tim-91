@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
+import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.DoctorTerms;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.NurseDTO;
 import rs.zis.app.zis.security.TokenUtils;
+import rs.zis.app.zis.service.ClinicService;
 import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.DoctorTermsService;
@@ -28,14 +30,27 @@ public class DoctorController extends WebConfig {
     private CustomUserService customUserService;
     @Autowired
     private TokenUtils tokenUtils;
-
+    @Autowired
+    private ClinicService clinicService;
     @Autowired
     private DoctorTermsService doctorTermsService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctor() {
         List<Doctor> listDoctor = doctorService.findAll();
+
+        ArrayList<DoctorDTO> listDTO = new ArrayList<>();
+        for (Doctor d: listDoctor) {
+            listDTO.add(new DoctorDTO(d));
+        }
+        return new ResponseEntity<>(listDTO, HttpStatus.OK);
+    }
+    @GetMapping(produces = "application/json", value = "/getDoctors/{clinic}")
+    // @PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<List<DoctorDTO>> getDoctorByClinic(@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        List<Doctor> listDoctor = doctorService.findDoctorByClinic(c);
 
         ArrayList<DoctorDTO> listDTO = new ArrayList<>();
         for (Doctor d: listDoctor) {

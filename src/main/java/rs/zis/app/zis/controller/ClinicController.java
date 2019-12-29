@@ -87,5 +87,14 @@ public class ClinicController extends WebConfig {
         List<ClinicDTO> listaKlinikaDTO = clinicService.filterClinic(cenaOd, cenaDo, ocenaOd, ocenaDo, naziv, lKlinika);
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
-
+    @GetMapping (produces = "application/json", value = "/getOne/{name}")
+    //@PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<?> getClinicByName(@PathVariable("name") String name) {
+        System.out.println("ime klinike: " + name);
+        Clinic pronadjiKliniku = clinicService.findOneByName(name);
+        if(pronadjiKliniku == null) {
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(new ClinicDTO(pronadjiKliniku), HttpStatus.OK);
+    }
 }

@@ -68,6 +68,9 @@ public class DoctorService {
     public List<Doctor> findDoctorByLastName(String lastName) {
         return doctorRepository.findDoctorByLastName(lastName);
     }
+    public List<Doctor> findDoctorByClinic(Clinic clinic) {
+        return doctorRepository.findDoctorByClinic(clinic);
+    }
     public Doctor update(Doctor doctor){
         return doctorRepository.save(doctor);
     }
