@@ -48,6 +48,9 @@ public class ClinicService implements UserDetailsService {
         c = this.clinicRepository.save(c);
         return c;
     }
+    public Clinic update(Clinic clinic){
+        return clinicRepository.save(clinic);
+    }
 
     public Clinic findOneByName(String name) {
         return clinicRepository.findOneByName(name);

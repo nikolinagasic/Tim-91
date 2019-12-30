@@ -31,6 +31,9 @@ public class Clinic {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Doctor> doctors = new HashSet<Doctor>();
 
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Room> rooms = new HashSet<Room>();
 //    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)v
 //    private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
 
@@ -98,6 +101,9 @@ public class Clinic {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    public Set<Room> getRooms() {
+        return rooms;
     }
 
 }

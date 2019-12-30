@@ -15,8 +15,6 @@ insert into user_authority (user_id, authority_id) values (1, 1);
 insert into tip_pregleda (name) values ('Стоматологија');
 insert into tip_pregleda (name) values ('Кардиологија');
 
-
-
 -- za proveru KLINIKA-DOKTOR
 insert into clinic (address, description, location, name, rating)
     values ('Topolska 18', 'Neki opis klinike', 'Novi Sad', 'Moja klinika', 8);
