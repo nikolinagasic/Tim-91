@@ -9,6 +9,7 @@ import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.DoctorTerms;
+import rs.zis.app.zis.domain.TipPregleda;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.NurseDTO;
@@ -46,6 +47,15 @@ public class DoctorController extends WebConfig {
         }
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
+    @PostMapping(value = "/delete/{mail}")
+    public ResponseEntity<?> deleteType(@PathVariable("mail") String mail) {
+        System.out.println("usao da brise");
+        Doctor d = doctorService.findOneByMail(mail);
+
+        doctorService.remove(d.getId());
+        return new ResponseEntity<>("deleted", HttpStatus.OK);
+    }
+
     @GetMapping(produces = "application/json", value = "/getDoctors/{clinic}")
     // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctorByClinic(@PathVariable("clinic") String clinic) {
@@ -81,9 +91,6 @@ public class DoctorController extends WebConfig {
                 d.setLastName(value);
                 System.out.println(d.getLastName());
             }
-//            else if (changed == "oblast") {
-//                d.setField(value);
-//            }
             else
                 System.out.println("Greska");
         }

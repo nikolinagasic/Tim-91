@@ -97,4 +97,22 @@ public class ClinicController extends WebConfig {
         }
         return new ResponseEntity<>(new ClinicDTO(pronadjiKliniku), HttpStatus.OK);
     }
+    @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{name}")
+    public ResponseEntity<?> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("name") String name) {
+        System.out.println("usao sam ovde CHANGE" + changed + " " + value);
+        Clinic clinic= clinicService.findOneByName(name);
+        if(clinic==null){
+            System.out.println("Nema ga");
+        }else {
+            if (changed.equals("adresa")) {
+                clinic.setAddress(value);
+                System.out.println(clinic.getAddress());
+            } else if (changed.equals("opis")) {
+                clinic.setDescription(value);
+                System.out.println(clinic.getDescription());
+            }
+        }
+        clinicService.update(clinic);
+        return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+    }
 }
