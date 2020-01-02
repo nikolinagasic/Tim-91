@@ -101,7 +101,6 @@ public class DoctorController extends WebConfig {
         }if(prezime.equals("~")){
             prezime = "";
         }
-
         List<DoctorDTO> listaDoktoraDTO = doctorService.searchDoctors(listaLekara, ime, prezime, ocena);
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
@@ -116,16 +115,14 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
-    @GetMapping(produces = "application/json", value = "/getTermini/{ime}/{prezime}")
-    public ResponseEntity<?> getTermine(@PathVariable String ime, @PathVariable String prezime) {
-        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(ime, prezime);
-        List<DoctorTerms> listTerms = doctorTermsService.getTermine(doctor);
-        List<DoctorTermsDTO> listaTerminaDTO = new ArrayList<>();
-        for (DoctorTerms doctorTerms : listTerms) {
-            listaTerminaDTO.add(new DoctorTermsDTO(doctorTerms));
-        }
+    @GetMapping(produces = "application/json", value = "/getTermini/{ime}/{prezime}/{date}")
+    public ResponseEntity<?> getTermine(@PathVariable("ime") String ime,
+                                        @PathVariable("prezime") String prezime,
+                                        @PathVariable("date") long datum) {
 
-        return new ResponseEntity<>("ok", HttpStatus.OK);
+        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(ime, prezime);
+        List<DoctorTermsDTO> listTerms = doctorTermsService.getTermine(datum, doctor);
+        return new ResponseEntity<>(listTerms, HttpStatus.OK);
     }
 
 }

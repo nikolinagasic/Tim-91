@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.DoctorTerms;
+import rs.zis.app.zis.domain.TermDefinition;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
@@ -23,6 +25,9 @@ public class DoctorTermsService {
 
     @Autowired
     private DoctorTermsRepository doctorTermsRepository;
+
+    @Autowired
+    private TermDefinitionService termDefinitionService;
 
     public List<DoctorTerms> findAll() {
         return doctorTermsRepository.findAll();
@@ -57,11 +62,24 @@ public class DoctorTermsService {
 
     public DoctorTerms save(DoctorTerms u) {return doctorTermsRepository.save(u);}
 
-
     // TODO vratiti sve slobodne termine od tog doktora
-    public List<DoctorTerms> getTermine(Doctor doctor){
-        List<DoctorTerms> retList = new ArrayList<>();
+    public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
+        List<DoctorTermsDTO> retList = new ArrayList<>();
+        List<DoctorTerms> listaTermina = findAllByDoctor(doctor);
 
+        // izbaciti sve termine koji su zauzeti (u retList hocu samo one slobodne termine za tog doktora)
+        for (TermDefinition termDefinition : termDefinitionService.findAll()) {
+            boolean flag = false;           // nemoj dodavati u retList ako je zauzet
+            for (DoctorTerms doctorTerms : listaTermina) {
+                if(doctorTerms.getTerm().getId() == termDefinition.getId()){
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag) {
+                retList.add(new DoctorTermsDTO(date, termDefinition));
+            }
+        }
 
         return retList;
     }

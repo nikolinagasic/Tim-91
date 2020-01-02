@@ -55,7 +55,7 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
-    public List<ClinicDTO> searchClinic(long datum, String tip, int ocena){
+    public List<ClinicDTO> searchClinic(long datum, String tip, double ocena){
         // 1) return: doktori koji su datog tipa
         List<Doctor> doctorsType;
         if(tip.equals("Сви типови")){

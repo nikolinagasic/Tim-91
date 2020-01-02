@@ -9,15 +9,13 @@ import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.domain.Nurse;
-import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression"})
 @Service
 public class DoctorService {
 
@@ -92,7 +90,12 @@ public class DoctorService {
         for (DoctorDTO doctorDTO: lista_lekara) {
             if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
                 if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
-                    if(doctorDTO.getRating() == ocena){
+                    if(ocena != -1) {
+                        if (doctorDTO.getRating() == ocena) {
+                            retList.add(doctorDTO);
+                        }
+                    }
+                    else{
                         retList.add(doctorDTO);
                     }
                 }

@@ -42,10 +42,9 @@ public class ClinicController extends WebConfig {
     }
 
     @GetMapping (produces = "application/json", value = "/searchClinic/{date}/{type}/{rating}")
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getClinic(@PathVariable("date") long datum,
                                        @PathVariable("type") String tip,
-                                       @PathVariable("rating") int ocena) {
+                                       @PathVariable("rating") double ocena) {
         System.out.println("datum: " + datum + ", tip: " + tip + ", ocena: " + ocena);
         List<ClinicDTO> listaKlinikaDTO = clinicService.searchClinic(datum, tip, ocena);
         if(listaKlinikaDTO == null) {
