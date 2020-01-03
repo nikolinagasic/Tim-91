@@ -35,4 +35,8 @@ public class TermDefinitionService {
     public TermDefinition findOneByEnd_term(String end_term) {
         return termDefinitionRepository.findOneByEndTerm(end_term);
     }
+
+    public List<TermDefinition> findAllByWorkShift(int workShift){
+        return termDefinitionRepository.findAllByWorkShift(workShift);
+    }
 }

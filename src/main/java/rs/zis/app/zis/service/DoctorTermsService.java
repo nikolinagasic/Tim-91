@@ -67,8 +67,11 @@ public class DoctorTermsService {
         List<DoctorTermsDTO> retList = new ArrayList<>();
         List<DoctorTerms> listaTermina = findAllByDoctor(doctor);
 
+        // svi termini za tu smenu (prva/druga)
+        List<TermDefinition> listaSvihTermina = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
+
         // izbaciti sve termine koji su zauzeti (u retList hocu samo one slobodne termine za tog doktora)
-        for (TermDefinition termDefinition : termDefinitionService.findAll()) {
+        for (TermDefinition termDefinition : listaSvihTermina) {
             boolean flag = false;           // nemoj dodavati u retList ako je zauzet
             for (DoctorTerms doctorTerms : listaTermina) {
                 if(doctorTerms.getTerm().getId() == termDefinition.getId()){

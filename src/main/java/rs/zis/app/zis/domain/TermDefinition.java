@@ -9,6 +9,9 @@ public class TermDefinition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "work_shift", nullable = false)      // smena
+    private int workShift;
+
     @Column(name = "start_term", nullable = false)
     private String startTerm;
 
@@ -18,8 +21,9 @@ public class TermDefinition {
     public TermDefinition() {
     }
 
-    public TermDefinition(Long id, String startTerm, String endTerm) {
+    public TermDefinition(Long id, int workShift, String startTerm, String endTerm) {
         this.id = id;
+        this.workShift = workShift;
         this.startTerm = startTerm;
         this.endTerm = endTerm;
     }
@@ -30,6 +34,14 @@ public class TermDefinition {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getWorkShift() {
+        return workShift;
+    }
+
+    public void setWorkShift(int workShift) {
+        this.workShift = workShift;
     }
 
     public String getStartTerm() {

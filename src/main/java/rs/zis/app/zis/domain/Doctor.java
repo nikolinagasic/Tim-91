@@ -27,6 +27,9 @@ public class Doctor extends Users {
     @Column(name= "rating")     // prosecna ocena
     private double rating;
 
+    @Column(name= "work_shift")     // smena
+    private int workShift;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private TipPregleda tip;
 
@@ -41,14 +44,16 @@ public class Doctor extends Users {
 
     public Doctor() {
         this.role = "doctor";
+        this.workShift = 1;
     }
 
     public Doctor(String mail, String password, String firstName, String lastName, double price, Set<Vacation> vacation,
-                  Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+                  Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin, int workShift) {
         super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = "doctor";
+        this.workShift = workShift;
      //   this.vacation = vacation;
     }
 
@@ -124,7 +129,15 @@ public class Doctor extends Users {
         this.clinic = clinic;
     }
 
- /*   public Set<Godisnji_odmor> getVacation() {
+    public int getWorkShift() {
+        return workShift;
+    }
+
+    public void setWorkShift(int workShift) {
+        this.workShift = workShift;
+    }
+
+    /*   public Set<Godisnji_odmor> getVacation() {
         return vacation;
     }
 

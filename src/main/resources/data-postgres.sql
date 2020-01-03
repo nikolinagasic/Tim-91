@@ -7,40 +7,40 @@ insert into authority (name) values ('ROLE_DOCTOR');
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'admin@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
 insert into clinic_centre_admin (first_name, last_name, predefined, role, id)
-    values ('Admin', 'Admin', true, 'ccadmin', 1);
+    values ('Aдмин', 'Aдмин', true, 'ccadmin', 1);
 
 
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'patient@gmail.com','$2a$10$dHUB7Rc9.w6lCB1QRcNIJe2ZPSnbRORDQPtVszxtsSSAN965P8MRm'); --password: 12345678
 insert into patient (address, city, country, first_name, last_name, lbo, role, telephone, id)
-    values ('Moja adresa 25', 'Novi Sad', 'Srbija', 'Petar', 'Petrovic', 12345678912, 'patient', 456789, 2);
+    values ('Моја адреса 25', 'Нови Сад', 'Србија', 'Петар', 'Петровић', 12345678912, 'patient', 456789, 2);
 
 insert into user_authority (user_id, authority_id) values (1, 1);
 insert into user_authority (user_id, authority_id) values (2, 2);
 
 -- TERM DEFINITION
-insert into term_definition (end_term, start_term) values ('08:30', '08:00');
-insert into term_definition (end_term, start_term) values ('09:00', '08:30');
-insert into term_definition (end_term, start_term) values ('09:30', '09:00');
---insert into term_definition (end_term, start_term) values ('10:00', '09:30');          PAUZA
-insert into term_definition (end_term, start_term) values ('10:30', '10:00');
-insert into term_definition (end_term, start_term) values ('11:00', '10:30');
-insert into term_definition (end_term, start_term) values ('11:30', '11:00');
-insert into term_definition (end_term, start_term) values ('12:00', '11:30');
-insert into term_definition (end_term, start_term) values ('12:30', '12:00');
-insert into term_definition (end_term, start_term) values ('13:00', '12:30');
-insert into term_definition (end_term, start_term) values ('13:30', '13:00');
-insert into term_definition (end_term, start_term) values ('14:00', '13:30');
-insert into term_definition (end_term, start_term) values ('14:30', '14:00');
-insert into term_definition (end_term, start_term) values ('15:00', '14:30');
-insert into term_definition (end_term, start_term) values ('15:30', '15:00');
---insert into term_definition (end_term, start_term) values ('16:00', '15:30');          PAUZA
-insert into term_definition (end_term, start_term) values ('16:30', '16:00');
-insert into term_definition (end_term, start_term) values ('17:00', '16:30');
-insert into term_definition (end_term, start_term) values ('17:30', '17:00');
-insert into term_definition (end_term, start_term) values ('18:00', '17:30');
-insert into term_definition (end_term, start_term) values ('18:30', '18:00');
-insert into term_definition (end_term, start_term) values ('19:00', '18:30');
+insert into term_definition (end_term, start_term, work_shift) values ('08:30', '08:00', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('09:00', '08:30', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('09:30', '09:00', 1);
+--insert into term_definition (end_term, start_term, work_shift) values ('10:00', '09:30', 1);          PAUZA
+insert into term_definition (end_term, start_term, work_shift) values ('10:30', '10:00', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('11:00', '10:30', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('11:30', '11:00', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('12:00', '11:30', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('12:30', '12:00', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('13:00', '12:30', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('13:30', '13:00', 1);
+insert into term_definition (end_term, start_term, work_shift) values ('14:00', '13:30', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('14:30', '14:00', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('15:00', '14:30', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('15:30', '15:00', 2);
+--insert into term_definition (end_term, start_term, work_shift) values ('16:00', '15:30', 2);          PAUZA
+insert into term_definition (end_term, start_term, work_shift) values ('16:30', '16:00', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('17:00', '16:30', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('17:30', '17:00', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('18:00', '17:30', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('18:30', '18:00', 2);
+insert into term_definition (end_term, start_term, work_shift) values ('19:00', '18:30', 2);
 ------------------
 
 -- inicijalni tipovi pregleda
@@ -49,24 +49,24 @@ insert into tip_pregleda (name) values ('Кардиологија');
 
 -- za proveru KLINIKA-DOKTOR
 insert into clinic (address, description, location, name, rating)
-    values ('Topolska 18', 'Neki opis klinike', 'Novi Sad', 'Moja klinika', 8);
+    values ('Тополска 18', 'Неки опис клинике', 'Нови Сад', 'Моја клиника', 8);
 insert into clinic (address, description, location, name, rating)
-    values ('Pionirska 10', 'Opis klinike', 'Futog', 'Nasa klinika', 4);
+    values ('Пионирска 10', 'Опис клинике', 'Футог', 'Наша клиника', 4);
 --d1
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id)
-    values (4200.00, 'Marko', 'Markovic', 'doctor', 7.4, 3, 1, 1);
+insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
+    values (4200.00, 'Mарко', 'Марковић', 'doctor', 7.4, 3, 1, 1, 1);
 --d2
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor1@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id)
-    values (5500.00, 'Marinko', 'Marinkovic', 'doctor', 4.5, 4, 2, 1);
+insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
+    values (5500.00, 'Mаринко', 'Mаринковић', 'doctor', 4.5, 4, 2, 1, 2);
 -- d3
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor3@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id)
-    values (6400.00, 'Milos', 'Bojanic', 'doctor', 8.2, 5, 1, 2);
+insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
+    values (6400.00, 'Бојан', 'Бојанић', 'doctor', 8.2, 5, 1, 2, 1);
 -- d1
 insert into clinic_doctors (clinic_id, doctors_id) values (1,3);
 insert into user_authority (user_id, authority_id) values (3, 5);

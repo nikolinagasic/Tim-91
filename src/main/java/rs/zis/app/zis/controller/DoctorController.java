@@ -115,12 +115,11 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
-    @GetMapping(produces = "application/json", value = "/getTermini/{ime}/{prezime}/{date}")
-    public ResponseEntity<?> getTermine(@PathVariable("ime") String ime,
-                                        @PathVariable("prezime") String prezime,
+    @GetMapping(produces = "application/json", value = "/getTermini/{id}/{date}")
+    public ResponseEntity<?> getTermine(@PathVariable("id") Long id,
                                         @PathVariable("date") long datum) {
 
-        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(ime, prezime);
+        Doctor doctor = doctorService.findOneById(id);
         List<DoctorTermsDTO> listTerms = doctorTermsService.getTermine(datum, doctor);
         return new ResponseEntity<>(listTerms, HttpStatus.OK);
     }
