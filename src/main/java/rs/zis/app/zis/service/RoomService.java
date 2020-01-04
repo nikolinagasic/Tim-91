@@ -32,7 +32,8 @@ public class RoomService implements UserDetailsService {
         Room c = new Room();
         c.setName(roomDTO.getName());
         c.setNumber(roomDTO.getNumber());
-        c.setClinic(roomDTO.getClinic());
+        Clinic clinic = clinicService.findOneByName(roomDTO.getClinic());
+        c.setClinic(clinic);
 
         c = this.roomRepository.save(c);
         return c;

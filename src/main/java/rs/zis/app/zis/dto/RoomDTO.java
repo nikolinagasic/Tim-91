@@ -7,14 +7,14 @@ public class RoomDTO {
     private long id;
     private String name;
     private String number;
-    private Clinic clinic;
+    private String clinic;
 
 
     public RoomDTO() {
 
     }
 
-    public RoomDTO(long id, String name, String number, Clinic clinic) {
+    public RoomDTO(long id, String name, String number, String clinic) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -25,7 +25,7 @@ public class RoomDTO {
         this.id = c.getId();
         this.name = c.getName();
         this.number = c.getNumber();
-        this.clinic = c.getClinic();
+        this.clinic = c.getClinic().getName();
     }
 
     public long getId() {
@@ -40,7 +40,7 @@ public class RoomDTO {
         return number;
     }
 
-    public Clinic getClinic() {
+    public String getClinic() {
         return clinic;
     }
 }

@@ -15,4 +15,5 @@ public interface ClinicRepository extends JpaRepository<Clinic,Long> {
     Page<Clinic> findAll(Pageable pageable);
     Clinic findOneById(Long id);
     Clinic findOneByName(String name);
+
 }

@@ -30,21 +30,32 @@ public class RoomController extends WebConfig {
     @GetMapping(produces = "application/json", value = "/getByClinic/{clinic}")
     public ResponseEntity<?> getRoomsInClinic(@PathVariable("clinic") String clinic){
         Clinic c = clinicService.findOneByName(clinic);
-        List<Room> rooms = roomService.findRoomByClinic(c);
+        List<Room> listRoom = roomService.findRoomByClinic(c);
 
         ArrayList<RoomDTO> roomsDTO = new ArrayList<>();
-        for (Room r: rooms) {
+        for (Room r: listRoom) {
             roomsDTO.add(new RoomDTO(r));
         }
+        System.out.println(roomsDTO);
         return new ResponseEntity<>(roomsDTO, HttpStatus.OK);
     }
     @PostMapping(consumes = "application/json", value = "/save")
     public ResponseEntity<?> saveRoom(@RequestBody RoomDTO roomDTO) {
         System.out.println("usao da doda");
-        Room room = roomService.save(roomDTO);
-        if(room == null){
-            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        Clinic clinic = clinicService.findOneByName(roomDTO.getClinic());
+        List<Room> sobe = roomService.findRoomByClinic(clinic);
+        for (Room r: sobe) {
+            if (r.getName().equals(roomDTO.getName())) {
+                if (r.getNumber().equals(roomDTO.getNumber())) {
+                    return new ResponseEntity<>("postoji", HttpStatus.CONFLICT);
+                }
+            } else if (r.getNumber().equals(roomDTO.getNumber())) {
+                if (r.getName().equals(roomDTO.getName())) {
+                    return new ResponseEntity<>("postoji", HttpStatus.CONFLICT);
+                }
+            }
         }
+        Room room = roomService.save(roomDTO);
         return new ResponseEntity<>(roomDTO, HttpStatus.CREATED);
     }
     @PostMapping(value = "/changeAttribute/{changed}/{value}/{name}")

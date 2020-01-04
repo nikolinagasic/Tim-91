@@ -111,7 +111,18 @@ public class DoctorService {
 
         return retList;
     }
+    public List<DoctorDTO> findDoctor(List<DoctorDTO> lista_lekara, String ime, String prezime) {
+        List<DoctorDTO> retList = new ArrayList<>();
+        for (DoctorDTO doctorDTO: lista_lekara) {
+            if(doctorDTO.getFirstName().toLowerCase().equals(ime.toLowerCase())){
+                if(doctorDTO.getLastName().toLowerCase().equals(prezime.toLowerCase())){
+                        retList.add(doctorDTO);
+                }
+            }
+        }
 
+        return retList;
+    }
     public Doctor findDoctorByFirstNameAndLastName(String ime, String prezime) {
         return doctorRepository.findDoctorByFirstNameAndLastName(ime, prezime);
     }
