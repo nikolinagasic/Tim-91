@@ -30,6 +30,9 @@ public class Patient extends Users {
     @Column(name = "lbo", unique = false, nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "patient")
+    private MedicalRecord medicalRecord;
+
     @Column(name= "role")
     private String role;
 
