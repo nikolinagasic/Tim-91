@@ -147,7 +147,7 @@ public class DoctorController extends WebConfig {
                                          @RequestBody DoctorTermsDTO doctorTermsDTO) {
 
         String mail = tokenUtils.getUsernameFromToken(token);
-        DoctorTermsDTO doctorTermsDTO_ret = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
+        boolean doctorTermsDTO_ret = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
         return new ResponseEntity<>(doctorTermsDTO_ret, HttpStatus.OK);
     }
 

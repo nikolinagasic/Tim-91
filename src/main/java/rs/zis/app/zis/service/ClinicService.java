@@ -10,7 +10,6 @@ import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
 @Service
@@ -69,6 +68,8 @@ public class ClinicService implements UserDetailsService {
         for (Doctor d : doctorsType) {                      // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
             List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d);
             int counter_term = 0;
+
+            // TODO coditi racuna i o godisnjim odmorima / odsustvima lekara
             if(!doctorTerm.isEmpty()) {                     // ima zauzetih termina taj doca
                 for (DoctorTerms dt : doctorTerm) {         // iteriraj kroz sve njegove zauzete termine
                     if (dt.getDate() == datum) {            // proveri da li medju njima ima nekog za taj moj datum
