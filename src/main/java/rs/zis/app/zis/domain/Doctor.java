@@ -18,14 +18,20 @@ public class Doctor extends Users {
     @Column(name = "lastName")
     private String lastName;
 
-    @Column(name = "price")
-    private double price;           // cena pregleda
+    @Column(name = "price")         // cena pregleda
+    private double price;
 
     @Column(name= "role")
     private String role;
 
-    @Column(name= "rating")     // prosecna ocena
+    @Column(name= "rating")         // prosecna ocena
     private double rating;
+
+    @Column(name= "work_shift")     // smena
+    private int workShift;
+
+    @Column(name= "discount")       // popust na pregled (% - u procentima)
+    private int discount;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private TipPregleda tip;
@@ -41,15 +47,28 @@ public class Doctor extends Users {
 
     public Doctor() {
         this.role = "doctor";
+        this.workShift = 1;
+        this.discount = 0;
     }
 
     public Doctor(String mail, String password, String firstName, String lastName, double price, Set<Vacation> vacation,
-                  Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+                  Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin, int workShift
+                    ,int discount) {
         super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = "doctor";
+        this.workShift = workShift;
+        this.discount = discount;
      //   this.vacation = vacation;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
     }
 
     public double getPrice() {
@@ -124,7 +143,15 @@ public class Doctor extends Users {
         this.clinic = clinic;
     }
 
- /*   public Set<Godisnji_odmor> getVacation() {
+    public int getWorkShift() {
+        return workShift;
+    }
+
+    public void setWorkShift(int workShift) {
+        this.workShift = workShift;
+    }
+
+    /*   public Set<Godisnji_odmor> getVacation() {
         return vacation;
     }
 

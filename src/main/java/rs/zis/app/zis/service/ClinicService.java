@@ -5,17 +5,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TipPregleda;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
 @Service
@@ -32,6 +26,9 @@ public class ClinicService implements UserDetailsService {
 
     @Autowired
     private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private TermDefinitionService termDefinitionService;
 
     @Autowired
     private TipPregledaService tipPregledaService;
@@ -68,16 +65,27 @@ public class ClinicService implements UserDetailsService {
 
         // 2) return: doktori koji imaju slobodnih termina u tom danu
         List<Doctor> slobodni_doktori = new ArrayList<>();
-        for (Doctor d : doctorsType) {          // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
+        for (Doctor d : doctorsType) {                      // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
             List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d);
-            if(!doctorTerm.isEmpty()){          // ima zauzetih termina taj doca
-                System.out.println("doktor [z]: " + d.getFirstName() + " " + d.getLastName());
-//                DoctorTerms dt = doctorTermsService.findAllByDate(datum);  // proveravam da li ima nesto tog dana
-                // TODO proveriti da li su sve satnice zauzete
+            int counter_term = 0;
+
+            // TODO coditi racuna i o godisnjim odmorima / odsustvima lekara
+            if(!doctorTerm.isEmpty()) {                     // ima zauzetih termina taj doca
+                for (DoctorTerms dt : doctorTerm) {         // iteriraj kroz sve njegove zauzete termine
+                    if (dt.getDate() == datum) {            // proveri da li medju njima ima nekog za taj moj datum
+                        counter_term++;
+                    }
+                }
+
+                // nisu svi termini zauzeti (imam 10 termina za svaku smenu)
+                if(counter_term < 10){
+                    slobodni_doktori.add(d);
+                    counter_term = 0;
+                }
 
             }
-            else{                               // nema zauzetih
-                slobodni_doktori.add(d);        // odmah ga upisi u listu
+            else{                                       // nema zauzetih
+                slobodni_doktori.add(d);                // odmah ga upisi u listu
             }
         }
 

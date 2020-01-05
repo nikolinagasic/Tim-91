@@ -115,14 +115,40 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
-    @GetMapping(produces = "application/json", value = "/getTermini/{ime}/{prezime}/{date}")
-    public ResponseEntity<?> getTermine(@PathVariable("ime") String ime,
-                                        @PathVariable("prezime") String prezime,
+    @GetMapping(produces = "application/json", value = "/getTermini/{id}/{date}")
+    public ResponseEntity<?> getTermine(@PathVariable("id") Long id,
                                         @PathVariable("date") long datum) {
 
-        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(ime, prezime);
+        Doctor doctor = doctorService.findOneById(id);
         List<DoctorTermsDTO> listTerms = doctorTermsService.getTermine(datum, doctor);
         return new ResponseEntity<>(listTerms, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getDetailTerm/{id}/{date}")
+    public ResponseEntity<?> getDetailTerm(@PathVariable("id") Long id,
+                                        @PathVariable("date") long datum) {
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/detailTermin/{id_doctor}/{date}/{start_term}")
+    public ResponseEntity<?> getTermine(@RequestHeader("Auth-Token") String token,
+                                        @PathVariable("id_doctor") Long id_doctor,
+                                        @PathVariable("date") long datum,
+                                        @PathVariable("start_term") String start_term) {
+
+        String mail = tokenUtils.getUsernameFromToken(token);
+        DoctorTermsDTO doctorTermsDTO = doctorTermsService.detailTerm(id_doctor, datum, start_term, mail);
+        return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = "application/json", produces = "application/json", value = "/reserveTerm")
+    public ResponseEntity<?> reserveTerm(@RequestHeader("Auth-Token") String token,
+                                         @RequestBody DoctorTermsDTO doctorTermsDTO) {
+
+        String mail = tokenUtils.getUsernameFromToken(token);
+        boolean doctorTermsDTO_ret = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
+        return new ResponseEntity<>(doctorTermsDTO_ret, HttpStatus.OK);
     }
 
 }
