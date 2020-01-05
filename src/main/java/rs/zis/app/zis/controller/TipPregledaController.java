@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.TipPregleda;
+import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.TipPregledaDTO;
 import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.TipPregledaService;
@@ -58,15 +59,14 @@ public class TipPregledaController extends WebConfig {
         return new ResponseEntity<>("deleted", HttpStatus.OK);
     }
 
-    @GetMapping(produces = "application/json", value = "/findName/{name}")
-    // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> findByName(@PathVariable("name") String naziv) {
-        TipPregleda tip = tipPregledaService.findOneByName(naziv);
-        if(tip == null){
-            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+    @GetMapping(produces = "application/json", value = "/search/{naziv}")
+    // @PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<?> findByName(@PathVariable("naziv") String naziv) {
+        if(naziv.equals("~")){
+            naziv = "";
         }
-
-        return new ResponseEntity<>(new TipPregledaDTO(tip), HttpStatus.OK);
+        List<TipPregledaDTO> listaTipovaDTO = tipPregledaService.search(naziv);
+        return new ResponseEntity<>(listaTipovaDTO, HttpStatus.OK);
     }
     @PostMapping(value = "/changeAttribute/{changed}/{value}/{name}")
     // @PreAuthorize("hasRole('CADMIN')")
