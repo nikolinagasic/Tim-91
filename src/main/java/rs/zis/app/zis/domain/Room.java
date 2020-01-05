@@ -12,12 +12,22 @@ public class Room {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Column(name = "name", nullable = false)
+        @Column(name = "name", nullable = false, unique = true)
         private String name;
 
         @Column(name = "number", nullable = false)
         private String number;
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Column(name = "enabled", nullable = false)
+        private boolean enabled;
         @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
         private Clinic clinic;
 
@@ -26,6 +36,7 @@ public class Room {
             this.name = name;
             this.number = number;
             this.clinic = clinic;
+            this.enabled = true;
         }
 
         public Room() {

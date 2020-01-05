@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
+import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.TipPregleda;
 import rs.zis.app.zis.dto.DoctorDTO;
@@ -47,16 +48,17 @@ public class TipPregledaController extends WebConfig {
         return new ResponseEntity<>(typeDTO, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/delete/{name}")
+    @PostMapping(produces = "application/json",value = "/delete/{name}")
     public ResponseEntity<?> deleteType(@PathVariable("name") String name) {
-        System.out.println("usao da brise");
         TipPregleda tip = tipPregledaService.findOneByName(name);
-        List<Doctor> doctorList = doctorService.findDoctorByType(tip);
-        if (doctorList.size()!=0) {
-            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        tip.setEnabled(false);
+        tipPregledaService.update(tip);
+        List<TipPregleda> tipovi = tipPregledaService.findAll();
+        List<TipPregledaDTO> tipoviDTO = new ArrayList<>();
+        for (TipPregleda t: tipovi) {
+            tipoviDTO.add(new TipPregledaDTO(t));
         }
-        tipPregledaService.remove(tip.getId());
-        return new ResponseEntity<>("deleted", HttpStatus.OK);
+        return new ResponseEntity<>(tipoviDTO, HttpStatus.OK);
     }
 
     @GetMapping(produces = "application/json", value = "/search/{naziv}")

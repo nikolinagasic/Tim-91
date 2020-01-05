@@ -95,7 +95,16 @@ public class DoctorService {
         return doctorRepository.findAllByTip(tp);
     }
 
-    public List<Doctor> findAllByClinic(Clinic c) { return doctorRepository.findAllByClinic(c); }
+    public List<Doctor> findAllByClinic(Clinic c) {
+        List<Doctor> svi = doctorRepository.findAllByClinic(c);
+        List<Doctor> retVal = new ArrayList<>();
+        for (Doctor d : svi) {
+            if (d.isEnabled()) {
+                retVal.add(d);
+            }
+        }
+        return retVal;
+    }
 
     public List<DoctorDTO> searchDoctors(List<DoctorDTO> lista_lekara, String ime, String prezime, double ocena) {
         List<DoctorDTO> retList = new ArrayList<>();

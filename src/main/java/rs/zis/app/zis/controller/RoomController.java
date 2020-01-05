@@ -46,14 +46,9 @@ public class RoomController extends WebConfig {
         List<Room> sobe = roomService.findRoomByClinic(clinic);
         for (Room r: sobe) {
             if (r.getName().equals(roomDTO.getName())) {
-                if (r.getNumber().equals(roomDTO.getNumber())) {
                     return new ResponseEntity<>("postoji", HttpStatus.CONFLICT);
                 }
-            } else if (r.getNumber().equals(roomDTO.getNumber())) {
-                if (r.getName().equals(roomDTO.getName())) {
-                    return new ResponseEntity<>("postoji", HttpStatus.CONFLICT);
-                }
-            }
+
         }
         Room room = roomService.save(roomDTO);
         return new ResponseEntity<>(roomDTO, HttpStatus.CREATED);
@@ -74,12 +69,29 @@ public class RoomController extends WebConfig {
         roomService.update(room);
         return new ResponseEntity<>(new RoomDTO(room), HttpStatus.OK);
     }
-    @PostMapping(value = "/delete/{name}")
-    public ResponseEntity<?> deleteType(@PathVariable("name") String name) {
-        System.out.println("usao da brise");
+    @PostMapping(produces = "application/json", value = "/delete/{name}/{clinic}")
+    public ResponseEntity<?> delete(@PathVariable("name") String name,@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
         Room room = roomService.findOneByName(name);
-        //ubaciti proveru za preglede
-        roomService.remove(room.getId());
-        return new ResponseEntity<>("deleted", HttpStatus.OK);
+        room.setEnabled(false);
+        roomService.update(room);
+        List<Room> lista = roomService.findRoomByClinic(c);
+        List<RoomDTO> listaDTO = new ArrayList<>();
+        for (Room r: lista) {
+            listaDTO.add(new RoomDTO(r));
+        }
+
+        return new ResponseEntity<>(listaDTO, HttpStatus.OK);
+    }
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{naziv}/{broj}")
+    public ResponseEntity<?> findDoctor(@RequestBody List<RoomDTO> lista, @PathVariable("naziv") String naziv,
+                                        @PathVariable("broj") String broj) {
+        if(naziv.equals("~")){
+            naziv = "";
+        }if(broj.equals("~")){
+            broj = "";
+        }
+        List<RoomDTO> listaDTO = roomService.findRoom(lista, naziv, broj);
+        return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
 }
