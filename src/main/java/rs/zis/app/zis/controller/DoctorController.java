@@ -19,6 +19,7 @@ import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.DoctorTermsService;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
@@ -47,20 +48,13 @@ public class DoctorController extends WebConfig {
         }
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
-    @PostMapping(value = "/delete/{mail}")
-    public ResponseEntity<?> deleteType(@PathVariable("mail") String mail) {
-        System.out.println("usao da brise");
-        Doctor d = doctorService.findOneByMail(mail);
 
-        doctorService.remove(d.getId());
-        return new ResponseEntity<>("deleted", HttpStatus.OK);
-    }
 
     @GetMapping(produces = "application/json", value = "/getDoctors/{clinic}")
     // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctorByClinic(@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
-        List<Doctor> listDoctor = doctorService.findDoctorByClinic(c);
+        List<Doctor> listDoctor = doctorService.findAllByClinic(c);
 
         ArrayList<DoctorDTO> listDTO = new ArrayList<>();
         for (Doctor d: listDoctor) {
@@ -158,6 +152,21 @@ public class DoctorController extends WebConfig {
             prezime = "";
         }
         List<DoctorDTO> listaDoktoraDTO = doctorService.findDoctor(listaLekara, ime, prezime);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+    @PostMapping(produces = "application/json", value = "/delete/{id}/{clinic}")
+    public ResponseEntity<?> delete(@PathVariable("id") long id,@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        Doctor doctor = doctorService.findOneById(id);
+        doctor.setEnabled(false);
+        doctorService.update(doctor);
+        List<Doctor> listaDoktora = doctorService.findAllByClinic(c);
+        List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
+        for (Doctor d: listaDoktora) {
+            listaDoktoraDTO.add(new DoctorDTO(d));
+        }
+        Doctor doc = doctorService.findOneById(id);
+        System.out.println(doc.isEnabled());
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 }

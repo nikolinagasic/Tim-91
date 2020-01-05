@@ -6,12 +6,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Clinic;
+import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Room;
 import rs.zis.app.zis.dto.ClinicDTO;
+import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 import rs.zis.app.zis.repository.RoomRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
@@ -34,7 +37,7 @@ public class RoomService implements UserDetailsService {
         c.setNumber(roomDTO.getNumber());
         Clinic clinic = clinicService.findOneByName(roomDTO.getClinic());
         c.setClinic(clinic);
-
+        c.setEnabled(true);
         c = this.roomRepository.save(c);
         return c;
     }
@@ -55,10 +58,30 @@ public class RoomService implements UserDetailsService {
     }
 
     public List<Room> findRoomByClinic(Clinic clinic) {
-        return roomRepository.findRoomByClinic(clinic);
-    }
+
+        List<Room> svi = roomRepository.findRoomByClinic(clinic);
+        List<Room> retVal = new ArrayList<>();
+        for (Room r : svi) {
+            if (r.isEnabled()) {
+                retVal.add(r);
+            }
+        }
+        return retVal;    }
 
     public Room findOneById(Long id) { return roomRepository.findOneById(id); }
+
+    public List<RoomDTO> findRoom(List<RoomDTO> lista, String naziv, String broj) {
+        List<RoomDTO> retList = new ArrayList<>();
+        for (RoomDTO roomDTO: lista) {
+            if(roomDTO.getName().toLowerCase().contains(naziv.toLowerCase())){
+                if(roomDTO.getNumber().toLowerCase().contains(broj.toLowerCase())){
+                    retList.add(roomDTO);
+                }
+            }
+        }
+
+        return retList;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {

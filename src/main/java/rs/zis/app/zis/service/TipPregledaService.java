@@ -26,7 +26,14 @@ public class TipPregledaService {
     }
 
     public List<TipPregleda> findAll() {
-        return tipPregledaRepository.findAll();
+        List<TipPregleda> retVal = new ArrayList<>();
+        List<TipPregleda> svi = tipPregledaRepository.findAll();
+        for (TipPregleda tip : svi) {
+            if (tip.isEnabled()) {
+                retVal.add(tip);
+            }
+        }
+        return retVal;
     }
 
     public void remove(Long id) {
@@ -47,7 +54,7 @@ public class TipPregledaService {
         if(tip != null){
             return null;
         }
-
+        t.setEnabled(true);
         t.setName(tipPregledaDTO.getName());
         t = this.tipPregledaRepository.save(t);
         return t;

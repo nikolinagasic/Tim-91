@@ -34,6 +34,7 @@ public class DoctorDTO {
 
 
 
+
     public DoctorDTO(Doctor doctor) {
         this.id = doctor.getId();
         this.mail = doctor.getMail();
@@ -43,8 +44,8 @@ public class DoctorDTO {
         this.firstName = doctor.getFirstName();
         this.lastName = doctor.getLastName();
         this.firstLogin = doctor.isFirstLogin();
-        this.clinic = doctor.getClinic().getName(); // privremenp
-        this.tip = doctor.getTip().getName(); // privremeno
+        this.clinic = doctor.getClinic().getName();
+        this.tip = doctor.getTip().getName();
     }
 
     public Long getId() {
