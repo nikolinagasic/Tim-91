@@ -13,12 +13,13 @@ public class DoctorDTO {
     private String role;
     private boolean firstLogin;
     private int workShift;
+    private int discount;
 
     public DoctorDTO() {
     }
 
     public DoctorDTO(Long id, String firstName, String lastName,String mail, String password, String role, double rating,
-                     boolean firstLogin, int workShift) {
+                     boolean firstLogin, int workShift, int discount) {
         this.id = id;
         this.mail = mail;
         this.password = password;
@@ -28,6 +29,7 @@ public class DoctorDTO {
         this.lastName = lastName;
         this.firstLogin = firstLogin;
         this.workShift = workShift;
+        this.discount = discount;
     }
 
     public DoctorDTO(Doctor doctor) {
@@ -40,6 +42,7 @@ public class DoctorDTO {
         this.lastName = doctor.getLastName();
         this.firstLogin = doctor.isFirstLogin();
         this.workShift = doctor.getWorkShift();
+        this.discount = doctor.getDiscount();
     }
 
     public Long getId() {
@@ -76,5 +79,9 @@ public class DoctorDTO {
 
     public int getWorkShift() {
         return workShift;
+    }
+
+    public int getDiscount() {
+        return discount;
     }
 }

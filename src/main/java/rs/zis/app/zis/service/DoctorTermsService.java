@@ -3,17 +3,9 @@ package rs.zis.app.zis.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Authority;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TermDefinition;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
-import rs.zis.app.zis.repository.DoctorRepository;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
 import java.util.ArrayList;
@@ -28,6 +20,12 @@ public class DoctorTermsService {
 
     @Autowired
     private TermDefinitionService termDefinitionService;
+
+    @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private PatientService patientService;
 
     public List<DoctorTerms> findAll() {
         return doctorTermsRepository.findAll();
@@ -62,7 +60,6 @@ public class DoctorTermsService {
 
     public DoctorTerms save(DoctorTerms u) {return doctorTermsRepository.save(u);}
 
-    // TODO vratiti sve slobodne termine od tog doktora
     public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
         List<DoctorTermsDTO> retList = new ArrayList<>();
         List<DoctorTerms> listaTermina = findAllByDoctor(doctor);
@@ -80,10 +77,25 @@ public class DoctorTermsService {
                 }
             }
             if(!flag) {
-                retList.add(new DoctorTermsDTO(date, termDefinition));
+                retList.add(new DoctorTermsDTO(date, termDefinition, doctor));
             }
         }
 
         return retList;
+    }
+
+    public DoctorTermsDTO detailTerm(Long doctor_id, Long date, String start_term, String mail_patient){
+        Doctor doctor = doctorService.findOneById(doctor_id);
+        TermDefinition termDefinition = termDefinitionService.findOneByStart_term(start_term);
+        Patient patient = patientService.findOneByMail(mail_patient);
+
+        return new DoctorTermsDTO(date, termDefinition, doctor);
+    }
+
+    // TODO uraditi rezervaciju termina
+    public DoctorTermsDTO reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
+
+
+        return new DoctorTermsDTO();
     }
 }

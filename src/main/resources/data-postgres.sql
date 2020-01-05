@@ -55,18 +55,18 @@ insert into clinic (address, description, location, name, rating)
 --d1
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
-    values (4200.00, 'Mарко', 'Марковић', 'doctor', 7.4, 3, 1, 1, 1);
+insert into doctor (discount, price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
+    values (0, 4200.00, 'Mарко', 'Марковић', 'doctor', 7.4, 3, 1, 1, 1);
 --d2
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor1@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
-    values (5500.00, 'Mаринко', 'Mаринковић', 'doctor', 4.5, 4, 2, 1, 2);
+insert into doctor (discount, price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
+    values (5, 5500.00, 'Mаринко', 'Mаринковић', 'doctor', 4.5, 4, 2, 1, 2);
 -- d3
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor3@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
-insert into doctor (price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
-    values (6400.00, 'Бојан', 'Бојанић', 'doctor', 8.2, 5, 1, 2, 1);
+insert into doctor (discount, price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
+    values (10, 6400.00, 'Бојан', 'Бојанић', 'doctor', 8.2, 5, 1, 2, 1);
 -- d1
 insert into clinic_doctors (clinic_id, doctors_id) values (1,3);
 insert into user_authority (user_id, authority_id) values (3, 5);
@@ -83,7 +83,25 @@ insert into vacation (id, start_vacation, end_vacation, doctor_id) values (2, 15
 
 -- DOCTOR_TERM
 insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
-values (true, 1234567889, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 1);
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 1); -- 8. januar
 insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
-values (true, 1234565879, 'Пацијенту се нагло погоршало стање. Хитна операција.', 4, 2, 2);
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 2); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 3); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 4); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 5); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 6); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 7); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 8); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 9); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, 10); -- 8. januar
+insert into doctor_terms (active, date, report, doctor_id, patient_id, term_definition_id)
+values (true, 1578441600000, 'Пацијенту се нагло погоршало стање. Хитна операција.', 4, 2, 11);
 
