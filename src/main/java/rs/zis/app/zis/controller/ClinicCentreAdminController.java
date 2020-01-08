@@ -38,6 +38,8 @@ public class ClinicCentreAdminController extends WebConfig
     @Autowired
     private DiagnosisService diagnosisService;
     @Autowired
+
+    private MedicalRecordService medicalRecordService;
     private ClinicService clinicService;
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
@@ -108,20 +110,22 @@ public class ClinicCentreAdminController extends WebConfig
     @GetMapping( value = "accept/{mail}/{br}/{reason}")
     public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br,
                                                   @PathVariable("reason") String reason ){
-       
 
-            if(br==1){
+             if(br==1){
              Users u= userService.findAllByMail(mail);
              if(u==null){
                  System.out.println("USER JE NULL");
              }else {
-                 //System.out.println("PODACI:" + u.getId());
                  u.setEnabled(true); //sada je registrovan
                  userService.save(u);
-                // System.out.println("sacuvao sam izasao");
-                 try {
-                     //System.out.println("usao sam u pisanje mejla ")
+                 //kada registrujem novog pacijenta otvaram mu odmah i karton
+                 MedicalRecordDTO medicalRecordDTO =  new MedicalRecordDTO();
+                 medicalRecordDTO.setPatientMail(mail);
+                 medicalRecordDTO.setBloodGroup("");
+                 medicalRecordDTO.setAllergy("");
+                 MedicalRecord medicalRecord = medicalRecordService.save(medicalRecordDTO);
 
+                 try {
                      String tb="Postovani," + "\n" +
                                 "Vas zahtev za registraciju je prihvacen! Aktivirajte vas nalog prijavom na sledecem linku"+"\n"+
                                 "http://localhost:3000/#/login";
@@ -134,23 +138,16 @@ public class ClinicCentreAdminController extends WebConfig
                  }
              }
          }else{
-            // System.out.println("KLIKNUTO NA ODBIJ"+mail+br);
              Users u= userService.findOneByMail(mail);
              userService.deleteLogical(u.getId());       // brisem ga logicki
 //             userService.remove(u.getId());    //brisem ga i iz liste usera
              try{
-                 //System.out.println("usao sam u pisanje mejla ");
                  notificationService.SendNotification(mail, "billypiton43@gmail.com",
-
                          "PSW", reason);
-
-                         
-
              }catch (MailException e){
                  logger.info("Error Sending Mail:" + e.getMessage());
                  return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
              }
-
          }
 
 
@@ -174,29 +171,39 @@ public class ClinicCentreAdminController extends WebConfig
 
     //cuvam u bazi azuriran sifarnik koji je poslat sa fronta
     @PostMapping(consumes = "application/json" , value = "/savediagnosis")
-    public ResponseEntity<Integer> saveDiagnosis(@RequestBody List<DiagnosisDTO> listDTO){
+    public ResponseEntity<Integer> saveDiagnosis(@RequestBody DiagnosisDTO d){
          Diagnosis diag = new Diagnosis();
-         boolean change= true;
-         for(DiagnosisDTO d:listDTO){
-            // Diagnosis temp=diagnosisService.findOneByCurePassword(d.getCure_password());
-            /* if(temp.getCure_password().equals(d.getCure_password())){
-                 if(temp.getDiagnosis_password().equals(d.getDiagnosis_password())){
-                    System.out.println("isti je element");
-                 }else{
-                     change=true;
+         boolean origin= true; //ako je jedinstvena kombinacija
+
+         List<Diagnosis>diagnosisList=diagnosisService.findAll();
+         if(diagnosisList.size()>0) {
+             for (Diagnosis diagnosis : diagnosisList) {
+                 if (diagnosis.getDiagnosis_password().equals(d.getDiagnosis_password())) {
+                     if (diagnosis.getCure_password().equals(d.getCure_password()))
+                         origin = false;
                  }
-             }else{
-                 change=true;
-             }*/
-           if(change){
-               diag.setCure_password(d.getCure_password());
-               diag.setCure_name(d.getCure_name());
-               diag.setDiagnosis_password(d.getDiagnosis_password());
-               diag.setDiagnosis_name(d.getDiagnosis_name());
-               diagnosisService.save(diag);
-           }
+             }
+             if (origin) {
+                     diag.setCure_password(d.getCure_password());
+                     diag.setCure_name(d.getCure_name());
+                     diag.setDiagnosis_password(d.getDiagnosis_password());
+                     diag.setDiagnosis_name(d.getDiagnosis_name());
+                     diagnosisService.save(diag);
+             }
+
+         }else{
+             diag.setCure_password(d.getCure_password());
+             diag.setCure_name(d.getCure_name());
+             diag.setDiagnosis_password(d.getDiagnosis_password());
+             diag.setDiagnosis_name(d.getDiagnosis_name());
+             diagnosisService.save(diag);
          }
-        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+         if(origin==false) {
+             return new ResponseEntity<>(-2, HttpStatus.CONFLICT); //vec postoji u bazi ta kombinacija
+         }
+         else{
+             return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+         }
     }
 
 

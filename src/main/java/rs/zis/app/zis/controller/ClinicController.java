@@ -42,10 +42,9 @@ public class ClinicController extends WebConfig {
     }
 
     @GetMapping (produces = "application/json", value = "/searchClinic/{date}/{type}/{rating}")
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getClinic(@PathVariable("date") long datum,
                                        @PathVariable("type") String tip,
-                                       @PathVariable("rating") int ocena) {
+                                       @PathVariable("rating") double ocena) {
         System.out.println("datum: " + datum + ", tip: " + tip + ", ocena: " + ocena);
         List<ClinicDTO> listaKlinikaDTO = clinicService.searchClinic(datum, tip, ocena);
         if(listaKlinikaDTO == null) {
@@ -65,9 +64,10 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaKlinika, HttpStatus.OK);
     }
 
-    @GetMapping (produces = "application/json", value = "/getDoctorsByClinic/{clinic_name}")
-    public ResponseEntity<?> getDoctorsInClinic(@PathVariable("clinic_name") String clinic_name){
-        List<Doctor> listaDoktora = clinicService.findDoctorsByClinic(clinic_name);
+    @GetMapping (produces = "application/json", value = "/getDoctorsByClinic/{clinic_name}/{date}")
+    public ResponseEntity<?> getDoctorsInClinic(@PathVariable("clinic_name") String clinic_name,
+                                                @PathVariable("date") Long date){
+        List<Doctor> listaDoktora = clinicService.findDoctorsByClinic(clinic_name, date);
         List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
         for (Doctor d : listaDoktora) {
             listaDoktoraDTO.add(new DoctorDTO(d));
@@ -87,6 +87,18 @@ public class ClinicController extends WebConfig {
         List<ClinicDTO> listaKlinikaDTO = clinicService.filterClinic(cenaOd, cenaDo, ocenaOd, ocenaDo, naziv, lKlinika);
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
+
+    @GetMapping (produces = "application/json", value = "/getClinicByName/{clinic_id}")
+    public ResponseEntity<?> getClinicById(@PathVariable("clinic_id") Long clinic_id){
+        Clinic clinic = clinicService.findOneById(clinic_id);
+        if(clinic != null){
+            return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("greska", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping (produces = "application/json", value = "/getOne/{name}")
     //@PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<?> getClinicByName(@PathVariable("name") String name) {
@@ -97,7 +109,8 @@ public class ClinicController extends WebConfig {
         }
         return new ResponseEntity<>(new ClinicDTO(pronadjiKliniku), HttpStatus.OK);
     }
-    @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{name}")
+
+  @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{name}")
     public ResponseEntity<?> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("name") String name) {
         System.out.println("usao sam ovde CHANGE" + changed + " " + value);
         Clinic clinic= clinicService.findOneByName(name);

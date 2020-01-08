@@ -131,13 +131,6 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping(value = "/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Auth-Token") String token){
-        SecurityContextHolder.getContext().setAuthentication(null);
-
-        return new ResponseEntity<>("ok", HttpStatus.OK);
-    }
-
     // 'http://localhost:8081/patient/getByToken/dksamd8sajidn328d8i32jd82'
     @GetMapping(produces = "application/json", value = "/getByToken/{token}")
     public ResponseEntity<?> getPatientByMail(@PathVariable("token") String token) {

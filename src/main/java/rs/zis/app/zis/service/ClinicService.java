@@ -5,17 +5,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TipPregleda;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
 @Service
@@ -34,7 +28,13 @@ public class ClinicService implements UserDetailsService {
     private DoctorTermsService doctorTermsService;
 
     @Autowired
+    private TermDefinitionService termDefinitionService;
+
+    @Autowired
     private TipPregledaService tipPregledaService;
+
+    @Autowired
+    private VacationService vacationService;
 
     public List<Clinic> findAll() {return clinicRepository.findAll(); }
 
@@ -58,9 +58,8 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
-
-
-    public List<ClinicDTO> searchClinic(long datum, String tip, int ocena){
+    // TODO obratiti paznju na DATE format (long/TimeStamp/String)
+    public List<ClinicDTO> searchClinic(long datum, String tip, double ocena){
         // 1) return: doktori koji su datog tipa
         List<Doctor> doctorsType;
         if(tip.equals("Сви типови")){
@@ -73,16 +72,35 @@ public class ClinicService implements UserDetailsService {
 
         // 2) return: doktori koji imaju slobodnih termina u tom danu
         List<Doctor> slobodni_doktori = new ArrayList<>();
-        for (Doctor d : doctorsType) {          // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
-            List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d);
-            if(!doctorTerm.isEmpty()){          // ima zauzetih termina taj doca
-                System.out.println("doktor [z]: " + d.getFirstName() + " " + d.getLastName());
-//                DoctorTerms dt = doctorTermsService.findAllByDate(datum);  // proveravam da li ima nesto tog dana
-                // TODO proveriti da li su sve satnice zauzete
+        for (Doctor d : doctorsType) {                      // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
+            List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d);       // svi zauzeti termini doktora
+            List<Vacation> vacationList = vacationService.findAllByDoctor(d);           // godisnji odmori tog doktora
+            int counter_term = 0;
 
+
+            boolean godisnji = false;
+            for (Vacation vacation : vacationList) {
+                if(vacation.isActive() && datum <= vacation.getKraj() && datum >= vacation.getPocetak()){      // proveri da li sam tada na godisnjem
+                    godisnji = true;
+                    break;
+                }
             }
-            else{                               // nema zauzetih
-                slobodni_doktori.add(d);        // odmah ga upisi u listu
+
+            if(!godisnji) {
+                if (!doctorTerm.isEmpty()) {                             // ima zauzetih termina taj doca
+                    for (DoctorTerms dt : doctorTerm) {                 // iteriraj kroz sve njegove zauzete termine
+                        if (dt.getDate() == datum) {            // proveri da li medju njima ima nekog za taj moj datum
+                            counter_term++;
+                        }
+                    }
+                    // nisu svi termini zauzeti (imam 10 termina za svaku smenu)
+                    if (counter_term < 10) {
+                        slobodni_doktori.add(d);
+                        counter_term = 0;
+                    }
+                } else {                                       // nema zauzetih
+                    slobodni_doktori.add(d);                // odmah ga upisi u listu
+                }
             }
         }
 
@@ -117,12 +135,37 @@ public class ClinicService implements UserDetailsService {
         return  retList;
     }
 
-    public List<Doctor> findDoctorsByClinic(String clinic_name){
+    // TODO date format
+    public List<Doctor> findDoctorsByClinic(String clinic_name, Long date){
         List<Doctor> retList = new ArrayList<>();
         Clinic clinic = findOneByName(clinic_name);
         if(clinic != null) {
             for (Doctor doctor: doctorService.findAllByClinic(clinic)) {
-                retList.add(doctor);
+                List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+                List<Vacation> vacationList = vacationService.findAllByDoctor(doctor);
+
+                boolean godisnji = false;
+                for (Vacation vacation : vacationList) {
+                    if(vacation.getDoctor().getId() == doctor.getId()) {
+                        if (date >= vacation.getPocetak() && date <= vacation.getKraj()) {
+                            godisnji = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(!godisnji) {
+                    int term_counter = 0;
+                    for (DoctorTerms doctorTerms : doctorTermsList) {
+                        if (doctorTerms.getDate() == date) {
+                            term_counter++;
+                        }
+                    }
+
+                    if (term_counter < 10) {
+                        retList.add(doctor);
+                    }
+                }
             }
         }
 

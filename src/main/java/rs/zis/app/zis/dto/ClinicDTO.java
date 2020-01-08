@@ -1,6 +1,7 @@
 package rs.zis.app.zis.dto;
 
 import rs.zis.app.zis.domain.Clinic;
+import rs.zis.app.zis.domain.Doctor;
 
 public class ClinicDTO {
 
@@ -8,6 +9,7 @@ public class ClinicDTO {
     private String name;
     private double rating;         // ocena klinike
     private String address;
+    private String location;
     private String description;
     private double price;       // cena pregleda
 
@@ -15,21 +17,29 @@ public class ClinicDTO {
 
     }
 
-    public ClinicDTO(long id, String name, String address, String description, double rating, double price) {
+    public ClinicDTO(long id, String name, String address, String description, double rating, double price,
+                             String location) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;
         this.rating = rating;
         this.price = price;
+        this.location = location;
     }
 
-    public ClinicDTO(Clinic c) {
-        this.id = c.getId();
-        this.name = c.getName();
-        this.address = c.getAddress();
-        this.description = c.getDescription();
-        this.rating = c.getRating();
+    public ClinicDTO(Clinic clinic) {
+        this.id = clinic.getId();
+        this.name = clinic.getName();
+        this.address = clinic.getAddress();
+        this.description = clinic.getDescription();
+        this.rating = clinic.getRating();
+        this.location = clinic.getLocation();
+        double suma = 0;
+        for (Doctor doctor : clinic.getDoctors()) {
+            suma += doctor.getPrice();
+        }
+        this.price = suma / clinic.getDoctors().size();             // prosecna cena svih doktora koji rade u klinici
     }
 
     public double getRating() {
@@ -78,5 +88,13 @@ public class ClinicDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

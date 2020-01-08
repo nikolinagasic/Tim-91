@@ -1,6 +1,8 @@
 package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
@@ -13,37 +15,44 @@ public class DoctorTerms {
     @Column(name = "date", nullable = false)
     private long date;
 
-    @Column(name = "start_term", nullable = false)
-    private int start_term;
+    // potrebno za logicko brisanje
+    @Column(name = "active", nullable = false)
+    private boolean active;
 
-    @Column(name = "end_term", nullable = false)
-    private int end_term;
+    @Column(name = "report", nullable = false)          // izvestaj za taj pregled
+    private String report;
 
-    // formira se medjutabela koja mi odslikava koji je doktor zauzet u kom terminu
+    @Column(name = "processed_by_cadmin", nullable = false)    // da li ga je admin klinike obradio
+    private boolean processedByAdmin;
+
+    // JoinColumn ce uzeti samo reference iz doktora (doktor ne vidi ove termine)
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="doctor_id", referencedColumnName="id")
     private Doctor doctor;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="term_definition_id", referencedColumnName="id")
+    private TermDefinition term;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="patient_id", referencedColumnName="id")
     private Patient patient;
 
-    // potrebno za logicko brisanje
-    @Column(name = "active", nullable = false)
-    private boolean active;
-
     public DoctorTerms() {
         this.active = true;
+        this.processedByAdmin = false;
     }
 
-    public DoctorTerms(Long id, long date, int start_term, int end_term, Doctor doctor, Patient patient, boolean active) {
+    public DoctorTerms(Long id, long date, Doctor doctor, Patient patient, boolean active, String report,
+                       TermDefinition termDefinition, boolean processedByAdmin) {
         this.id = id;
         this.date = date;
-        this.start_term = start_term;
-        this.end_term = end_term;
         this.doctor = doctor;
         this.patient = patient;
         this.active = active;
+        this.report = report;
+        this.term = termDefinition;
+        this.processedByAdmin = processedByAdmin;
     }
 
     public Long getId() {
@@ -62,20 +71,20 @@ public class DoctorTerms {
         this.date = date;
     }
 
-    public int getStart_term() {
-        return start_term;
+    public TermDefinition getTerm() {
+        return term;
     }
 
-    public void setStart_term(int start_term) {
-        this.start_term = start_term;
+    public void setTerm(TermDefinition term) {
+        this.term = term;
     }
 
-    public int getEnd_term() {
-        return end_term;
+    public String getReport() {
+        return report;
     }
 
-    public void setEnd_term(int end_term) {
-        this.end_term = end_term;
+    public void setReport(String report) {
+        this.report = report;
     }
 
     public Doctor getDoctor() {
@@ -100,5 +109,13 @@ public class DoctorTerms {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isProcessedByAdmin() {
+        return processedByAdmin;
+    }
+
+    public void setProcessedByAdmin(boolean processedByAdmin) {
+        this.processedByAdmin = processedByAdmin;
     }
 }

@@ -5,24 +5,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Authority;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.domain.Nurse;
-import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression"})
 @Service
 public class DoctorService {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private VacationService vacationService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -111,7 +112,12 @@ public class DoctorService {
         for (DoctorDTO doctorDTO: lista_lekara) {
             if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
                 if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
-                    if(doctorDTO.getRating() == ocena){
+                    if(ocena != -1) {
+                        if (doctorDTO.getRating() == ocena) {
+                            retList.add(doctorDTO);
+                        }
+                    }
+                    else{
                         retList.add(doctorDTO);
                     }
                 }
@@ -157,6 +163,64 @@ public class DoctorService {
         }
 
         return retList;
+    }
+
+
+    public List<DoctorDTO> expandedSearchDoctor(String ime, String prezime, double ocena, long datum, String tip,
+                                                List<DoctorDTO> lista_lekara){
+        List<DoctorDTO> retList = new ArrayList<>();
+        if(ime.equals("~")){
+            ime = "";
+        }if(prezime.equals("~")){
+            prezime = "";
+        }if(tip.equals("Сви типови")){
+            tip = "";
+        }
+
+        for (DoctorDTO doctorDTO : lista_lekara) {
+            Doctor doctor = findOneById(doctorDTO.getId());
+            if(doctor.getTip().getName().toLowerCase().contains(tip.toLowerCase())){
+                if(doctor_free_at_date(doctor, datum) || datum == -1){
+                    if(doctor.getRating() == ocena || ocena == -1){
+                        if(doctor.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+                            if(doctor.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+                                retList.add(doctorDTO);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return retList;
+    }
+
+    private boolean doctor_free_at_date(Doctor doctor, long datum) {
+        List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+
+        boolean godisnji = false;
+        for (Vacation vacation : vacationService.findAllByDoctor(doctor)) {
+            if(vacation.isActive() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
+                godisnji = true;
+            }
+        }
+
+        if(!godisnji) {
+            int term_counter = 0;
+            for (DoctorTerms doctorTerms : doctorTermsList) {
+                if (doctorTerms.getDate() == datum) {
+                    term_counter++;
+                }
+            }
+
+            if (term_counter == 10) {
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+        return true;
     }
 
 }
