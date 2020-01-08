@@ -38,13 +38,20 @@ public class ClinicCentreAdminController extends WebConfig
     @Autowired
     private DiagnosisService diagnosisService;
     @Autowired
+
     private MedicalRecordService medicalRecordService;
+    private ClinicService clinicService;
 
     @PostMapping(consumes = "application/json" , value = "/register_admin")
     public ResponseEntity<Integer> saveClinicAdministrator(@RequestBody ClinicAdministratorDTO clinicAdministratorDTO) {
         Users proveriMail = userService.findOneByMail(clinicAdministratorDTO.getMail());
         if(proveriMail != null){
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
+        }
+        Clinic proveriClinic = clinicService.findOneByName(clinicAdministratorDTO.getClinic());
+        if (proveriClinic == null) {
+            System.out.println("ovde usao"+ clinicAdministratorDTO.getClinic());
+            return new ResponseEntity<>(-2, HttpStatus.NOT_FOUND);
         }
 
         ClinicAdministrator clinicAdministrator = clinicAdministratorService.save(clinicAdministratorDTO);

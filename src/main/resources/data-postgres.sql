@@ -44,8 +44,9 @@ insert into term_definition (end_term, start_term, work_shift) values ('19:00', 
 ------------------
 
 -- inicijalni tipovi pregleda
-insert into tip_pregleda (name) values ('Стоматологија');
-insert into tip_pregleda (name) values ('Кардиологија');
+
+insert into tip_pregleda (enabled,name) values (true,'Стоматологија');
+insert into tip_pregleda (enabled,name) values (true,'Кардиологија');
 
 -- za proveru KLINIKA-DOKTOR
 insert into clinic (address, description, location, name, rating)

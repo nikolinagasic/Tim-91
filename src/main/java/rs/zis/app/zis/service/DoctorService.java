@@ -31,6 +31,11 @@ public class DoctorService {
     @Autowired
     private AuthorityService authService;
 
+    @Autowired
+    private ClinicService clinicService;
+    @Autowired
+    private TipPregledaService tipPregledaService;
+
     public List<Doctor> findAll() {
         return doctorRepository.findAll();
     }
@@ -43,6 +48,8 @@ public class DoctorService {
         Doctor d = new Doctor();
         d.setMail(doctorDTO.getMail());
         d.setPassword(passwordEncoder.encode(doctorDTO.getPassword()));
+        d.setClinic(clinicService.findOneByName(doctorDTO.getClinic()));
+        d.setTip(tipPregledaService.findOneByName(doctorDTO.getTip()));
         d.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
@@ -61,6 +68,9 @@ public class DoctorService {
 
     public List<Doctor> findDoctorByLastName(String lastName) {
         return doctorRepository.findDoctorByLastName(lastName);
+    }
+    public List<Doctor> findDoctorByClinic(Clinic clinic) {
+        return doctorRepository.findDoctorByClinic(clinic);
     }
     public Doctor update(Doctor doctor){
         return doctorRepository.save(doctor);
@@ -86,7 +96,16 @@ public class DoctorService {
         return doctorRepository.findAllByTip(tp);
     }
 
-    public List<Doctor> findAllByClinic(Clinic c) { return doctorRepository.findAllByClinic(c); }
+    public List<Doctor> findAllByClinic(Clinic c) {
+        List<Doctor> svi = doctorRepository.findAllByClinic(c);
+        List<Doctor> retVal = new ArrayList<>();
+        for (Doctor d : svi) {
+            if (d.isEnabled()) {
+                retVal.add(d);
+            }
+        }
+        return retVal;
+    }
 
     public List<DoctorDTO> searchDoctors(List<DoctorDTO> lista_lekara, String ime, String prezime, double ocena) {
         List<DoctorDTO> retList = new ArrayList<>();
@@ -107,7 +126,18 @@ public class DoctorService {
 
         return retList;
     }
+    public List<DoctorDTO> findDoctor(List<DoctorDTO> lista_lekara, String ime, String prezime) {
+        List<DoctorDTO> retList = new ArrayList<>();
+        for (DoctorDTO doctorDTO: lista_lekara) {
+            if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+                if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+                        retList.add(doctorDTO);
+                }
+            }
+        }
 
+        return retList;
+    }
     public Doctor findDoctorByFirstNameAndLastName(String ime, String prezime) {
         return doctorRepository.findDoctorByFirstNameAndLastName(ime, prezime);
     }

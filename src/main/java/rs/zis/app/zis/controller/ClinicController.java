@@ -89,7 +89,7 @@ public class ClinicController extends WebConfig {
     }
 
     @GetMapping (produces = "application/json", value = "/getClinicByName/{clinic_id}")
-    public ResponseEntity<?> getClinicByName(@PathVariable("clinic_id") Long clinic_id){
+    public ResponseEntity<?> getClinicById(@PathVariable("clinic_id") Long clinic_id){
         Clinic clinic = clinicService.findOneById(clinic_id);
         if(clinic != null){
             return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
@@ -99,4 +99,33 @@ public class ClinicController extends WebConfig {
         }
     }
 
+    @GetMapping (produces = "application/json", value = "/getOne/{name}")
+    //@PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<?> getClinicByName(@PathVariable("name") String name) {
+        System.out.println("ime klinike: " + name);
+        Clinic pronadjiKliniku = clinicService.findOneByName(name);
+        if(pronadjiKliniku == null) {
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(new ClinicDTO(pronadjiKliniku), HttpStatus.OK);
+    }
+
+  @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{name}")
+    public ResponseEntity<?> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("name") String name) {
+        System.out.println("usao sam ovde CHANGE" + changed + " " + value);
+        Clinic clinic= clinicService.findOneByName(name);
+        if(clinic==null){
+            System.out.println("Nema ga");
+        }else {
+            if (changed.equals("adresa")) {
+                clinic.setAddress(value);
+                System.out.println(clinic.getAddress());
+            } else if (changed.equals("opis")) {
+                clinic.setDescription(value);
+                System.out.println(clinic.getDescription());
+            }
+        }
+        clinicService.update(clinic);
+        return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+    }
 }

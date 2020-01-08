@@ -6,16 +6,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
+import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.DoctorTerms;
+import rs.zis.app.zis.domain.TipPregleda;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.NurseDTO;
 import rs.zis.app.zis.security.TokenUtils;
+import rs.zis.app.zis.service.ClinicService;
 import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.DoctorTermsService;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
@@ -28,14 +32,29 @@ public class DoctorController extends WebConfig {
     private CustomUserService customUserService;
     @Autowired
     private TokenUtils tokenUtils;
-
+    @Autowired
+    private ClinicService clinicService;
     @Autowired
     private DoctorTermsService doctorTermsService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctor() {
         List<Doctor> listDoctor = doctorService.findAll();
+
+        ArrayList<DoctorDTO> listDTO = new ArrayList<>();
+        for (Doctor d: listDoctor) {
+            listDTO.add(new DoctorDTO(d));
+        }
+        return new ResponseEntity<>(listDTO, HttpStatus.OK);
+    }
+
+
+    @GetMapping(produces = "application/json", value = "/getDoctors/{clinic}")
+    // @PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<List<DoctorDTO>> getDoctorByClinic(@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        List<Doctor> listDoctor = doctorService.findAllByClinic(c);
 
         ArrayList<DoctorDTO> listDTO = new ArrayList<>();
         for (Doctor d: listDoctor) {
@@ -66,9 +85,6 @@ public class DoctorController extends WebConfig {
                 d.setLastName(value);
                 System.out.println(d.getLastName());
             }
-//            else if (changed == "oblast") {
-//                d.setField(value);
-//            }
             else
                 System.out.println("Greska");
         }
@@ -123,16 +139,9 @@ public class DoctorController extends WebConfig {
         List<DoctorTermsDTO> listTerms = doctorTermsService.getTermine(datum, doctor);
         return new ResponseEntity<>(listTerms, HttpStatus.OK);
     }
-
-    @GetMapping(produces = "application/json", value = "/getDetailTerm/{id}/{date}")
-    public ResponseEntity<?> getDetailTerm(@PathVariable("id") Long id,
-                                        @PathVariable("date") long datum) {
-
-        return new ResponseEntity<>("ok", HttpStatus.OK);
-    }
-
+  
     @GetMapping(produces = "application/json", value = "/detailTermin/{id_doctor}/{date}/{start_term}")
-    public ResponseEntity<?> getTermine(@RequestHeader("Auth-Token") String token,
+    public ResponseEntity<?> getDetailTermin(@RequestHeader("Auth-Token") String token,
                                         @PathVariable("id_doctor") Long id_doctor,
                                         @PathVariable("date") long datum,
                                         @PathVariable("start_term") String start_term) {
@@ -164,4 +173,30 @@ public class DoctorController extends WebConfig {
                 , HttpStatus.OK);
     }
 
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}")
+    public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("ime") String ime,
+                                        @PathVariable("prezime") String prezime) {
+        if(ime.equals("~")){
+            ime = "";
+        }if(prezime.equals("~")){
+            prezime = "";
+        }
+        List<DoctorDTO> listaDoktoraDTO = doctorService.findDoctor(listaLekara, ime, prezime);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+    @PostMapping(produces = "application/json", value = "/delete/{id}/{clinic}")
+    public ResponseEntity<?> delete(@PathVariable("id") long id,@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        Doctor doctor = doctorService.findOneById(id);
+        doctor.setEnabled(false);
+        doctorService.update(doctor);
+        List<Doctor> listaDoktora = doctorService.findAllByClinic(c);
+        List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
+        for (Doctor d: listaDoktora) {
+            listaDoktoraDTO.add(new DoctorDTO(d));
+        }
+        Doctor doc = doctorService.findOneById(id);
+        System.out.println(doc.isEnabled());
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
 }
