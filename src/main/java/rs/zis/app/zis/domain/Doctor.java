@@ -52,7 +52,7 @@ public class Doctor extends Users {
         this.discount = 0;
     }
 
-    public Doctor(String mail, String password, String firstName, String lastName, double price, Clinic clinic, TipPregleda tip, double price, 
+    public Doctor(String mail, String password, String firstName, String lastName, Clinic clinic, TipPregleda tip, double price,
                   Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin, 
                   int workShift, int discount) {
         super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);

@@ -36,9 +36,6 @@ public class DoctorDTO {
         this.discount = discount;
     }
 
-
-
-
     public DoctorDTO(Doctor doctor) {
         this.id = doctor.getId();
         this.mail = doctor.getMail();
@@ -58,22 +55,6 @@ public class DoctorDTO {
         return id;
     }
 
-    public String getMail() {
-        return mail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getTip() {
-        return tip;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -86,6 +67,26 @@ public class DoctorDTO {
         return rating;
     }
 
+    public String getMail() {
+        return mail;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getClinic() {
+        return clinic;
+    }
+
+    public String getTip() {
+        return tip;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
     public boolean isFirstLogin() {
         return firstLogin;
     }
@@ -96,8 +97,5 @@ public class DoctorDTO {
 
     public int getDiscount() {
         return discount;
-      
-    public String getClinic() {
-        return clinic;
     }
 }
