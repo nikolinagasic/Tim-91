@@ -1,6 +1,7 @@
 package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name= "MedicalRecord")
@@ -31,11 +32,16 @@ public class MedicalRecord {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Patient patient;
 
+    //formiram medjutabelu kartoni-izvestaji
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<MedicalReview> medicalReviews = new HashSet<MedicalReview>();
+
     public MedicalRecord(){
 
     }
 
-    public MedicalRecord(Long id, int height, int weight, float dioptreRightEye, float dioptreLeftEye, String bloodGroup, String allergy, Patient patient) {
+    public MedicalRecord(Long id, int height, int weight, float dioptreRightEye, float dioptreLeftEye, String bloodGroup, String allergy, Patient patient,
+                         Set<MedicalReview>medicalReviews) {
         this.id = id;
         this.height = height;
         this.weight = weight;
@@ -44,6 +50,7 @@ public class MedicalRecord {
         this.bloodGroup = bloodGroup;
         this.allergy = allergy;
         this.patient = patient;
+        this.medicalReviews = medicalReviews;
     }
 
     public Long getId() {
@@ -110,5 +117,13 @@ public class MedicalRecord {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    public Set<MedicalReview> getMedicalReviews() {
+        return medicalReviews;
+    }
+
+    public void addMedicalReviews(MedicalReview medicalReview) {
+        this.medicalReviews.add(medicalReview);
     }
 }

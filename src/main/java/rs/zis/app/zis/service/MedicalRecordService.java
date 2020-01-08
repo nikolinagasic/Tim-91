@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.MedicalRecord;
+import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.MedicalRecordDTO;
 import rs.zis.app.zis.repository.MedicalRecordRepository;
 
@@ -40,6 +41,15 @@ public class MedicalRecordService {
         medicalRecord.setPatient(patientService.findOneByMail(medicalRecordDTO.getPatientMail()));
         medicalRecord = medicalRecordRepository.save(medicalRecord);
         return medicalRecord;
+    }
+
+    public MedicalRecord findOneByPatientMail(String mail){
+        List<MedicalRecord>medicalRecordList = medicalRecordRepository.findAll();
+        for(MedicalRecord medicalRecord:medicalRecordList){
+            if(medicalRecord.getPatintMail().equals(mail))
+                return medicalRecord;
+        }
+        return null;
     }
 
 

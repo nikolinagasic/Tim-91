@@ -40,8 +40,6 @@ public class MedicalRecordController extends WebConfig {
     public ResponseEntity<MedicalRecordDTO> getRecord(@PathVariable("mail") String mail){
         List<MedicalRecord>medicalRecordList = medicalRecordService.findAll();
         MedicalRecord medicalRecord = new MedicalRecord();
-
-
         for(MedicalRecord temp:medicalRecordList){
             if(temp.getPatintMail().equals(mail))
                 medicalRecord=temp;
@@ -49,6 +47,50 @@ public class MedicalRecordController extends WebConfig {
         MedicalRecordDTO medicalRecordDTO = new MedicalRecordDTO(medicalRecord);
         return new ResponseEntity<>(medicalRecordDTO,HttpStatus.OK);
      }
+
+
+     //cuvam azuriran zdravstveni karton pacijenta
+    @PostMapping(value = "/changeRecord/{naziv}/{vrednost}/{mail}")
+    public ResponseEntity<?> changeRecord(@PathVariable("naziv") String naziv,
+                                          @PathVariable("vrednost") String vrednost,
+                                          @PathVariable("mail") String mail) {
+        System.out.println("primio change: naziv{" + naziv + "}, vrednost{" + vrednost + "}, mail{" + mail + "}");
+        //trazim zdravstveni karton pacijenta ciji je mejl prosledjen
+        List<MedicalRecord>medicalRecordList = medicalRecordService.findAll();
+        MedicalRecord medicalRecord = new MedicalRecord();
+        for(MedicalRecord temp:medicalRecordList){
+            if(temp.getPatintMail().equals(mail))
+                medicalRecord=temp;
+        }
+        if(medicalRecord==null){
+            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+        }
+
+        if(naziv.equals("height")){
+            medicalRecord.setHeight(Integer.parseInt(vrednost));
+        }
+        else if(naziv.equals("weight")) {
+           medicalRecord.setWeight(Integer.parseInt(vrednost));
+        }
+        else if(naziv.equals("dioptreRightEye")){
+            medicalRecord.setDioptreRightEye(Float.parseFloat(vrednost));
+        }
+        else if(naziv.equals("diopreLeftEye")){
+            medicalRecord.setDioptreLeftEye(Float.parseFloat(vrednost));
+        }
+        else if(naziv.equals("bloodGroup")) {
+            medicalRecord.setBloodGroup(vrednost);
+        }
+        else if(naziv.equals("allergy")){
+            medicalRecord.setAllergy(vrednost);
+        }
+
+        medicalRecordService.save(medicalRecord);
+        MedicalRecordDTO medicalRecordDTO = new MedicalRecordDTO(medicalRecord);
+        return new ResponseEntity<>(medicalRecordDTO,HttpStatus.OK);
+
+    }
+
 
 
 

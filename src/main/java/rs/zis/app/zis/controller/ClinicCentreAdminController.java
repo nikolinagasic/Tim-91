@@ -164,29 +164,39 @@ public class ClinicCentreAdminController extends WebConfig
 
     //cuvam u bazi azuriran sifarnik koji je poslat sa fronta
     @PostMapping(consumes = "application/json" , value = "/savediagnosis")
-    public ResponseEntity<Integer> saveDiagnosis(@RequestBody List<DiagnosisDTO> listDTO){
+    public ResponseEntity<Integer> saveDiagnosis(@RequestBody DiagnosisDTO d){
          Diagnosis diag = new Diagnosis();
-         boolean change= true;
-         for(DiagnosisDTO d:listDTO){
-            // Diagnosis temp=diagnosisService.findOneByCurePassword(d.getCure_password());
-            /* if(temp.getCure_password().equals(d.getCure_password())){
-                 if(temp.getDiagnosis_password().equals(d.getDiagnosis_password())){
-                    System.out.println("isti je element");
-                 }else{
-                     change=true;
+         boolean origin= true; //ako je jedinstvena kombinacija
+
+         List<Diagnosis>diagnosisList=diagnosisService.findAll();
+         if(diagnosisList.size()>0) {
+             for (Diagnosis diagnosis : diagnosisList) {
+                 if (diagnosis.getDiagnosis_password().equals(d.getDiagnosis_password())) {
+                     if (diagnosis.getCure_password().equals(d.getCure_password()))
+                         origin = false;
                  }
-             }else{
-                 change=true;
-             }*/
-           if(change){
-               diag.setCure_password(d.getCure_password());
-               diag.setCure_name(d.getCure_name());
-               diag.setDiagnosis_password(d.getDiagnosis_password());
-               diag.setDiagnosis_name(d.getDiagnosis_name());
-               diagnosisService.save(diag);
-           }
+             }
+             if (origin) {
+                     diag.setCure_password(d.getCure_password());
+                     diag.setCure_name(d.getCure_name());
+                     diag.setDiagnosis_password(d.getDiagnosis_password());
+                     diag.setDiagnosis_name(d.getDiagnosis_name());
+                     diagnosisService.save(diag);
+             }
+
+         }else{
+             diag.setCure_password(d.getCure_password());
+             diag.setCure_name(d.getCure_name());
+             diag.setDiagnosis_password(d.getDiagnosis_password());
+             diag.setDiagnosis_name(d.getDiagnosis_name());
+             diagnosisService.save(diag);
          }
-        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+         if(origin==false) {
+             return new ResponseEntity<>(-2, HttpStatus.CONFLICT); //vec postoji u bazi ta kombinacija
+         }
+         else{
+             return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+         }
     }
 
 
