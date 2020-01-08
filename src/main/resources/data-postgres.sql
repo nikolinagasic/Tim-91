@@ -49,19 +49,21 @@ insert into tip_pregleda (name) values ('Кардиологија');
 
 -- za proveru KLINIKA-DOKTOR
 insert into clinic (address, description, location, name, rating)
-    values ('Тополска 18', 'Неки опис клинике', 'Нови Сад', 'Моја клиника', 8);
+    values ('Тополска 18', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Нови Сад', 'Моја клиника', 8.6);
 insert into clinic (address, description, location, name, rating)
-    values ('Пионирска 10', 'Опис клинике', 'Футог', 'Наша клиника', 4);
+    values ('Пионирска 10', 'Aliquet eget sit amet tellus cras adipiscing. Senectus et netus et malesuada. Morbi tristique senectus et netus et. Sed turpis tincidunt id aliquet risus. Ultrices sagittis orci a scelerisque purus. Elementum facilisis.',
+    'Футог', 'Наша клиника', 4.2);
 --d1
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
 insert into doctor (discount, price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
-    values (0, 4200.00, 'Mарко', 'Марковић', 'doctor', 7.4, 3, 1, 1, 1);
+    values (0, 4200.00, 'Марко', 'Марковић', 'doctor', 7.4, 3, 1, 1, 1);
 --d2
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor1@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
 insert into doctor (discount, price, first_name, last_name, role, rating, id, clinic_id, tip_id, work_shift)
-    values (5, 5500.00, 'Mаринко', 'Mаринковић', 'doctor', 4.5, 4, 2, 1, 2);
+    values (5, 5500.00, 'Маринко', 'Маринковић', 'doctor', 4.5, 4, 2, 1, 2);
 -- d3
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor3@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
@@ -78,8 +80,8 @@ insert into clinic_doctors (clinic_id, doctors_id) values (1,5);
 insert into user_authority (user_id, authority_id) values (5, 5);
 
 -- VACATION
-insert into vacation (id, start_vacation, end_vacation, doctor_id) values (1, 1579824000000, 1580428800000, 3);     -- 24.01. - 31.01.
-insert into vacation (id, start_vacation, end_vacation, doctor_id) values (2, 1580428800000, 1581033600000, 4);     -- 31.01. - 07.02.
+insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (1, true, 1579824000000, 1580428800000, 3);     -- 24.01. - 31.01.
+insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (2, true, 1580428800000, 1581033600000, 4);     -- 31.01. - 07.02.
 
 -- DOCTOR_TERM
 insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)

@@ -88,4 +88,15 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
 
+    @GetMapping (produces = "application/json", value = "/getClinicByName/{clinic_id}")
+    public ResponseEntity<?> getClinicByName(@PathVariable("clinic_id") Long clinic_id){
+        Clinic clinic = clinicService.findOneById(clinic_id);
+        if(clinic != null){
+            return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("greska", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

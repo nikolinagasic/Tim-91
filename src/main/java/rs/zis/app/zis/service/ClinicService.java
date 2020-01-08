@@ -55,7 +55,6 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
-
     // TODO obratiti paznju na DATE format (long/TimeStamp/String)
     public List<ClinicDTO> searchClinic(long datum, String tip, double ocena){
         // 1) return: doktori koji su datog tipa
@@ -78,7 +77,7 @@ public class ClinicService implements UserDetailsService {
 
             boolean godisnji = false;
             for (Vacation vacation : vacationList) {
-                if(datum <= vacation.getKraj() && datum >= vacation.getPocetak()){      // proveri da li sam tada na godisnjem
+                if(vacation.isActive() && datum <= vacation.getKraj() && datum >= vacation.getPocetak()){      // proveri da li sam tada na godisnjem
                     godisnji = true;
                     break;
                 }
