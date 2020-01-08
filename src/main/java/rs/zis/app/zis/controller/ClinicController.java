@@ -64,9 +64,10 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaKlinika, HttpStatus.OK);
     }
 
-    @GetMapping (produces = "application/json", value = "/getDoctorsByClinic/{clinic_name}")
-    public ResponseEntity<?> getDoctorsInClinic(@PathVariable("clinic_name") String clinic_name){
-        List<Doctor> listaDoktora = clinicService.findDoctorsByClinic(clinic_name);
+    @GetMapping (produces = "application/json", value = "/getDoctorsByClinic/{clinic_name}/{date}")
+    public ResponseEntity<?> getDoctorsInClinic(@PathVariable("clinic_name") String clinic_name,
+                                                @PathVariable("date") Long date){
+        List<Doctor> listaDoktora = clinicService.findDoctorsByClinic(clinic_name, date);
         List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
         for (Doctor d : listaDoktora) {
             listaDoktoraDTO.add(new DoctorDTO(d));
@@ -85,6 +86,17 @@ public class ClinicController extends WebConfig {
         System.out.println(cenaOd + "-" + cenaDo + ", " + ocenaOd + "-" + ocenaDo + ", " + naziv);
         List<ClinicDTO> listaKlinikaDTO = clinicService.filterClinic(cenaOd, cenaDo, ocenaOd, ocenaDo, naziv, lKlinika);
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
+    }
+
+    @GetMapping (produces = "application/json", value = "/getClinicByName/{clinic_id}")
+    public ResponseEntity<?> getClinicByName(@PathVariable("clinic_id") Long clinic_id){
+        Clinic clinic = clinicService.findOneById(clinic_id);
+        if(clinic != null){
+            return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("greska", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

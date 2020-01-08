@@ -17,20 +17,26 @@ public class Vacation {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Doctor doctor;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     public Vacation() {
     }
 
-    public Vacation(long pocetak, long kraj) {
+    public Vacation(Long id, long pocetak, long kraj, Doctor doctor, boolean active) {
+        this.id = id;
         this.pocetak = pocetak;
         this.kraj = kraj;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+        this.active = active;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public long getPocetak() {
@@ -47,5 +53,21 @@ public class Vacation {
 
     public void setKraj(long kraj) {
         this.kraj = kraj;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

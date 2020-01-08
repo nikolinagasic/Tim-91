@@ -13,7 +13,7 @@ import rs.zis.app.zis.repository.DoctorTermsRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "SpellCheckingInspection"})
+@SuppressWarnings({"unused", "SpellCheckingInspection", "DefaultAnnotationParam", "NumberEquality"})
 @Service
 @Transactional(readOnly = true)
 public class DoctorTermsService {
@@ -65,7 +65,14 @@ public class DoctorTermsService {
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAllByDoctor(Doctor doctor){
-        return doctorTermsRepository.findAllByDoctor(doctor);
+        List<DoctorTerms> doctorTermsList = new ArrayList<>();
+        for (DoctorTerms doctorTerms : doctorTermsRepository.findAllByDoctor(doctor)) {
+            if(doctorTerms.isProcessedByAdmin()){
+                doctorTermsList.add(doctorTerms);
+            }
+        }
+
+        return doctorTermsList;
     }
 
     @Transactional(readOnly = false)
@@ -74,21 +81,23 @@ public class DoctorTermsService {
     @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
         List<DoctorTermsDTO> retList = new ArrayList<>();
-        List<DoctorTerms> listaTermina = findAllByDoctor(doctor);
+        List<DoctorTerms> listaTermina = findAllByDoctor(doctor);           // lista termina mog doktora
 
-        // svi termini za tu smenu (prva/druga)
+        // svi termini za tu smenu (prva/druga smena)
         List<TermDefinition> listaSvihTermina = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
 
         // izbaciti sve termine koji su zauzeti (u retList hocu samo one slobodne termine za tog doktora)
         for (TermDefinition termDefinition : listaSvihTermina) {
-            boolean flag = false;           // nemoj dodavati u retList ako je zauzet
+            boolean zauzet = false;
             for (DoctorTerms doctorTerms : listaTermina) {
-                if(doctorTerms.getTerm().getId() == termDefinition.getId()){
-                    flag = true;
-                    break;
+                if(doctorTerms.getDate() == date) {                                 // ako je za taj datum
+                    if (doctorTerms.getTerm().getId() == termDefinition.getId()) {  // i ako je ta satnica
+                        zauzet = true;                                           // => nemoj da ga dodajes
+                        break;
+                    }
                 }
             }
-            if(!flag) {
+            if(!zauzet) {
                 retList.add(new DoctorTermsDTO(date, termDefinition, doctor));
             }
         }
@@ -105,7 +114,7 @@ public class DoctorTermsService {
         return new DoctorTermsDTO(date, termDefinition, doctor);
     }
 
-    // TODO uraditi rezervaciju termina
+
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
         Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
@@ -125,7 +134,8 @@ public class DoctorTermsService {
             doctorTerms.setReport("Нема извештаја");
             doctorTerms.setTerm(term_def);
 
-            // TODO radim samo prosledjivanje administratoru klinike, ne cuvam odmah
+            // TODO staviti processed_by_admin na false (ne cuvam ga odmah)
+            doctorTerms.setProcessedByAdmin(false);
             doctorTermsRepository.save(doctorTerms);
             return true;        // uspesno sam napravio tvoj termin
         }
