@@ -15,31 +15,36 @@ public class DoctorTerms {
     @Column(name = "date", nullable = false)
     private long date;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="term_definition_id", referencedColumnName="id")
-    private TermDefinition term;
+    // potrebno za logicko brisanje
+    @Column(name = "active", nullable = false)
+    private boolean active;
 
     @Column(name = "report", nullable = false)          // izvestaj za taj pregled
     private String report;
+
+    @Column(name = "processed_by_cadmin", nullable = false)    // da li ga je admin klinike obradio
+    private boolean processedByAdmin;
 
     // JoinColumn ce uzeti samo reference iz doktora (doktor ne vidi ove termine)
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="doctor_id", referencedColumnName="id")
     private Doctor doctor;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="term_definition_id", referencedColumnName="id")
+    private TermDefinition term;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="patient_id", referencedColumnName="id")
     private Patient patient;
 
-    // potrebno za logicko brisanje
-    @Column(name = "active", nullable = false)
-    private boolean active;
-
     public DoctorTerms() {
         this.active = true;
+        this.processedByAdmin = false;
     }
 
-    public DoctorTerms(Long id, long date, Doctor doctor, Patient patient, boolean active, String report, TermDefinition termDefinition) {
+    public DoctorTerms(Long id, long date, Doctor doctor, Patient patient, boolean active, String report,
+                       TermDefinition termDefinition, boolean processedByAdmin) {
         this.id = id;
         this.date = date;
         this.doctor = doctor;
@@ -47,6 +52,7 @@ public class DoctorTerms {
         this.active = active;
         this.report = report;
         this.term = termDefinition;
+        this.processedByAdmin = processedByAdmin;
     }
 
     public Long getId() {
@@ -103,5 +109,13 @@ public class DoctorTerms {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isProcessedByAdmin() {
+        return processedByAdmin;
+    }
+
+    public void setProcessedByAdmin(boolean processedByAdmin) {
+        this.processedByAdmin = processedByAdmin;
     }
 }

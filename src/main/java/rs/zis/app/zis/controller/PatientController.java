@@ -6,15 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
+import rs.zis.app.zis.domain.MedicalRecord;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.Users;
+import rs.zis.app.zis.dto.MedicalRecordDTO;
 import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.security.TokenUtils;
-import rs.zis.app.zis.service.CustomUserService;
-import rs.zis.app.zis.service.NotificationService;
-import rs.zis.app.zis.service.PatientService;
+import rs.zis.app.zis.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import rs.zis.app.zis.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,9 @@ public class PatientController extends WebConfig {
     private UserService userService;
 
     @Autowired
+    private MedicalRecordService medicalRecordService;
+
+    @Autowired
     private TokenUtils tokenUtils;
 
     @Autowired
@@ -56,6 +58,7 @@ public class PatientController extends WebConfig {
             return new ResponseEntity<>(patientDTO, HttpStatus.CONFLICT);  // mejl nije okej (na nivou svih korisika)
         }
         Patient patient = patientService.save(patientDTO);                  //sacuvam u registerService
+
 
         return new ResponseEntity<>(patientDTO, HttpStatus.CREATED);     // sve okej
     }

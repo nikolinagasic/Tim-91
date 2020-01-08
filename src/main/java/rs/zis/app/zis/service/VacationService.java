@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Vacation;
 import rs.zis.app.zis.repository.VacationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,7 +18,14 @@ public class VacationService {
     private VacationRepository vacationRepository;
 
     public List<Vacation> findAll() {
-        return vacationRepository.findAll();
+        List<Vacation> vacationList = new ArrayList<>();
+        for (Vacation vacation : vacationRepository.findAll()) {
+            if(vacation.isActive()){
+                vacationList.add(vacation);
+            }
+        }
+
+        return vacationList;
     }
 
     public Page<Vacation> findAll(Pageable page) {
@@ -31,8 +40,8 @@ public class VacationService {
         return vacationRepository.findOneById(id);
     }
 
-    public Vacation findOneByDoctor(Long id) {
-        return vacationRepository.findOneByDoctor(id);
+    public List<Vacation> findAllByDoctor(Doctor doctor) {
+        return vacationRepository.findAllByDoctor(doctor);
     }
 
     public Vacation save(Vacation u) {return vacationRepository.save(u);}

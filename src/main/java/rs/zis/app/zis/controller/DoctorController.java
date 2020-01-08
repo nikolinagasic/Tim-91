@@ -151,4 +151,17 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(doctorTermsDTO_ret, HttpStatus.OK);
     }
 
+    @PostMapping(produces = "application/json", consumes = "application/json",
+            value = "/expandedSearchDoctor/{ime}/{prezime}/{ocena}/{date}/{select}")
+    public ResponseEntity<?> expandedSearchDoctor(@RequestBody List<DoctorDTO> listaLekara,
+                                        @PathVariable("ime") String ime,
+                                        @PathVariable("prezime") String prezime,
+                                        @PathVariable("ocena") double ocena,
+                                        @PathVariable("date") long datum,
+                                        @PathVariable("select") String tip) {
+
+        return new ResponseEntity<>(doctorService.expandedSearchDoctor(ime, prezime, ocena, datum, tip, listaLekara)
+                , HttpStatus.OK);
+    }
+
 }
