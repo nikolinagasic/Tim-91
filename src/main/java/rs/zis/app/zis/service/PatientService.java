@@ -11,10 +11,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.Users;
 import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -98,6 +100,25 @@ public class PatientService {
 
     public Patient update(Patient patient){
         return patientRepository.save(patient);
+    }
+
+    public List<PatientDTO> findPatient(List<PatientDTO> lista, String ime, String prezime,String lbo) {
+        List<PatientDTO> retList = new ArrayList<>();
+        for (PatientDTO patientDTO: lista) {
+            String strLbo = String.valueOf(patientDTO.getLbo());
+            if(patientDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+
+                if(patientDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+                    if(strLbo.contains(lbo)) {
+                        retList.add(patientDTO);
+
+                    }
+
+                }
+            }
+        }
+
+        return retList;
     }
 
     public boolean checkFirstLastName(String mail, String firstName, String lastName) {

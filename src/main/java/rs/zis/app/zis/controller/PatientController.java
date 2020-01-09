@@ -9,6 +9,7 @@ import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.Users;
 import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.CustomUserService;
 import rs.zis.app.zis.service.NotificationService;
@@ -70,6 +71,22 @@ public class PatientController extends WebConfig {
             listDTO.add(new PatientDTO(p));
         }
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}/{lbo}")
+    public ResponseEntity<?> findPatient(@RequestBody List<PatientDTO> lista, @PathVariable("ime") String ime, @PathVariable("prezime") String prezime,
+                                        @PathVariable("lbo") String lbo) {
+        if(ime.equals("~")){
+            ime = "";
+        }
+        if(prezime.equals("~")){
+            prezime = "";
+        }
+        if(lbo.equals("~")){
+            lbo = "";
+        }
+        List<PatientDTO> listaDTO = patientService.findPatient(lista, ime, prezime,lbo);
+        return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
 
     //@PreAuthorize("hasRole('PATIENT')")
