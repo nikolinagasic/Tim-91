@@ -65,14 +65,7 @@ public class DoctorTermsService {
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAllByDoctor(Doctor doctor){
-        List<DoctorTerms> doctorTermsList = new ArrayList<>();
-        for (DoctorTerms doctorTerms : doctorTermsRepository.findAllByDoctor(doctor)) {
-            if(doctorTerms.isProcessedByAdmin()){
-                doctorTermsList.add(doctorTerms);
-            }
-        }
-
-        return doctorTermsList;
+        return doctorTermsRepository.findAllByDoctor(doctor);
     }
 
     @Transactional(readOnly = false)
@@ -122,9 +115,15 @@ public class DoctorTermsService {
         TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
         Patient patient = patientService.findOneByMail(mail_patient);
 
-        DoctorTerms dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
-                                                                                    term_def,
-                                                                                    doctor);
+        DoctorTerms dt = new DoctorTerms();
+        try {
+            dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
+                    term_def,
+                    doctor);
+        }catch (Exception e){
+            System.out.println("Okinut exception: " + e.getClass());
+            return false;
+        }
 
         if(dt == null) {
             DoctorTerms doctorTerms = new DoctorTerms();
@@ -134,7 +133,6 @@ public class DoctorTermsService {
             doctorTerms.setReport("Нема извештаја");
             doctorTerms.setTerm(term_def);
 
-            // TODO staviti processed_by_admin na false (ne cuvam ga odmah)
             doctorTerms.setProcessedByAdmin(false);
             doctorTermsRepository.save(doctorTerms);
             return true;        // uspesno sam napravio tvoj termin

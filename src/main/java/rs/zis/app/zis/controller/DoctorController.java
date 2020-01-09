@@ -156,8 +156,13 @@ public class DoctorController extends WebConfig {
                                          @RequestBody DoctorTermsDTO doctorTermsDTO) {
 
         String mail = tokenUtils.getUsernameFromToken(token);
-        boolean doctorTermsDTO_ret = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
-        return new ResponseEntity<>(doctorTermsDTO_ret, HttpStatus.OK);
+        boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
+        if(isReserved){
+            return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(produces = "application/json", consumes = "application/json",
