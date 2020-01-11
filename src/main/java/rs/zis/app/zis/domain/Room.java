@@ -12,10 +12,10 @@ public class Room {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Column(name = "name", nullable = false, unique = true)
+        @Column(name = "name", nullable = false)
         private String name;
 
-        @Column(name = "number", nullable = false)
+        @Column(name = "number", nullable = false, unique = true)
         private String number;
 
     public boolean isEnabled() {

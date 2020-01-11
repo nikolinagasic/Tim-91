@@ -68,13 +68,15 @@ public class PatientController extends WebConfig {
 
         ArrayList<PatientDTO> listDTO = new ArrayList<>();
         for (Patient p: listPatient) {
-            listDTO.add(new PatientDTO(p));
+            if (p.isEnabled()) {
+                listDTO.add(new PatientDTO(p));
+            }
         }
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
-    @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}/{lbo}")
-    public ResponseEntity<?> findPatient(@RequestBody List<PatientDTO> lista, @PathVariable("ime") String ime, @PathVariable("prezime") String prezime,
+    @GetMapping(produces = "application/json", value = "/find/{ime}/{prezime}/{lbo}")
+    public ResponseEntity<?> findPatient(@PathVariable("ime") String ime, @PathVariable("prezime") String prezime,
                                         @PathVariable("lbo") String lbo) {
         if(ime.equals("~")){
             ime = "";
@@ -85,7 +87,14 @@ public class PatientController extends WebConfig {
         if(lbo.equals("~")){
             lbo = "";
         }
-        List<PatientDTO> listaDTO = patientService.findPatient(lista, ime, prezime,lbo);
+        List<Patient> lista = patientService.findAll();
+        List<PatientDTO> ret = new ArrayList<>();
+        for (Patient p : lista) {
+            if (p.isEnabled()) {
+                ret.add(new PatientDTO(p));
+            }
+        }
+        List<PatientDTO> listaDTO = patientService.findPatient(ret, ime, prezime,lbo);
         return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
 
