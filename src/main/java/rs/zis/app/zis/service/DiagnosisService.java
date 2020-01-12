@@ -7,6 +7,7 @@ import rs.zis.app.zis.domain.Diagnosis;
 import rs.zis.app.zis.dto.DiagnosisDTO;
 import rs.zis.app.zis.repository.DiagnosisRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,5 +33,18 @@ public class DiagnosisService {
         return d;
     }
 
+    public List<DiagnosisDTO> filterDiagnosis(String naziv){
+        if(naziv.equals("~")){
+            naziv = "";
+        }
+        List<DiagnosisDTO>diagnosisDTOList=new ArrayList<>();
+        List<Diagnosis>diagnosisList=diagnosisRepository.findAll();
+        for(Diagnosis diagnosis:diagnosisList){
+            if(diagnosis.getDiagnosis_name().toLowerCase().contains(naziv.toLowerCase())){
+                diagnosisDTOList.add(new DiagnosisDTO(diagnosis));
+            }
+        }
+        return diagnosisDTOList;
+    }
 
 }
