@@ -92,20 +92,6 @@ public class DoctorController extends WebConfig {
         DoctorDTO doctorDTO = new DoctorDTO(d);
         return new ResponseEntity<>(doctorDTO, HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('DOCTOR')")
-    @PostMapping(consumes = "text/plain", value = "/changePassword")
-    public ResponseEntity<?> changePassword(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
-        String mail = tokenUtils.getUsernameFromToken(token);
-
-        boolean flag_ok = customUserService.changePassword(mail, password);
-        if(flag_ok) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
 
     // NAPOMENA: moram poslati i celu listu, da bih znao sta treba da pretrazim (da ne pretrazuje medju svim lekarima)
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/searchDoctors/{ime}/{prezime}/{ocena}")

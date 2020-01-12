@@ -66,17 +66,5 @@ public class NurseController {
         NurseDTO nurseDTO = new NurseDTO(d);
         return new ResponseEntity<>(nurseDTO, HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('NURSE')")
-    @PostMapping(consumes = "text/plain", value = "/changePassword")
-    public ResponseEntity<?> changePassword(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
-        String mail = tokenUtils.getUsernameFromToken(token);
 
-        boolean flag_ok = customUserService.changePassword(mail, password);
-        if(flag_ok) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 }
