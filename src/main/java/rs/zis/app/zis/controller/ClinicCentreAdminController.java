@@ -161,6 +161,13 @@ public class ClinicCentreAdminController extends WebConfig
         return new ResponseEntity<>(diagnosisListDTO, HttpStatus.OK);
     }
 
+    //filtriram listu svih dijagnoza koje imam u bazi na osnovu prosledjenog naziva
+    @GetMapping(value="/diagnosisByName/{naziv}")
+    public ResponseEntity<List<DiagnosisDTO>> getDiagnosisByName(@PathVariable("naziv") String naziv){
+       System.out.println(naziv);
+       List<DiagnosisDTO>diagnosisDTOList=diagnosisService.filterDiagnosis(naziv);
+       return new ResponseEntity<>(diagnosisDTOList, HttpStatus.OK);
+    }
 
     //cuvam u bazi azuriran sifarnik koji je poslat sa fronta
     @PostMapping(consumes = "application/json" , value = "/savediagnosis")
@@ -171,10 +178,30 @@ public class ClinicCentreAdminController extends WebConfig
          List<Diagnosis>diagnosisList=diagnosisService.findAll();
          if(diagnosisList.size()>0) {
              for (Diagnosis diagnosis : diagnosisList) {
+                 //provera da li je komb sifra diag-sifra leka jedinstvena
+                 //provera da li su lekovi sa istom sifrom i istog naziva
+                 //provera da li su lekovi sa istom sifrom i istog naziva
                  if (diagnosis.getDiagnosis_password().equals(d.getDiagnosis_password())) {
                      if (diagnosis.getCure_password().equals(d.getCure_password()))
                          origin = false;
                  }
+                 if (diagnosis.getDiagnosis_password().equals(d.getDiagnosis_password())) {
+                     if(diagnosis.getDiagnosis_name().equals(d.getDiagnosis_name())){
+
+                     }else{
+                         origin=false;
+                     }
+
+                 }
+                 if(diagnosis.getCure_password().equals(d.getCure_password())){
+                     if(diagnosis.getCure_name().equals(d.getCure_name())){
+
+                     }else{
+                         origin=false;
+                     }
+
+                 }
+
              }
              if (origin) {
                      diag.setCure_password(d.getCure_password());
@@ -198,6 +225,8 @@ public class ClinicCentreAdminController extends WebConfig
              return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
          }
     }
+
+
 
 
     //cuvam azuriran profil admina koji je poslat sa fronta
