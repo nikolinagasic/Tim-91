@@ -18,6 +18,9 @@ public class Nurse extends Users {
     @Column(name= "role")
     private String role;
 
+    @Column(name= "work_shift")     // smena
+    private int workShift;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;                     // klinika u kojoj je zaposlen
 
@@ -29,13 +32,14 @@ public class Nurse extends Users {
       //  vacation = new HashSet<Godisnji_odmor>();
     }
 
-    public Nurse(String mail, String password, String firstName, String lastName, Clinic clinic, Set<Vacation> vacation,
+    public Nurse(String mail, String password, String firstName, String lastName, int workShift, Clinic clinic, Set<Vacation> vacation,
                  Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
         super(mail, password,true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;
         this.role = "nurse";
+        this.workShift = workShift;
       //  this.vacation = vacation;
     }
 
@@ -45,6 +49,14 @@ public class Nurse extends Users {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public int getWorkShift() {
+        return workShift;
+    }
+
+    public void setWorkShift(int workShift) {
+        this.workShift = workShift;
     }
 
     public String getFirstName() {

@@ -156,4 +156,10 @@ public class PatientController extends WebConfig {
         String mail = tokenUtils.getUsernameFromToken(token);
         return new ResponseEntity<>(patientService.findOneByMail(mail), HttpStatus.OK);
     }
+
+    @GetMapping(produces = "application/json", value = "/getByMail/{mail}")
+    public ResponseEntity<?> getPatient(@PathVariable("mail") String mail) {
+        Patient patient = patientService.findOneByMail(mail);
+        return new ResponseEntity<>(new PatientDTO(patient), HttpStatus.OK);
+    }
 }
