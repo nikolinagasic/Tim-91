@@ -14,8 +14,8 @@ public class DoctorTermsDTO {
     private String lastNameDoctor;
     private double price;
     private int discount;
-    private String type;            // tip pregleda
-    private Long patient_id;        // id pacijenta
+    private String type;           // tip pregleda
+    private Long patient_id;       // id pacijenta
 
     public DoctorTermsDTO() {
     }
