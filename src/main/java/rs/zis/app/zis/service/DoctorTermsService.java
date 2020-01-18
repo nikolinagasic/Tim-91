@@ -30,6 +30,12 @@ public class DoctorTermsService {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private ClinicAdministratorService clinicAdministratorService;
+
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAll() {
         return doctorTermsRepository.findAll();
@@ -124,6 +130,13 @@ public class DoctorTermsService {
             return false;
         }
 
+        List<ClinicAdministrator> lista_cadmina = new ArrayList<>();
+        for (ClinicAdministrator clinicAdministrator : clinicAdministratorService.findAll()) {
+            if(clinicAdministrator.getClinic().getId() == doctor.getClinic().getId()){
+                lista_cadmina.add(clinicAdministrator);
+            }
+        }
+
         if(dt == null) {
             DoctorTerms doctorTerms = new DoctorTerms();
             doctorTerms.setDate(doctorTermsDTO.getDate());
@@ -133,6 +146,14 @@ public class DoctorTermsService {
 
             doctorTerms.setProcessedByAdmin(false);
             doctorTermsRepository.save(doctorTerms);
+            // poslati mejl administratoru/ima klinike
+            for (ClinicAdministrator clinicAdministrator : lista_cadmina) {
+                String textBody = "Поштовани,\nПристигао вам је нови захтев за прегледом у Вашој клиници. Захтев је следећи:\n" +
+                        "Доктор: " + doctor.getFirstName() + " " + doctor.getLastName() + "\n" +
+                        "Пацијент: " + patient.getFirstName() + " " + patient.getLastName() + "\n";
+                notificationService.SendNotification(clinicAdministrator.getMail(), "billypiton43@gmail.com",
+                        "Нови захтев за преглед", textBody);
+            }
             return true;        // uspesno sam napravio tvoj termin
         }
         else{

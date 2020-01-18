@@ -80,6 +80,21 @@ insert into user_authority (user_id, authority_id) values (4, 5);
 insert into clinic_doctors (clinic_id, doctors_id) values (1,5);
 insert into user_authority (user_id, authority_id) values (5, 5);
 
+-- CLINIC ADMINISTRATOR
+insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
+    values (true, true, true, '2017-10-01 21:58:58.508-07', 'cadmin@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
+insert into clinic_administrator (address, city, country, first_name, last_name, role, telephone, id, clinic_id)
+    values ('Цара Лазара 12', 'Нови Сад', 'Србија', 'Предраг', 'Шпагић', 'cadmin', '879-456', 6, 1);
+
+insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
+    values (true, true, true, '2017-10-01 21:58:58.508-07', 'cadmin1@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
+insert into clinic_administrator (address, city, country, first_name, last_name, role, telephone, id, clinic_id)
+    values ('Царице Милице', 'Београд', 'Србија', 'Душко', 'Кртола', 'cadmin', '895-456', 7, 2);
+--ca1
+insert into user_authority (user_id, authority_id) values (6, 3);
+--ca2
+insert into user_authority (user_id, authority_id) values (7, 3);
+
 -- VACATION
 insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (1, true, 1579824000000, 1580428800000, 3);     -- 24.01. - 31.01.
 insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (2, true, 1580428800000, 1581033600000, 5);     -- 31.01. - 07.02.

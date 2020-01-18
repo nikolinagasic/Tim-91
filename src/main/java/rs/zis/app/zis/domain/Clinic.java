@@ -3,7 +3,7 @@ package rs.zis.app.zis.domain;
 import javax.persistence.*;
 import java.util.*;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "Convert2Diamond"})
 @Entity
 @Table(name = "Clinic")
 public class Clinic {
@@ -31,19 +31,19 @@ public class Clinic {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Doctor> doctors = new HashSet<Doctor>();
 
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Room> rooms = new HashSet<Room>();
-//    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)v
-//    private Set<ClinicAdministrator> clinic_admin = new HashSet<ClinicAdministrator>();
 
-    public Clinic(Long id, String name, String address, String description, Set<ClinicAdministrator> clinic_admin,
+    @OneToOne(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private ClinicAdministrator clinic_admin;
+
+    public Clinic(Long id, String name, String address, String description, ClinicAdministrator clinic_admin,
                   Set<Doctor> doctor, String location) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;
-//        this.clinic_admin = clinic_admin;
+        this.clinic_admin = clinic_admin;
         this.doctors = doctor;
         this.location = location;
     }
@@ -106,4 +106,19 @@ public class Clinic {
         return rooms;
     }
 
+    public void setDoctors(Set<Doctor> doctors) {
+        this.doctors = doctors;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    public ClinicAdministrator getClinic_admin() {
+        return clinic_admin;
+    }
+
+    public void setClinic_admin(ClinicAdministrator clinic_admin) {
+        this.clinic_admin = clinic_admin;
+    }
 }
