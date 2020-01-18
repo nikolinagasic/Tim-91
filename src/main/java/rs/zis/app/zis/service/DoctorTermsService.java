@@ -10,6 +10,7 @@ import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,20 @@ public class DoctorTermsService {
     public List<DoctorTerms> findAllByDate(Long date) {
         return doctorTermsRepository.findAllByDate(date);
     }
+
+    @Transactional(readOnly = false)
+    public List<DoctorTerms> findAllByClinic(Clinic clinic)
+    {
+        List<DoctorTerms> all = doctorTermsRepository.findAll();
+        List<DoctorTerms> retVal = new ArrayList<>();
+        for (DoctorTerms t: all) {
+            if (t.getDoctor().getClinic().getName().equals(clinic.getName())) {
+                retVal.add(t);
+            }
+        }
+        return retVal;
+    }
+
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAllByDoctor(Doctor doctor){

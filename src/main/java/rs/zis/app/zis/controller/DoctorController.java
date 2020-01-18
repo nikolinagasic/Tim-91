@@ -14,10 +14,7 @@ import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.NurseDTO;
 import rs.zis.app.zis.security.TokenUtils;
-import rs.zis.app.zis.service.ClinicService;
-import rs.zis.app.zis.service.CustomUserService;
-import rs.zis.app.zis.service.DoctorService;
-import rs.zis.app.zis.service.DoctorTermsService;
+import rs.zis.app.zis.service.*;
 
 import javax.print.Doc;
 import java.util.ArrayList;
@@ -36,7 +33,8 @@ public class DoctorController extends WebConfig {
     private ClinicService clinicService;
     @Autowired
     private DoctorTermsService doctorTermsService;
-
+    @Autowired
+    private TipPregledaService tipPregledaService;
     @GetMapping(produces = "application/json", value = "/getAll")
    // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctor() {
@@ -92,20 +90,6 @@ public class DoctorController extends WebConfig {
         DoctorDTO doctorDTO = new DoctorDTO(d);
         return new ResponseEntity<>(doctorDTO, HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('DOCTOR')")
-    @PostMapping(consumes = "text/plain", value = "/changePassword")
-    public ResponseEntity<?> changePassword(@RequestHeader("Auth-Token") String token, @RequestBody String password) {
-        String mail = tokenUtils.getUsernameFromToken(token);
-
-        boolean flag_ok = customUserService.changePassword(mail, password);
-        if(flag_ok) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
 
     // NAPOMENA: moram poslati i celu listu, da bih znao sta treba da pretrazim (da ne pretrazuje medju svim lekarima)
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/searchDoctors/{ime}/{prezime}/{ocena}")
@@ -187,6 +171,11 @@ public class DoctorController extends WebConfig {
             prezime = "";
         }
         List<DoctorDTO> listaDoktoraDTO = doctorService.findDoctor(listaLekara, ime, prezime);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+    @PostMapping(produces = "application/json", consumes = "application/json", value = "/filterByType/{type}")
+    public ResponseEntity<?> filterDoctorByType(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("type") String type) {
+        List<DoctorDTO> listaDoktoraDTO = doctorService.filterDoctorByType(listaLekara, type);
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
     @PostMapping(produces = "application/json", value = "/delete/{id}/{clinic}")

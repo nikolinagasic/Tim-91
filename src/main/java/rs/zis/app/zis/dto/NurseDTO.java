@@ -10,15 +10,17 @@ public class NurseDTO {
     private String clinic;
     private String role;
     private boolean firstLogin;
+    private int workShift;
 
     public NurseDTO() {
     }
 
-    public NurseDTO(Long id, String mail, String password, String clinic, String role, boolean firstLogin) {
+    public NurseDTO(Long id, String mail, String password, String clinic,int workShift, String role, boolean firstLogin) {
         this.id = id;
         this.mail = mail;
         this.password = password;
         this.clinic = clinic;
+        this.workShift = workShift;
         this.role = role;
         this.firstLogin = firstLogin;
     }
@@ -28,6 +30,7 @@ public class NurseDTO {
         this.mail = nurse.getMail();
         this.password = nurse.getPassword();
         this.clinic = nurse.getClinic().getName();
+        this.workShift = nurse.getWorkShift();
         this.role = nurse.getRole();
         this.firstLogin = nurse.isFirstLogin();
     }
@@ -38,6 +41,10 @@ public class NurseDTO {
 
     public String getMail() {
         return mail;
+    }
+
+    public int getWorkShift() {
+        return workShift;
     }
 
     public String getClinic() {

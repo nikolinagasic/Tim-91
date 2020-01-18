@@ -44,6 +44,7 @@ import java.util.List;
         public Nurse save(NurseDTO nurseDTO) {
             Nurse d = new Nurse();
             d.setMail(nurseDTO.getMail());
+            d.setWorkShift(nurseDTO.getWorkShift());
             d.setPassword(passwordEncoder.encode(nurseDTO.getPassword()));
             d.setEnabled(true);
             d.setClinic(clinicService.findOneByName(nurseDTO.getClinic()));
