@@ -91,7 +91,7 @@ public class DoctorTermsService {
                 }
             }
             if(!zauzet) {
-                retList.add(new DoctorTermsDTO(date, termDefinition, doctor));
+                retList.add(new DoctorTermsDTO(date, termDefinition, doctor, new Patient()));
             }
         }
 
@@ -104,9 +104,8 @@ public class DoctorTermsService {
         TermDefinition termDefinition = termDefinitionService.findOneByStart_term(start_term);
         Patient patient = patientService.findOneByMail(mail_patient);
 
-        return new DoctorTermsDTO(date, termDefinition, doctor);
+        return new DoctorTermsDTO(date, termDefinition, doctor, new Patient());
     }
-
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
@@ -130,7 +129,6 @@ public class DoctorTermsService {
             doctorTerms.setDate(doctorTermsDTO.getDate());
             doctorTerms.setDoctor(doctor);
             doctorTerms.setPatient(patient);
-            doctorTerms.setReport("Нема извештаја");
             doctorTerms.setTerm(term_def);
 
             doctorTerms.setProcessedByAdmin(false);

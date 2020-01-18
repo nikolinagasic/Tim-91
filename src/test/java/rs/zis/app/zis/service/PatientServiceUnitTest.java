@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+@SuppressWarnings("unused")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PatientServiceUnitTest {
@@ -40,8 +41,8 @@ class PatientServiceUnitTest {
         Mockito.when(patientRepository.findAll()).then(invocationOnMock -> new ArrayList<Patient>() {{
             Patient patient = new Patient();
             patient.setActive(false);
-            add(patient);
-            add(new Patient());
+            add(patient);           // 1. pacijent nije aktivan
+            add(new Patient());     // 2. aktivan
         }});
 
         //Patient p = new Patient(null, )
@@ -64,7 +65,6 @@ class PatientServiceUnitTest {
 
     }
 
-
     @Test
     void findAll() {
         assertThat(patientService.findAll()).hasSize(1);
@@ -77,7 +77,7 @@ class PatientServiceUnitTest {
 //        p1.setPassword("password");
 //        p1.setRole("PATIENT");
 //        p1.setId(null);
-//
+
         Patient result = patientService.save(p1);
         assertThat(result.getId()).isEqualTo(5L);
     }

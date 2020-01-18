@@ -21,7 +21,6 @@ import rs.zis.app.zis.repository.PatientRepository;
 @Service
 public class PatientService {
 
-
     @Autowired
     private PatientRepository patientRepository;
 
@@ -41,10 +40,6 @@ public class PatientService {
         }
 
         return retList;
-    }
-
-    public Page<Patient> findAll(Pageable page) {
-        return patientRepository.findAll(page);
     }
 
     public Patient save(PatientDTO patientDTO) {

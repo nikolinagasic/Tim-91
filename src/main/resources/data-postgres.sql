@@ -82,28 +82,49 @@ insert into user_authority (user_id, authority_id) values (5, 5);
 
 -- VACATION
 insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (1, true, 1579824000000, 1580428800000, 3);     -- 24.01. - 31.01.
-insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (2, true, 1580428800000, 1581033600000, 4);     -- 31.01. - 07.02.
+insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (2, true, 1580428800000, 1581033600000, 5);     -- 31.01. - 07.02.
+
+-- ROOM
+insert into room(enabled, name, number, clinic_id) values (true, 'Сала 1', 1, 1);
+insert into room(enabled, name, number, clinic_id) values (true, 'Сала 2', 2, 1);
+insert into room(enabled, name, number, clinic_id) values (true, 'Сала 3', 3, 1);
+insert into room(enabled, name, number, clinic_id) values (true, 'Сала 4', 4, 1);
+insert into room(enabled, name, number, clinic_id) values (true, 'Роом 1', 1, 2);
+insert into room(enabled, name, number, clinic_id) values (true, 'Роом 2', 2, 2);
+insert into room(enabled, name, number, clinic_id) values (true, 'Роом 3', 3, 2);
 
 -- DOCTOR_TERM
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 1); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 2); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 3); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 4); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 5); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 6); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 7); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 8); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 9); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Преглед успешно завршен. Пацијент у добром стању. Контрола по потреби', 3, 2, true, 10); -- 8. januar
-insert into doctor_terms (active, date, report, doctor_id, patient_id, processed_by_cadmin, term_definition_id)
-    values (true, 1578441600000, 'Пацијенту се нагло погоршало стање. Хитна операција.', 4, 2, true, 11);
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, true, 3, 2, true, false, 1, 1); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, true, 3, 2, true, false, 3, 2); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, true, 3, 2, true, false, 1, 3); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, true, 3, 2, true, false, 2, 4); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 3, 2, true, false, 2, 5); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 3, 2, true, false, 2, 6); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 3, 2, true, false, 2, 7); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 3, 2, true, false, 4, 8); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 3, 2, true, false, 2, 9); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 3, 2, true, false, 3, 10); -- 8. januar
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, predefined, room_id, term_definition_id)
+    values (true, 1578441600000, false, 4, 2, true, false, 6, 11);
+
+insert into room_doctor_terms (room_id, doctor_terms_id) values (1, 1);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (3, 2);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (1, 3);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 4);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 5);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 6);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 7);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (4, 8);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 9);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (3, 10);
+insert into room_doctor_terms (room_id, doctor_terms_id) values (6, 11);
