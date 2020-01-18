@@ -48,12 +48,6 @@ public class ClinicCentreAdminController extends WebConfig
         if(proveriMail != null){
             return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> mejl nije okej
         }
-        Clinic proveriClinic = clinicService.findOneByName(clinicAdministratorDTO.getClinic());
-        if (proveriClinic == null) {
-            System.out.println("ovde usao"+ clinicAdministratorDTO.getClinic());
-            return new ResponseEntity<>(-2, HttpStatus.NOT_FOUND);
-        }
-
         ClinicAdministrator clinicAdministrator = clinicAdministratorService.save(clinicAdministratorDTO);
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
