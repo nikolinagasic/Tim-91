@@ -13,7 +13,7 @@ import rs.zis.app.zis.repository.DoctorTermsRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "SpellCheckingInspection", "DefaultAnnotationParam", "NumberEquality"})
+@SuppressWarnings({"unused", "SpellCheckingInspection", "DefaultAnnotationParam", "NumberEquality", "UnusedAssignment", "RedundantIfStatement"})
 @Service
 @Transactional(readOnly = true)
 public class DoctorTermsService {
@@ -29,6 +29,15 @@ public class DoctorTermsService {
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private TipPregledaService tipPregledaService;
+
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private VacationService vacationService;
 
     @Autowired
     private NotificationService notificationService;
@@ -76,6 +85,11 @@ public class DoctorTermsService {
 
     @Transactional(readOnly = false)
     public DoctorTerms save(DoctorTerms u) {return doctorTermsRepository.save(u);}
+
+    @Transactional(readOnly = false)
+    public List<DoctorTerms> findAllByRoom(Room room) {
+        return doctorTermsRepository.findAllByRoom(room);
+    }
 
     @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
@@ -160,4 +174,65 @@ public class DoctorTermsService {
             return false ;      // vec postoji jedan takav kreiran termin
         }
     }
+
+    @Transactional(readOnly = false)
+    public int createPredefinedTerm(Long date, Long satnica_id, Long room_id, Long type_id, Long doctor_id,
+                                        double price, int discount){
+        TermDefinition termDefinition = termDefinitionService.findOneById(satnica_id);
+        Room room = roomService.findOneById(room_id);
+        Doctor doctor = doctorService.findOneById(doctor_id);
+        TipPregleda tipPregleda = tipPregledaService.findOneById(type_id);
+
+        if(!checkDoctor(doctor, date, termDefinition)){
+            return -1;
+        }
+        if(!checkRoom(room, date, termDefinition)){
+            return -2;
+        }
+
+        DoctorTerms doctorTerms = new DoctorTerms();
+        doctorTerms.setDate(date);
+        doctorTerms.setDoctor(doctor);
+        doctorTerms.setTerm(termDefinition);
+        doctorTerms.setRoom(room);
+        doctorTerms.setExamination(true);
+        doctorTerms.setPrice(price);
+        doctorTerms.setDiscount(discount);
+        doctorTerms.setPredefined(true);
+
+        save(doctorTerms);
+        return 0;
+    }
+
+    private boolean checkDoctor(Doctor doctor, Long date, TermDefinition termDefinition){
+        for (DoctorTerms doctorTerm : findAllByDoctor(doctor)) {
+            if(doctorTerm.getDate() == date){
+                if(doctorTerm.getTerm().equals(termDefinition)){
+                    return false;
+                }
+            }
+        }
+
+        for (Vacation vacation : vacationService.findAllByDoctor(doctor)) {
+            if(vacation.getPocetak() < date && vacation.getKraj() > date){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean checkRoom(Room room, Long date, TermDefinition termDefinition){
+        for (DoctorTerms doctorTerm : findAllByRoom(room)) {
+            if(doctorTerm.getDate() == date){
+                if(doctorTerm.getTerm().equals(termDefinition)){
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
 }

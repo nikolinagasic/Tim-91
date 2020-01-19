@@ -7,10 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.Doctor;
+import rs.zis.app.zis.domain.Room;
 import rs.zis.app.zis.domain.Vacation;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.service.ClinicService;
+import rs.zis.app.zis.service.RoomService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,9 @@ public class ClinicController extends WebConfig {
 
     @Autowired
     private ClinicService clinicService;
+
+    @Autowired
+    private RoomService roomService;
 
     // dobijam sve doktore koji rade u klinici sa imenom NAME
     @GetMapping (produces = "application/json", value = "/getDoctors/{name}")
@@ -38,7 +44,7 @@ public class ClinicController extends WebConfig {
             listaDoktoraDTO.add(new DoctorDTO(d));
         }
 
-        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
     @GetMapping (produces = "application/json", value = "/searchClinic/{date}/{type}/{rating}")
@@ -127,5 +133,16 @@ public class ClinicController extends WebConfig {
         }
         clinicService.update(clinic);
         return new ResponseEntity<>(new ClinicDTO(clinic), HttpStatus.OK);
+    }
+
+    // vraca sale klinike sa imenom name
+    @GetMapping (produces = "application/json", value = "/getRooms/{clinic_name}")
+    public ResponseEntity<?> getRoomsByName(@PathVariable("clinic_name") String name) {
+        List<RoomDTO> roomDTOS = new ArrayList<>();
+        for (Room room : roomService.getRoomsInClinic(name)) {
+            roomDTOS.add(new RoomDTO(room));
+        }
+
+        return new ResponseEntity<>(roomDTOS, HttpStatus.OK);
     }
 }

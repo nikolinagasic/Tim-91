@@ -6,12 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Room;
-import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.RoomDTO;
-import rs.zis.app.zis.dto.TipPregledaDTO;
 import rs.zis.app.zis.service.ClinicService;
 import rs.zis.app.zis.service.RoomService;
 
@@ -73,7 +69,7 @@ public class RoomController extends WebConfig {
     public ResponseEntity<?> delete(@PathVariable("name") String name,@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
         Room room = roomService.findOneByName(name);
-        room.setEnabled(false);
+        room.setActive(false);
         roomService.update(room);
         List<Room> lista = roomService.findRoomByClinic(c);
         List<RoomDTO> listaDTO = new ArrayList<>();

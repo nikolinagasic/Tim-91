@@ -6,18 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.dto.DoctorDTO;
-import rs.zis.app.zis.dto.DoctorTermsDTO;
-import rs.zis.app.zis.dto.NurseDTO;
+import rs.zis.app.zis.domain.*;
+import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
-import rs.zis.app.zis.service.ClinicService;
-import rs.zis.app.zis.service.CustomUserService;
-import rs.zis.app.zis.service.DoctorService;
-import rs.zis.app.zis.service.DoctorTermsService;
+import rs.zis.app.zis.service.*;
 
 import javax.print.Doc;
 import java.util.ArrayList;
@@ -36,6 +28,10 @@ public class DoctorController extends WebConfig {
     private ClinicService clinicService;
     @Autowired
     private DoctorTermsService doctorTermsService;
+    @Autowired
+    private TipPregledaService tipPregledaService;
+    @Autowired
+    private TermDefinitionService termDefinitionService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
    // @PreAuthorize("hasRole('CADMIN')")
@@ -49,6 +45,33 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
+    @GetMapping(produces = "application/json", value = "/getDoctor/{id}")
+    public ResponseEntity<?> getTypeByDoctor(@PathVariable("id") Long id) {
+        Doctor doctor = doctorService.findOneById(id);
+        TipPregledaDTO tipPregledaDTO = new TipPregledaDTO(doctor.getTip());
+        return new ResponseEntity<>(tipPregledaDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getDoctorsByType/{id}")
+    public ResponseEntity<?> getDoctorsByType(@PathVariable("id") Long id) {
+        List<DoctorDTO> doctorList = new ArrayList<>();
+        for (Doctor doctor : doctorService.findDoctorByType(tipPregledaService.findOneById(id))) {
+            doctorList.add(new DoctorDTO(doctor));
+        }
+
+        return new ResponseEntity<>(doctorList, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getTermsByWorkShift/{id}")
+    public ResponseEntity<?> getTermsByWorkShift(@PathVariable("id") Long id) {
+        Doctor doctor = doctorService.findOneById(id);
+        List<TermDefinition> termDefinitionList = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
+        List<TermDefinitionDTO> termDefinitionDTOS =  new ArrayList<>();
+        for (TermDefinition termDefinition : termDefinitionList) {
+            termDefinitionDTOS.add(new TermDefinitionDTO(termDefinition));
+        }
+        return new ResponseEntity<>(termDefinitionDTOS, HttpStatus.OK);
+    }
 
     @GetMapping(produces = "application/json", value = "/getDoctors/{clinic}")
     // @PreAuthorize("hasRole('CADMIN')")
@@ -123,7 +146,7 @@ public class DoctorController extends WebConfig {
 
     @PostMapping(produces = "application/json", consumes = "application/json",
             value = "/getFilterDoctor/{ocenaOd}/{ocenaDo}")
-    public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara,
+    public ResponseEntity<?> filterDoctors(@RequestBody List<DoctorDTO> listaLekara,
                                            @PathVariable("ocenaOd") String ocenaOd,
                                            @PathVariable("ocenaDo") String ocenaDo){
 

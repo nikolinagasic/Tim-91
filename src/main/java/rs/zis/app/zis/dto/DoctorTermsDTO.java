@@ -50,8 +50,8 @@ public class DoctorTermsDTO {
         this.end_term = doctorTerms.getTerm().getEndTerm();
         this.firstNameDoctor = doctorTerms.getDoctor().getFirstName();
         this.lastNameDoctor = doctorTerms.getDoctor().getLastName();
-        this.price = doctorTerms.getDoctor().getPrice();
-        this.discount = doctorTerms.getDoctor().getDiscount();
+        this.price = doctorTerms.getPrice();
+        this.discount = doctorTerms.getDiscount();
         this.type = doctorTerms.getDoctor().getTip().getName();
         this.patient_id = doctorTerms.getPatient().getId();
     }
