@@ -5,10 +5,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.ClinicRepository;
 
+import javax.persistence.OptimisticLockException;
 import java.util.*;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
@@ -220,4 +224,42 @@ public class ClinicService implements UserDetailsService {
         }
     }
 
+    public List<DoctorTermsDTO> getPredefinedTerms(long clinic_id) {
+        List<DoctorTermsDTO> retList = new ArrayList<>();
+        Clinic clinic = findOneById(clinic_id);
+        for (DoctorTerms doctorTerm : doctorTermsService.findAll()) {
+            for (Doctor doctor : clinic.getDoctors()) {
+                if(doctorTerm.getDoctor().getId().equals(doctor.getId())){       // isti doktor => to je ta klinika
+                    if(doctorTerm.isPredefined() && doctorTerm.isActive()){
+                        retList.add(new DoctorTermsDTO(doctorTerm));
+                    }
+                }
+            }
+        }
+
+        return retList;
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public boolean reservePredefinedTerm(Long id_term, Patient patient) {
+        DoctorTerms doctorTerms = doctorTermsService.findOneById(id_term);
+        try {
+            if (doctorTerms != null) {
+                if (doctorTerms.isActive() && doctorTerms.isPredefined()) {
+                    doctorTerms.setPatient(patient);
+                    doctorTerms.setActive(false);
+                    doctorTermsService.save(doctorTerms);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }catch (OptimisticLockException e){
+            System.out.println("Optimistic lock exception je okinut (klasa: " + e.getClass() + " )");
+            return false;
+        }
+
+        return true;
+    }
 }

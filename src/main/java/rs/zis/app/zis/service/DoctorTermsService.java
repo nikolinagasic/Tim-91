@@ -199,6 +199,7 @@ public class DoctorTermsService {
         doctorTerms.setPrice(price);
         doctorTerms.setDiscount(discount);
         doctorTerms.setPredefined(true);
+        doctorTerms.setProcessedByAdmin(true);
 
         save(doctorTerms);
         return 0;

@@ -3,16 +3,16 @@ package rs.zis.app.zis.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.Room;
-import rs.zis.app.zis.domain.Vacation;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.RoomDTO;
+import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.ClinicService;
+import rs.zis.app.zis.service.PatientService;
 import rs.zis.app.zis.service.RoomService;
 
 import java.util.ArrayList;
@@ -29,6 +29,12 @@ public class ClinicController extends WebConfig {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private TokenUtils tokenUtils;
+
+    @Autowired
+    private PatientService patientService;
 
     // dobijam sve doktore koji rade u klinici sa imenom NAME
     @GetMapping (produces = "application/json", value = "/getDoctors/{name}")
@@ -145,4 +151,19 @@ public class ClinicController extends WebConfig {
 
         return new ResponseEntity<>(roomDTOS, HttpStatus.OK);
     }
+
+    @PostMapping (consumes = "application/json", produces = "application/json", value = "/getPredefinedTerms")
+    public ResponseEntity<?> getPredefinedTerms(@RequestBody ClinicDTO klinika) {
+        return new ResponseEntity<>(clinicService.getPredefinedTerms(klinika.getId()), HttpStatus.OK);
+    }
+
+    @PostMapping (produces = "application/json", value = "/reservePredefinedTerm/{id_term}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getPredefinedTerms(@PathVariable("id_term") Long id_term,
+                                                @RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        Patient patient = patientService.findOneByMail(mail);
+        return new ResponseEntity<>(clinicService.reservePredefinedTerm(id_term, patient), HttpStatus.OK);
+    }
+
 }

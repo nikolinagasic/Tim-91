@@ -7,11 +7,13 @@ import rs.zis.app.zis.domain.TermDefinition;
 
 @SuppressWarnings("unused")
 public class DoctorTermsDTO {
-    private long date;
+    private Long id;
+    private Long date;
     private String start_term;
     private String end_term;
     private String firstNameDoctor;
     private String lastNameDoctor;
+    private String room;           // naziv sale
     private double price;
     private int discount;
     private String type;           // tip pregleda
@@ -20,7 +22,8 @@ public class DoctorTermsDTO {
     public DoctorTermsDTO() {
     }
 
-    public DoctorTermsDTO(long date, String start_term, String end_term, Doctor doctor, Patient patient) {
+    public DoctorTermsDTO(Long date, String start_term, String end_term, Doctor doctor, Patient patient,
+                          String room, Long id) {
         this.date = date;
         this.start_term = start_term;
         this.end_term = end_term;
@@ -30,6 +33,8 @@ public class DoctorTermsDTO {
         this.discount = doctor.getDiscount();
         this.type = doctor.getTip().getName();
         this.patient_id = patient.getId();
+        this.room = room;
+        this.id = id;
     }
 
     public DoctorTermsDTO(Long date, TermDefinition termDefinition, Doctor doctor, Patient patient) {
@@ -53,7 +58,14 @@ public class DoctorTermsDTO {
         this.price = doctorTerms.getPrice();
         this.discount = doctorTerms.getDiscount();
         this.type = doctorTerms.getDoctor().getTip().getName();
-        this.patient_id = doctorTerms.getPatient().getId();
+        if(doctorTerms.getPatient() != null) {
+            this.patient_id = doctorTerms.getPatient().getId();
+        }
+        else{
+            this.patient_id = -1L;
+        }
+        this.room = doctorTerms.getRoom().getName();
+        this.id = doctorTerms.getId();
     }
 
     public long getDate() {
@@ -126,5 +138,25 @@ public class DoctorTermsDTO {
 
     public void setPatient_id(Long patient_id) {
         this.patient_id = patient_id;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setDate(Long date) {
+        this.date = date;
     }
 }
