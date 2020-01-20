@@ -25,10 +25,10 @@ public interface DoctorTermsRepository extends JpaRepository<DoctorTerms, Long> 
     // vraca sve termine za tog doktora
     List<DoctorTerms> findAllByDoctor(Doctor d);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
     DoctorTerms save(DoctorTerms doctorTerms);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
     @Query("select dt from DoctorTerms dt where dt.date = :date and dt.term = :start and dt.doctor = :doctor")
     DoctorTerms findOneByDateAndStartTermAndDoctorId(@Param("date")Long date,
                                                      @Param("start") TermDefinition start,

@@ -77,7 +77,6 @@ public class ClinicService implements UserDetailsService {
             List<Vacation> vacationList = vacationService.findAllByDoctor(d);           // godisnji odmori tog doktora
             int counter_term = 0;
 
-
             boolean godisnji = false;
             for (Vacation vacation : vacationList) {
                 if(vacation.isActive() && datum <= vacation.getKraj() && datum >= vacation.getPocetak()){      // proveri da li sam tada na godisnjem

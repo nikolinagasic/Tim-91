@@ -80,14 +80,7 @@ public class DoctorTermsService {
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAllByDoctor(Doctor doctor){
-        List<DoctorTerms> doctorTermsList = new ArrayList<>();
-        for (DoctorTerms doctorTerms : doctorTermsRepository.findAllByDoctor(doctor)) {
-            if(doctorTerms.isProcessedByAdmin()){
-                doctorTermsList.add(doctorTerms);
-            }
-        }
-
-        return doctorTermsList;
+        return doctorTermsRepository.findAllByDoctor(doctor);
     }
 
     @Transactional(readOnly = false)
@@ -113,7 +106,7 @@ public class DoctorTermsService {
                 }
             }
             if(!zauzet) {
-                retList.add(new DoctorTermsDTO(date, termDefinition, doctor));
+                retList.add(new DoctorTermsDTO(date, termDefinition, doctor, new Patient()));
             }
         }
 
@@ -126,9 +119,8 @@ public class DoctorTermsService {
         TermDefinition termDefinition = termDefinitionService.findOneByStart_term(start_term);
         Patient patient = patientService.findOneByMail(mail_patient);
 
-        return new DoctorTermsDTO(date, termDefinition, doctor);
+        return new DoctorTermsDTO(date, termDefinition, doctor, new Patient());
     }
-
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
@@ -137,19 +129,23 @@ public class DoctorTermsService {
         TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
         Patient patient = patientService.findOneByMail(mail_patient);
 
-        DoctorTerms dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
-                                                                                    term_def,
-                                                                                    doctor);
+        DoctorTerms dt = new DoctorTerms();
+        try {
+            dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
+                    term_def,
+                    doctor);
+        }catch (Exception e){
+            System.out.println("Okinut exception: " + e.getClass());
+            return false;
+        }
 
         if(dt == null) {
             DoctorTerms doctorTerms = new DoctorTerms();
             doctorTerms.setDate(doctorTermsDTO.getDate());
             doctorTerms.setDoctor(doctor);
             doctorTerms.setPatient(patient);
-            doctorTerms.setReport("Нема извештаја");
             doctorTerms.setTerm(term_def);
 
-            // TODO staviti processed_by_admin na false (ne cuvam ga odmah)
             doctorTerms.setProcessedByAdmin(false);
             doctorTermsRepository.save(doctorTerms);
             return true;        // uspesno sam napravio tvoj termin
