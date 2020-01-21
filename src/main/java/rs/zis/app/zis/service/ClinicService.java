@@ -40,6 +40,9 @@ public class ClinicService implements UserDetailsService {
     @Autowired
     private VacationService vacationService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<Clinic> findAll() {return clinicRepository.findAll(); }
 
     public Clinic save(ClinicDTO clinicDTO) {
@@ -248,6 +251,11 @@ public class ClinicService implements UserDetailsService {
                 if (doctorTerms.isActive() && doctorTerms.isPredefined()) {
                     doctorTerms.setPatient(patient);
                     doctorTerms.setActive(false);
+                    String textBody = "Поштовани "+patient.getFirstName()+ " " + patient.getLastName() + "," +
+                            "\n\nУспешно сте заказали термин у клиници "+ doctorTerms.getDoctor().getClinic().getName() +
+                            ", код доктора др "+ doctorTerms.getDoctor().getFirstName() + " " + doctorTerms.getDoctor().getLastName() + ".";
+                    notificationService.SendNotification(patient.getMail(), "billypiton43@gmail.com",
+                            "Успешно заказан преглед", textBody);
                     doctorTermsService.save(doctorTerms);
                 } else {
                     return false;
