@@ -3,9 +3,11 @@ package rs.zis.app.zis.domain;
 import java.sql.Timestamp;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
 public class Patient extends Users {
 
@@ -27,7 +29,7 @@ public class Patient extends Users {
     @Column(name = "telephone")
     private String telephone;
 
-    @Column(name = "lbo", unique = false, nullable = false)
+    @Column(name = "lbo", nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "patient")
@@ -115,5 +117,13 @@ public class Patient extends Users {
 
     public void setLbo(long lbo) {
         this.lbo = lbo;
+    }
+
+    public MedicalRecord getMedicalRecord() {
+        return medicalRecord;
+    }
+
+    public void setMedicalRecord(MedicalRecord medicalRecord) {
+        this.medicalRecord = medicalRecord;
     }
 }

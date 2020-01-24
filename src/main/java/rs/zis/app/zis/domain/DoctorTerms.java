@@ -31,6 +31,12 @@ public class DoctorTerms {
     @Column(name = "discount", nullable = false)    // popust
     private int discount;
 
+    @Column(name = "rate_clinic", nullable = false)    // pacijent ocenio kliniku
+    private boolean rate_clinic;
+
+    @Column(name = "rate_doctor", nullable = false)    // pacijent ocenio doktora
+    private boolean rate_doctor;
+
     @Version
     private Long version;
 
@@ -53,6 +59,8 @@ public class DoctorTerms {
     public DoctorTerms() {
         this.active = true;
         this.processedByAdmin = false;
+        this.rate_clinic = false;
+        this.rate_doctor = false;
     }
 
     public DoctorTerms(Long id, long date, Doctor doctor, Patient patient, boolean active,
@@ -174,5 +182,21 @@ public class DoctorTerms {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public boolean isRate_clinic() {
+        return rate_clinic;
+    }
+
+    public void setRate_clinic(boolean rate_clinic) {
+        this.rate_clinic = rate_clinic;
+    }
+
+    public boolean isRate_doctor() {
+        return rate_doctor;
+    }
+
+    public void setRate_doctor(boolean rate_doctor) {
+        this.rate_doctor = rate_doctor;
     }
 }

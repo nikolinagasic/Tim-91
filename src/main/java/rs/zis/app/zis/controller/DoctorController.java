@@ -27,6 +27,8 @@ public class DoctorController extends WebConfig {
     @Autowired
     private ClinicService clinicService;
     @Autowired
+    private PatientService patientService;
+    @Autowired
     private DoctorTermsService doctorTermsService;
     @Autowired
     private TipPregledaService tipPregledaService;
@@ -226,5 +228,24 @@ public class DoctorController extends WebConfig {
         Doctor doc = doctorService.findOneById(id);
         System.out.println(doc.isEnabled());
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+    }
+
+    @GetMapping (produces = "application/json", value = "/getPatientHistoryDoctors")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getHistoryClinic(@RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        Patient patient = patientService.findOneByMail(mail);
+
+        return new ResponseEntity<>(doctorService.getPatientHistoryDoctors(patient), HttpStatus.OK);
+    }
+
+    @PostMapping (produces = "application/json", value = "/oceniDoktora/{doctor_id}/{ocena}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getHistoryClinic(@PathVariable("doctor_id") Long id,
+                                              @PathVariable("ocena") double ocena,
+                                              @RequestHeader("Auth-Token") String token) {
+        Patient patient = patientService.findOneByMail(tokenUtils.getUsernameFromToken(token));
+        Doctor doctor = doctorService.findOneById(id);
+        return new ResponseEntity<>(doctorService.oceniDoktora(doctor, ocena, patient), HttpStatus.OK);
     }
 }

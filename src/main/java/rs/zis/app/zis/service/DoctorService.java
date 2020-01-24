@@ -6,13 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.*;
+import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression", "IfStatementMissingBreakInLoop"})
 @Service
 public class DoctorService {
 
@@ -53,6 +54,8 @@ public class DoctorService {
         d.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
+        d.setSum_ratings(0);
+        d.setNumber_rating(0);
 
         d = this.doctorRepository.save(d);
         return d;
@@ -181,7 +184,7 @@ public class DoctorService {
             Doctor doctor = findOneById(doctorDTO.getId());
             if(doctor.getTip().getName().toLowerCase().contains(tip.toLowerCase())){
                 if(doctor_free_at_date(doctor, datum) || datum == -1){
-                    if(doctor.getRating() == ocena || ocena == -1){
+                    if((doctor.getSum_ratings()/doctor.getNumber_rating()) == ocena || ocena == -1){
                         if(doctor.getLastName().toLowerCase().contains(prezime.toLowerCase())){
                             if(doctor.getFirstName().toLowerCase().contains(ime.toLowerCase())){
                                 retList.add(doctorDTO);
@@ -223,5 +226,54 @@ public class DoctorService {
         return true;
     }
 
+    // vrati sve doktore kod kojih je ovaj pacijent bio, a da ih nije pre toga ocenio
+    public List<DoctorDTO> getPatientHistoryDoctors(Patient patient) {
+        List<Doctor> tmpList = new ArrayList<>();
+        for (DoctorTerms doctorTerms : doctorTermsService.findAll()) {
+            if(doctorTerms.isProcessedByAdmin() && doctorTerms.getPatient() != null){
+                if(doctorTerms.getPatient().equals(patient) && !doctorTerms.isRate_doctor()){
+                    if(!tmpList.contains(doctorTerms.getDoctor())){
+                        tmpList.add(doctorTerms.getDoctor());
+                    }
+                }
+            }
+        }
+
+        List<DoctorDTO> retList = new ArrayList<>();
+        for (Doctor doctor : tmpList) {
+            retList.add(new DoctorDTO(doctor));
+        }
+
+        return retList;
+    }
+
+    public boolean oceniDoktora(Doctor doctor_param, double ocena, Patient patient) {
+        // TODO uradi zakljucavanje na findById
+        //  mora biti zakljucavanje (pesimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
+        Doctor doctor;
+        try {
+            doctor = findOneById(doctor_param.getId());
+        }catch (Exception e){
+            return false;
+        }
+        if(doctor == null){
+            return false;
+        }
+
+        doctor.setSum_ratings(doctor.getSum_ratings() + ocena);
+        doctor.setNumber_rating(doctor.getNumber_rating() + 1);
+        doctorRepository.save(doctor);
+
+        for (DoctorTerms doctorTerms : doctorTermsService.findAll()) {
+            if(doctorTerms.getDoctor().equals(doctor) && doctorTerms.getPatient() != null && !doctorTerms.isRate_doctor()) {
+                if (doctorTerms.getPatient().equals(patient)) {
+                    doctorTerms.setRate_doctor(true);
+                    doctorTermsService.save(doctorTerms);
+                }
+            }
+        }
+
+        return true;
+    }
 }
 

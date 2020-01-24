@@ -15,7 +15,7 @@ import rs.zis.app.zis.repository.ClinicRepository;
 import javax.persistence.OptimisticLockException;
 import java.util.*;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "MalformedFormatString", "CollectionAddAllCanBeReplacedWithConstructor", "UseBulkOperation", "UnusedAssignment", "DefaultAnnotationParam"})
 @Service
 public class ClinicService implements UserDetailsService {
 
@@ -50,7 +50,6 @@ public class ClinicService implements UserDetailsService {
         c.setName(clinicDTO.getName());
         c.setAddress(clinicDTO.getAddress());
         c.setDescription(clinicDTO.getDescription());
-        c.setRating(0);
 
         c = this.clinicRepository.save(c);
         return c;
@@ -65,7 +64,6 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
-    // TODO obratiti paznju na DATE format (long/TimeStamp/String)
     public List<ClinicDTO> searchClinic(long datum, String tip, double ocena){
         // 1) return: doktori koji su datog tipa
         List<Doctor> doctorsType;
@@ -115,7 +113,8 @@ public class ClinicService implements UserDetailsService {
         for (Doctor d : slobodni_doktori) {
             Long id = d.getClinic().getId();
             Clinic clinic = findOneById(id);
-            if(clinic.getRating() == ocena){
+            double prosecna_ocena = izracunaj_ocenu(clinic);
+            if(prosecna_ocena == ocena){
                 ClinicDTO clinicDTO = new ClinicDTO(clinic);
                 clinicDTO.setPrice(d.getPrice());                   // uzmi cenu doktora
 
@@ -141,7 +140,15 @@ public class ClinicService implements UserDetailsService {
         return  retList;
     }
 
-    // TODO date format
+    private double izracunaj_ocenu(Clinic clinic) {
+        if(clinic.getNumber_ratings() != 0){
+            return clinic.getSum_ratings() / clinic.getNumber_ratings();
+        }
+        else{
+            return -1;
+        }
+    }
+
     public List<Doctor> findDoctorsByClinic(String clinic_name, Long date){
         List<Doctor> retList = new ArrayList<>();
         Clinic clinic = findOneByName(clinic_name);
@@ -152,7 +159,7 @@ public class ClinicService implements UserDetailsService {
 
                 boolean godisnji = false;
                 for (Vacation vacation : vacationList) {
-                    if(vacation.getDoctor().getId() == doctor.getId()) {
+                    if(vacation.getDoctor().getId().equals(doctor.getId())) {
                         if (date >= vacation.getPocetak() && date <= vacation.getKraj()) {
                             godisnji = true;
                             break;
@@ -204,9 +211,12 @@ public class ClinicService implements UserDetailsService {
             naziv = "";
         }
         List<ClinicDTO> retList = new ArrayList<>();
+        double prosecna_ocena_klinike;
         for (ClinicDTO clinicDTO : listaKlinika) {
+            Clinic clinic = findOneById(clinicDTO.getId());
+            prosecna_ocena_klinike = izracunaj_ocenu(clinic);
             if(clinicDTO.getPrice() >= cenaOd && clinicDTO.getPrice() <= cenaDo){
-                if(clinicDTO.getRating() >= ocenaOd && clinicDTO.getRating() <= ocenaDo){
+                if(prosecna_ocena_klinike >= ocenaOd && prosecna_ocena_klinike <= ocenaDo){
                     if(clinicDTO.getName().toLowerCase().contains(naziv.toLowerCase())){
                         retList.add(clinicDTO);
                     }
@@ -266,6 +276,56 @@ public class ClinicService implements UserDetailsService {
         }catch (OptimisticLockException e){
             System.out.println("Optimistic lock exception je okinut (klasa: " + e.getClass() + " )");
             return false;
+        }
+
+        return true;
+    }
+
+    public List<ClinicDTO> getPatientHistoryClinics(Patient patient) {
+        List<Clinic> tmpList = new ArrayList<>();
+        for (DoctorTerms doctorTerms : doctorTermsService.findAll()) {
+            if(doctorTerms.isProcessedByAdmin() && doctorTerms.getPatient() != null){
+                if(doctorTerms.getPatient().equals(patient) && !doctorTerms.isRate_clinic()){
+                    if(!tmpList.contains(doctorTerms.getDoctor().getClinic())){
+                        tmpList.add(doctorTerms.getDoctor().getClinic());
+                    }
+                }
+            }
+        }
+
+        List<ClinicDTO> retList = new ArrayList<>();
+        for (Clinic clinic : tmpList) {
+            retList.add(new ClinicDTO(clinic));
+        }
+
+        return retList;
+    }
+
+    public boolean oceniKliniku(Clinic clinic_param, double ocena, Patient patient) {
+        // TODO uradi zakljucavanje na findById
+        //  mora biti zakljucavanje (pesimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
+        Clinic clinic;
+        try {
+            clinic = findOneById(clinic_param.getId());
+        }catch (Exception e){
+            return false;
+        }
+        if(clinic == null){
+            return false;
+        }
+
+        clinic.setSum_ratings(clinic.getSum_ratings() + ocena);
+        clinic.setNumber_ratings(clinic.getNumber_ratings() + 1);
+        clinicRepository.save(clinic);
+        List<DoctorTerms> list = doctorTermsService.findAll();
+        for (DoctorTerms doctorTerms : doctorTermsService.findAll()) {
+            if(doctorTerms.getDoctor().getClinic().equals(clinic) && doctorTerms.getPatient() != null
+                    && !doctorTerms.isRate_clinic()){
+                if(doctorTerms.getPatient().equals(patient)) {
+                    doctorTerms.setRate_clinic(true);
+                    doctorTermsService.save(doctorTerms);
+                }
+            }
         }
 
         return true;

@@ -166,4 +166,24 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(clinicService.reservePredefinedTerm(id_term, patient), HttpStatus.OK);
     }
 
+    @GetMapping (produces = "application/json", value = "/getPatientHistoryClinics")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getHistoryClinic(@RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        Patient patient = patientService.findOneByMail(mail);
+
+        return new ResponseEntity<>(clinicService.getPatientHistoryClinics(patient), HttpStatus.OK);
+    }
+
+    @PostMapping (produces = "application/json", value = "/oceniKliniku/{clinic_id}/{ocena}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getHistoryClinic(@PathVariable("clinic_id") Long id,
+                                              @PathVariable("ocena") double ocena,
+                                              @RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        Patient patient = patientService.findOneByMail(mail);
+        Clinic clinic = clinicService.findOneById(id);
+        return new ResponseEntity<>(clinicService.oceniKliniku(clinic, ocena, patient), HttpStatus.OK);
+    }
+
 }
