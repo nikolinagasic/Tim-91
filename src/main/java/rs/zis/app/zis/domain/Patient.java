@@ -1,5 +1,7 @@
 package rs.zis.app.zis.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.sql.Timestamp;
 
 import javax.persistence.*;
@@ -32,6 +34,7 @@ public class Patient extends Users {
     @Column(name = "lbo", nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "patient")
     private MedicalRecord medicalRecord;
 
@@ -45,7 +48,8 @@ public class Patient extends Users {
 
     public Patient(String mail, String password, String firstName, String lastName, String address,
                    String city, String country, String telephone, long lbo, boolean enabled,
-                   Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+                   Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin,
+                   MedicalRecord medicalRecord) {
         super(mail, password, enabled, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -55,6 +59,7 @@ public class Patient extends Users {
         this.telephone = telephone;
         this.lbo = lbo;
         this.role = "patient";
+        this.medicalRecord = medicalRecord;
     }
 
     public String getRole() {

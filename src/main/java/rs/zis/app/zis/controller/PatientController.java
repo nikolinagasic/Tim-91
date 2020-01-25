@@ -1,4 +1,5 @@
 package rs.zis.app.zis.controller;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,9 +125,9 @@ public class PatientController extends WebConfig {
         }
     }
 
-    @PreAuthorize("hasRole('PATIENT')")
     @GetMapping(produces = "application/json", value = "/getPat")
-    public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token) {
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getPatProfile(@RequestHeader("Auth-Token") String token) {
         String mail = tokenUtils.getUsernameFromToken(token);
         return new ResponseEntity<>(patientService.findOneByMail(mail), HttpStatus.OK);
     }
