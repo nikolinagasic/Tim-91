@@ -235,5 +235,36 @@ public class DoctorTermsService {
         return true;
     }
 
+    public List<DoctorTermsDTO> getAllExaminations(Patient patient) {
+        List<DoctorTermsDTO> dtoList = new ArrayList<>();
+        for (DoctorTerms doctorTerms : findAll()) {
+            if(doctorTerms.getPatient() != null){
+                if(doctorTerms.getPatient().equals(patient)){
+                    dtoList.add(new DoctorTermsDTO(doctorTerms));
+                }
+            }
+        }
 
+        return dtoList;
+    }
+
+    public List<DoctorTermsDTO> getSortExaminations(List<DoctorTermsDTO> listaTermina,
+                                                    Long datum, String tip, String vrsta) {
+        List<DoctorTermsDTO> retList = new ArrayList<>();
+        boolean examination = false;
+        if(vrsta.toLowerCase().equals("преглед")){
+            examination = true;
+        }
+        for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
+            if(doctorTermsDTO.getDate() == datum || datum == -1){
+                if(doctorTermsDTO.getType().toLowerCase().equals(tip.toLowerCase()) || tip.toLowerCase().equals("сви типови")){
+                    if( (doctorTermsDTO.isExamination() && examination) || vrsta.toLowerCase().equals("прегледи и операције") ){
+                        retList.add(doctorTermsDTO);
+                    }
+                }
+            }
+        }
+
+        return retList;
+    }
 }

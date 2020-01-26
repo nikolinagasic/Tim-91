@@ -18,12 +18,13 @@ public class DoctorTermsDTO {
     private int discount;
     private String type;           // tip pregleda
     private Long patient_id;       // id pacijenta
+    private boolean isExamination;
 
     public DoctorTermsDTO() {
     }
 
     public DoctorTermsDTO(Long date, String start_term, String end_term, Doctor doctor, Patient patient,
-                          String room, Long id) {
+                          String room, Long id, boolean isExamination) {
         this.date = date;
         this.start_term = start_term;
         this.end_term = end_term;
@@ -35,6 +36,7 @@ public class DoctorTermsDTO {
         this.patient_id = patient.getId();
         this.room = room;
         this.id = id;
+        this.isExamination = isExamination;
     }
 
     public DoctorTermsDTO(Long date, TermDefinition termDefinition, Doctor doctor, Patient patient) {
@@ -66,6 +68,7 @@ public class DoctorTermsDTO {
         }
         this.room = doctorTerms.getRoom().getName();
         this.id = doctorTerms.getId();
+        this.isExamination = doctorTerms.isExamination();
     }
 
     public long getDate() {
@@ -158,5 +161,13 @@ public class DoctorTermsDTO {
 
     public void setDate(Long date) {
         this.date = date;
+    }
+
+    public boolean isExamination() {
+        return isExamination;
+    }
+
+    public void setExamination(boolean examination) {
+        isExamination = examination;
     }
 }

@@ -204,7 +204,8 @@ public class DoctorController extends WebConfig {
     }
 
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}")
-    public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("ime") String ime,
+    public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara,
+                                        @PathVariable("ime") String ime,
                                         @PathVariable("prezime") String prezime) {
         if(ime.equals("~")){
             ime = "";
