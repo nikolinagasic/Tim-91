@@ -258,7 +258,7 @@ public class DoctorTermsService {
         for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
             if(doctorTermsDTO.getDate() == datum || datum == -1){
                 if(doctorTermsDTO.getType().toLowerCase().equals(tip.toLowerCase()) || tip.toLowerCase().equals("сви типови")){
-                    if( (doctorTermsDTO.isExamination() && examination) || vrsta.toLowerCase().equals("прегледи и операције") ){
+                    if( notXorFunc(doctorTermsDTO.isExamination(), examination) || vrsta.toLowerCase().equals("прегледи и операције") ){
                         retList.add(doctorTermsDTO);
                     }
                 }
@@ -266,5 +266,12 @@ public class DoctorTermsService {
         }
 
         return retList;
+    }
+
+    private boolean notXorFunc(boolean d_term_exam, boolean examination) {
+        if( (d_term_exam && examination) || (!d_term_exam && !examination) ){
+            return true;
+        }
+        return false;
     }
 }
