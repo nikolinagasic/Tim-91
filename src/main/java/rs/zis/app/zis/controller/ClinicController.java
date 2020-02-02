@@ -186,4 +186,20 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(clinicService.oceniKliniku(clinic, ocena, patient), HttpStatus.OK);
     }
 
+    @PostMapping (produces = "application/json",
+                  consumes = "application/json",
+                  value = "/sortClinicByName/{order}")
+    public ResponseEntity<?> sortClinicByName(@RequestBody List<ClinicDTO> lista_klinika,
+                                              @PathVariable("order") String order) {
+        return new ResponseEntity<>(clinicService.sortClinicByName(lista_klinika, order), HttpStatus.OK);
+    }
+
+    @PostMapping (produces = "application/json",
+            consumes = "application/json",
+            value = "/sortClinicByAddress/{order}")
+    public ResponseEntity<?> sortClinicByAddress(@RequestBody List<ClinicDTO> lista_klinika,
+                                                 @PathVariable("order") String order) {
+        return new ResponseEntity<>(clinicService.sortClinicByAddress(lista_klinika, order), HttpStatus.OK);
+    }
+
 }

@@ -4,18 +4,21 @@ import rs.zis.app.zis.domain.*;
 
 
 public class DoctorDTO {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private double rating;
-    private String mail;
-    private String password;
-    private  String clinic;
-    private String tip;
-    private String role;
-    private boolean firstLogin;
-    private int workShift;
-    private int discount;
+    private Long id;//
+    private String firstName;//
+    private String lastName;//
+    private double rating;//
+    private String mail;//
+    private String password;//
+    private  String clinic;//
+    private String tip;//
+    private String role;//
+    private boolean firstLogin;//
+    private int workShift;//
+    private int discount;//
+
+    public DoctorDTO() {
+    }
 
     public DoctorDTO(Doctor doctor) {
         this.id = doctor.getId();
