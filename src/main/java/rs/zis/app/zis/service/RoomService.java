@@ -36,11 +36,10 @@ public class RoomService implements UserDetailsService {
         List<Room> rooms = findRoomByClinic(clinic);
         for (Room r : rooms) {
             if (r.getNumber().equals(roomDTO.getNumber())) {
-                if (r.isEnabled()) {
+                if (r.isActive()) {
                     return null;
                 }
-                System.out.println("enable:"+r.isEnabled());
-                r.setEnabled(true);
+                r.setActive(true);
                 r.setName(roomDTO.getName());
                 r.setNumber(roomDTO.getNumber());
                 r.setClinic(clinic);
@@ -48,7 +47,7 @@ public class RoomService implements UserDetailsService {
                 return r;
             }
         }
-        System.out.println("enable2:"+c.isEnabled());
+        System.out.println("enable2:"+c.isActive());
         c.setName(roomDTO.getName());
         c.setNumber(roomDTO.getNumber());
         c.setClinic(clinic);
@@ -79,7 +78,8 @@ public class RoomService implements UserDetailsService {
         for (Room r : svi) {
             if (r.isActive()) {
                 retVal.add(r);
-                System.out.println("sobe u klinici"+r.getNumber());
+                System.out.println("sobe u klinici" + r.getNumber());
+            }
 
         }
         return retVal;

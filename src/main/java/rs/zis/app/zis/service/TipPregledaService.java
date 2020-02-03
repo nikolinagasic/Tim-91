@@ -54,11 +54,11 @@ public class TipPregledaService {
         TipPregleda t = new TipPregleda();
         TipPregleda tip = findOneByName(tipPregledaDTO.getName());
         if(tip != null){
-            if (tip.isEnabled())
+            if (tip.isActive())
                  return null;
-            tip.setEnabled(true);
+            tip.setActive(true);
             update(tip);
-            System.out.println("saving"+tip.isEnabled());
+            System.out.println("saving"+tip.isActive());
             return tip;
         }
         t.setActive(true);

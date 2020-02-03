@@ -30,7 +30,7 @@ public class RoomController extends WebConfig {
 
         ArrayList<RoomDTO> roomsDTO = new ArrayList<>();
         for (Room r: listRoom) {
-            if (r.isEnabled()) {
+            if (r.isActive()) {
                 roomsDTO.add(new RoomDTO(r));
             }
         }

@@ -25,9 +25,6 @@ public class ClinicAdministratorController extends WebConfig {
     private DoctorService doctorService;
 
     @Autowired
-    private DoctorTermsService doctorTermsService;
-
-    @Autowired
     private NurseService nurseService;
 
     @Autowired
