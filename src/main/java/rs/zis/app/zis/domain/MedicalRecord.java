@@ -1,5 +1,7 @@
 package rs.zis.app.zis.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -29,6 +31,7 @@ public class MedicalRecord {
     @Column(name= "allergy")
     private String allergy;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Patient patient;
 

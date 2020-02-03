@@ -76,6 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
                 .permitAll().antMatchers("/clinic/**")
                 .permitAll().antMatchers("/nurse/**")
+                .permitAll().antMatchers("/term_definition/**")
                 .permitAll().antMatchers("/medicalrecord/**")
                 .permitAll().antMatchers("/medicalreview/**")
                 .permitAll().antMatchers("/room/**")

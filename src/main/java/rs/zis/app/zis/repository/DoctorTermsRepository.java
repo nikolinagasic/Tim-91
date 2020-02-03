@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.Patient;
-import rs.zis.app.zis.domain.TermDefinition;
+import rs.zis.app.zis.domain.*;
 
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
@@ -21,7 +18,7 @@ public interface DoctorTermsRepository extends JpaRepository<DoctorTerms, Long> 
     Page<DoctorTerms> findAll(Pageable pageable);
     DoctorTerms findOneById(long id);
     List<DoctorTerms> findAllByDate(long date);
-
+    List<DoctorTerms> findAllByRoom(Room room);
     // vraca sve termine za tog doktora
     List<DoctorTerms> findAllByDoctor(Doctor d);
 

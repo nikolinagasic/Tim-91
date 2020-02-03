@@ -24,11 +24,14 @@ public class Doctor extends Users {
     @Column(name= "role")
     private String role;
 
-    @Column(name= "rating")         // prosecna ocena
-    private double rating;
-
     @Column(name= "work_shift")     // smena
     private int workShift;
+
+    @Column(name= "sum_ratings")        // suma svih recenzija
+    private double sum_ratings;
+
+    @Column(name= "number_ratings")        // broj recenzija
+    private double number_rating;
 
     @Column(name= "discount")       // popust na pregled (% - u procentima)
     private int discount;
@@ -42,19 +45,17 @@ public class Doctor extends Users {
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Vacation> vacation = new HashSet<>();
 
-
-//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private Set<DoctorTerms> busy_terms = new HashSet<>();
-
     public Doctor() {
         this.role = "doctor";
         this.workShift = 1;
         this.discount = 0;
+        this.sum_ratings = 0;
+        this.number_rating = 0;
     }
 
     public Doctor(String mail, String password, String firstName, String lastName, Clinic clinic, TipPregleda tip, double price,
                   Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin, 
-                  int workShift, int discount) {
+                  int workShift, int discount, double sum_ratings, double number_rating) {
         super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -63,7 +64,8 @@ public class Doctor extends Users {
         this.role = "doctor";
         this.workShift = workShift;
         this.discount = discount;
-     //   this.vacation = vacation;
+        this.sum_ratings = sum_ratings;
+        this.number_rating = number_rating;
     }
 
     public int getDiscount() {
@@ -80,14 +82,6 @@ public class Doctor extends Users {
 
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
     }
 
     public TipPregleda getTip() {
@@ -130,14 +124,6 @@ public class Doctor extends Users {
         this.lastName = lastName;
     }
 
-/*    public Set<Termin> getAppointmentList() {
-        return appointmentList;
-    }
-
-    public void setAppointmentList(Set<Termin> appointmentList) {
-        this.appointmentList = appointmentList;
-    }
-*/
     public Clinic getClinic() {
         return clinic;
     }
@@ -154,13 +140,20 @@ public class Doctor extends Users {
         this.workShift = workShift;
     }
 
-    /*   public Set<Godisnji_odmor> getVacation() {
-        return vacation;
+    public double getSum_ratings() {
+        return sum_ratings;
     }
 
-    public void setVacation(Set<Godisnji_odmor> vacation) {
-        this.vacation = vacation;
+    public void setSum_ratings(double sum_ratings) {
+        this.sum_ratings = sum_ratings;
     }
-*/
+
+    public double getNumber_rating() {
+        return number_rating;
+    }
+
+    public void setNumber_rating(double number_rating) {
+        this.number_rating = number_rating;
+    }
 
 }

@@ -6,12 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.Room;
-import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.RoomDTO;
-import rs.zis.app.zis.dto.TipPregledaDTO;
 import rs.zis.app.zis.service.ClinicService;
 import rs.zis.app.zis.service.RoomService;
 
@@ -67,27 +63,27 @@ public class RoomController extends WebConfig {
         roomService.update(room);
         return new ResponseEntity<>(new RoomDTO(room), HttpStatus.OK);
     }
-    @PostMapping(produces = "application/json", value = "/delete/{number}/{clinic}")
-    public ResponseEntity<?> delete(@PathVariable("number") String number,@PathVariable("clinic") String clinic) {
+  
+    // TODO Proveri za name/number
+    @PostMapping(produces = "application/json", value = "/delete/{name}/{clinic}")
+    public ResponseEntity<?> delete(@PathVariable("name") String name,@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
-        List<Room> rooms = roomService.findRoomByClinic(c);
-        for (Room r : rooms) {
-            if (r.getNumber().equals(number)) {
-                r.setEnabled(false);
-                roomService.update(r);
-            }
-        }
-
+      
+        Room room = roomService.findOneByName(name);
+        room.setActive(false);
+        roomService.update(room);
+      
         List<Room> lista = roomService.findRoomByClinic(c);
         List<RoomDTO> listaDTO = new ArrayList<>();
         for (Room r: lista) {
-            if (r.isEnabled()) {
+            if (r.isActive()) {
                 listaDTO.add(new RoomDTO(r));
             }
         }
 
         return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
+  
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{naziv}/{broj}")
     public ResponseEntity<?> findRoom(@RequestBody List<RoomDTO> lista, @PathVariable("naziv") String naziv,
                                         @PathVariable("broj") String broj) {

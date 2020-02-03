@@ -25,6 +25,21 @@ public class DoctorTerms {
     @Column(name = "predefined", nullable = false)    // da li je/nije unapred definisan
     private boolean predefined;
 
+    @Column(name = "price", nullable = false)    // cena
+    private double price;
+
+    @Column(name = "discount", nullable = false)    // popust
+    private int discount;
+
+    @Column(name = "rate_clinic", nullable = false)    // pacijent ocenio kliniku
+    private boolean rate_clinic;
+
+    @Column(name = "rate_doctor", nullable = false)    // pacijent ocenio doktora
+    private boolean rate_doctor;
+
+    @Version
+    private Long version;
+
     // JoinColumn ce uzeti samo reference iz doktora (doktor ne vidi ove termine)
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="doctor_id", referencedColumnName="id")
@@ -44,10 +59,13 @@ public class DoctorTerms {
     public DoctorTerms() {
         this.active = true;
         this.processedByAdmin = false;
+        this.rate_clinic = false;
+        this.rate_doctor = false;
     }
 
     public DoctorTerms(Long id, long date, Doctor doctor, Patient patient, boolean active,
-                       TermDefinition termDefinition, boolean processedByAdmin, Room room, boolean examination) {
+                       TermDefinition termDefinition, boolean processedByAdmin, Room room, boolean examination,
+                       double price, int discount, boolean predefined) {
         this.id = id;
         this.date = date;
         this.doctor = doctor;
@@ -57,6 +75,9 @@ public class DoctorTerms {
         this.processedByAdmin = processedByAdmin;
         this.room = room;
         this.examination = examination;
+        this.price = price;
+        this.discount = discount;
+        this.predefined = predefined;
     }
 
     public Long getId() {
@@ -129,5 +150,53 @@ public class DoctorTerms {
 
     public void setExamination(boolean examination) {
         this.examination = examination;
+    }
+
+    public boolean isPredefined() {
+        return predefined;
+    }
+
+    public void setPredefined(boolean predefined) {
+        this.predefined = predefined;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public boolean isRate_clinic() {
+        return rate_clinic;
+    }
+
+    public void setRate_clinic(boolean rate_clinic) {
+        this.rate_clinic = rate_clinic;
+    }
+
+    public boolean isRate_doctor() {
+        return rate_doctor;
+    }
+
+    public void setRate_doctor(boolean rate_doctor) {
+        this.rate_doctor = rate_doctor;
     }
 }

@@ -14,26 +14,28 @@ public class TipPregleda {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-    @Column(name = "enabled", nullable = false)
-    private boolean enabled;
+
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @OneToMany(mappedBy = "tip",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Doctor> doctors = new ArrayList<Doctor>();
 
     public TipPregleda(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.enabled = true;
+        this.active = true;
     }
 
     public TipPregleda() {
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Long getId() {
