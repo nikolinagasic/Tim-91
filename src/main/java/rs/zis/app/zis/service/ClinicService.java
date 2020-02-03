@@ -114,7 +114,7 @@ public class ClinicService implements UserDetailsService {
             Long id = d.getClinic().getId();
             Clinic clinic = findOneById(id);
             double prosecna_ocena = izracunaj_ocenu(clinic);
-            if(prosecna_ocena == ocena){
+            if(prosecna_ocena == ocena || ocena == -1){
                 ClinicDTO clinicDTO = new ClinicDTO(clinic);
                 clinicDTO.setPrice(d.getPrice());                   // uzmi cenu doktora
 
@@ -304,7 +304,7 @@ public class ClinicService implements UserDetailsService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean oceniKliniku(Clinic clinic_param, double ocena, Patient patient) {
         // uradjeno zakljucavanje na findById
-        // mora biti zakljucavanje (pesimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
+        // mora biti zakljucavanje (optimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
         Clinic clinic;
         try {
             clinic = findOneById(clinic_param.getId());

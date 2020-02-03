@@ -236,6 +236,7 @@ public class DoctorTermsService {
         return true;
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getAllExaminations(Patient patient) {
         List<DoctorTermsDTO> dtoList = new ArrayList<>();
         for (DoctorTerms doctorTerms : findAll()) {
@@ -249,6 +250,7 @@ public class DoctorTermsService {
         return dtoList;
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getSortExaminations(List<DoctorTermsDTO> listaTermina,
                                                     Long datum, String tip, String vrsta) {
         List<DoctorTermsDTO> retList = new ArrayList<>();
@@ -276,6 +278,7 @@ public class DoctorTermsService {
         return false;
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> sortByDate(List<DoctorTermsDTO> listaTermina, String order) {
         ArrayList<Long> lista_datuma = new ArrayList<>();
         for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
@@ -298,6 +301,7 @@ public class DoctorTermsService {
         return retList;
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> sortByTip(List<DoctorTermsDTO> listaTermina, String order) {
         ArrayList<String> lista_tipova = new ArrayList<>();
         for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
