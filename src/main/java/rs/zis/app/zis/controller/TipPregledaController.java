@@ -49,7 +49,13 @@ public class TipPregledaController extends WebConfig {
     @PostMapping(produces = "application/json",value = "/delete/{name}")
     public ResponseEntity<?> deleteType(@PathVariable("name") String name) {
         TipPregleda tip = tipPregledaService.findOneByName(name);
+        
+        List<Doctor> doktori = doctorService.findDoctorByType(tip);
+        if (doktori.size() != 0) {
+            return new ResponseEntity<>("koristi se", HttpStatus.CONFLICT);
+        }
         tip.setActive(false);
+      
         tipPregledaService.update(tip);
         List<TipPregleda> tipovi = tipPregledaService.findAll();
         List<TipPregledaDTO> tipoviDTO = new ArrayList<>();

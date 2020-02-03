@@ -19,6 +19,9 @@ import java.util.List;
 public class ClinicAdministratorController extends WebConfig {
 
     @Autowired
+    private DoctorTermsService doctorTermsService;
+
+    @Autowired
     private DoctorService doctorService;
 
     @Autowired
@@ -113,6 +116,21 @@ public class ClinicAdministratorController extends WebConfig {
         clinicAdministratorService.update(clinicAdministrator);
         ClinicAdministratorDTO clinicAdministratorDTO = new ClinicAdministratorDTO(clinicAdministrator);
         return new ResponseEntity<>(clinicAdministratorDTO, HttpStatus.OK);
+    }
+    @GetMapping(produces = "application/json", value = "/getTerms/{clinic}")
+    public ResponseEntity<?> getTerms(@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        List<DoctorTerms> terms = doctorTermsService.findAllByClinic(c);
+        List<DoctorTermsDTO> termsDTO = new ArrayList<>();
+        System.out.println("ovde je");
+        for (DoctorTerms t : terms) {
+            System.out.println(t.getDate());
+            if (!t.isProcessedByAdmin())
+                termsDTO.add(new DoctorTermsDTO(t));
+            System.out.println("nije:"+t.getDate());
+        }
+        return new ResponseEntity<>(termsDTO, HttpStatus.OK);
+
     }
 
     // TODO obradi izuzetak za OPTIMISTIC LOCK

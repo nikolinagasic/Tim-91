@@ -18,10 +18,10 @@ public class TipPregledaService {
     @Autowired
     private TipPregledaRepository tipPregledaRepository;
 
-    public Page<TipPregleda> findAll(Pageable page) {
+   /* public Page<TipPregleda> findAll(Pageable page) {
         return tipPregledaRepository.findAll(page);
     }
-
+*/
     public List<TipPregleda> findAll() {
         List<TipPregleda> retVal = new ArrayList<>();
         List<TipPregleda> svi = tipPregledaRepository.findAll();
@@ -30,6 +30,7 @@ public class TipPregledaService {
                 retVal.add(tip);
             }
         }
+        System.out.println("find all:"+retVal);
         return retVal;
     }
 
@@ -53,7 +54,12 @@ public class TipPregledaService {
         TipPregleda t = new TipPregleda();
         TipPregleda tip = findOneByName(tipPregledaDTO.getName());
         if(tip != null){
-            return null;
+            if (tip.isEnabled())
+                 return null;
+            tip.setEnabled(true);
+            update(tip);
+            System.out.println("saving"+tip.isEnabled());
+            return tip;
         }
         t.setActive(true);
         t.setName(tipPregledaDTO.getName());
@@ -62,8 +68,9 @@ public class TipPregledaService {
     }
     public List<TipPregledaDTO> search(String naziv) {
         List<TipPregledaDTO> retList = new ArrayList<>();
-        List<TipPregleda> svi = tipPregledaRepository.findAll();
+        List<TipPregleda> svi = findAll();
         for (TipPregleda tip: svi) {
+            System.out.println("search:"+tip.getName());
             if(tip.getName().toLowerCase().contains(naziv.toLowerCase())){
 
                     retList.add(new TipPregledaDTO(tip));

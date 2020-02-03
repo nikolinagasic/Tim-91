@@ -51,6 +51,7 @@ public class DoctorService {
         d.setPassword(passwordEncoder.encode(doctorDTO.getPassword()));
         d.setClinic(clinicService.findOneByName(doctorDTO.getClinic()));
         d.setTip(tipPregledaService.findOneByName(doctorDTO.getTip()));
+        d.setWorkShift(doctorDTO.getWorkShift());
         d.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
@@ -136,6 +137,18 @@ public class DoctorService {
                 if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
                         retList.add(doctorDTO);
                 }
+            }
+        }
+
+        return retList;
+    }
+    public List<DoctorDTO> filterDoctorByType(List<DoctorDTO> lista_lekara, String tip) {
+        List<DoctorDTO> retList = new ArrayList<>();
+        for (DoctorDTO doctorDTO: lista_lekara) {
+            if(doctorDTO.getTip().toLowerCase().equals(tip.toLowerCase())){
+
+                    retList.add(doctorDTO);
+
             }
         }
 

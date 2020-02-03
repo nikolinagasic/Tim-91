@@ -1,6 +1,8 @@
 package rs.zis.app.zis.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,9 +31,26 @@ public class RoomService implements UserDetailsService {
 
     public Room save(RoomDTO roomDTO) {
         Room c = new Room();
+
+        Clinic clinic = clinicService.findOneByName(roomDTO.getClinic());
+        List<Room> rooms = findRoomByClinic(clinic);
+        for (Room r : rooms) {
+            if (r.getNumber().equals(roomDTO.getNumber())) {
+                if (r.isEnabled()) {
+                    return null;
+                }
+                System.out.println("enable:"+r.isEnabled());
+                r.setEnabled(true);
+                r.setName(roomDTO.getName());
+                r.setNumber(roomDTO.getNumber());
+                r.setClinic(clinic);
+                update(r);
+                return r;
+            }
+        }
+        System.out.println("enable2:"+c.isEnabled());
         c.setName(roomDTO.getName());
         c.setNumber(roomDTO.getNumber());
-        Clinic clinic = clinicService.findOneByName(roomDTO.getClinic());
         c.setClinic(clinic);
         c.setActive(true);
         c = this.roomRepository.save(c);
@@ -60,7 +79,8 @@ public class RoomService implements UserDetailsService {
         for (Room r : svi) {
             if (r.isActive()) {
                 retVal.add(r);
-            }
+                System.out.println("sobe u klinici"+r.getNumber());
+
         }
         return retVal;
     }

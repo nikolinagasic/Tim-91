@@ -14,6 +14,7 @@ import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.MedicalRecordDTO;
 import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,9 +77,34 @@ public class PatientController extends WebConfig {
 
         ArrayList<PatientDTO> listDTO = new ArrayList<>();
         for (Patient p: listPatient) {
-            listDTO.add(new PatientDTO(p));
+            if (p.isEnabled()) {
+                listDTO.add(new PatientDTO(p));
+            }
         }
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/find/{ime}/{prezime}/{lbo}")
+    public ResponseEntity<?> findPatient(@PathVariable("ime") String ime, @PathVariable("prezime") String prezime,
+                                        @PathVariable("lbo") String lbo) {
+        if(ime.equals("~")){
+            ime = "";
+        }
+        if(prezime.equals("~")){
+            prezime = "";
+        }
+        if(lbo.equals("~")){
+            lbo = "";
+        }
+        List<Patient> lista = patientService.findAll();
+        List<PatientDTO> ret = new ArrayList<>();
+        for (Patient p : lista) {
+            if (p.isEnabled()) {
+                ret.add(new PatientDTO(p));
+            }
+        }
+        List<PatientDTO> listaDTO = patientService.findPatient(ret, ime, prezime,lbo);
+        return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
 
     //@PreAuthorize("hasRole('PATIENT')")
@@ -154,5 +180,11 @@ public class PatientController extends WebConfig {
                                           @PathVariable("vrsta") String vrsta) {
         return new ResponseEntity<>(doctorTermsService.getSortExaminations(listaTermina, datum, tip, vrsta),
                 HttpStatus.OK);
+    }
+  
+    @GetMapping(produces = "application/json", value = "/getByMail/{mail}")
+    public ResponseEntity<?> getPatient(@PathVariable("mail") String mail) {
+        Patient patient = patientService.findOneByMail(mail);
+        return new ResponseEntity<>(new PatientDTO(patient), HttpStatus.OK);
     }
 }
