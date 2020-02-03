@@ -30,7 +30,9 @@ public class RoomController extends WebConfig {
 
         ArrayList<RoomDTO> roomsDTO = new ArrayList<>();
         for (Room r: listRoom) {
-            roomsDTO.add(new RoomDTO(r));
+            if (r.isActive()) {
+                roomsDTO.add(new RoomDTO(r));
+            }
         }
         System.out.println(roomsDTO);
         return new ResponseEntity<>(roomsDTO, HttpStatus.OK);
@@ -38,21 +40,17 @@ public class RoomController extends WebConfig {
     @PostMapping(consumes = "application/json", value = "/save")
     public ResponseEntity<?> saveRoom(@RequestBody RoomDTO roomDTO) {
         System.out.println("usao da doda");
-        Clinic clinic = clinicService.findOneByName(roomDTO.getClinic());
-        List<Room> sobe = roomService.findRoomByClinic(clinic);
-        for (Room r: sobe) {
-            if (r.getName().equals(roomDTO.getName())) {
-                    return new ResponseEntity<>("postoji", HttpStatus.CONFLICT);
-                }
-
-        }
         Room room = roomService.save(roomDTO);
+        System.out.println(room.getNumber());
+        if (room == null) {
+            return new ResponseEntity<>("postoji", HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>(roomDTO, HttpStatus.CREATED);
     }
-    @PostMapping(value = "/changeAttribute/{changed}/{value}/{name}")
+    @PostMapping(value = "/changeAttribute/{changed}/{value}/{number}")
     // @PreAuthorize("hasRole('CADMIN')")
-    public ResponseEntity<?> changeAttribute(@PathVariable("changed") String changed,@PathVariable("value") String value,@PathVariable("name") String name) {
-        Room room = roomService.findOneByName(name);
+    public ResponseEntity<?> changeAttribute(@PathVariable("changed") String changed,@PathVariable("value") String value,@PathVariable("number") String number) {
+        Room room = roomService.findOneByNumber(number);
         if(room == null)
             return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
         if (changed.equals("naziv")) {
@@ -65,22 +63,29 @@ public class RoomController extends WebConfig {
         roomService.update(room);
         return new ResponseEntity<>(new RoomDTO(room), HttpStatus.OK);
     }
+  
+    // TODO Proveri za name/number
     @PostMapping(produces = "application/json", value = "/delete/{name}/{clinic}")
     public ResponseEntity<?> delete(@PathVariable("name") String name,@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
+      
         Room room = roomService.findOneByName(name);
         room.setActive(false);
         roomService.update(room);
+      
         List<Room> lista = roomService.findRoomByClinic(c);
         List<RoomDTO> listaDTO = new ArrayList<>();
         for (Room r: lista) {
-            listaDTO.add(new RoomDTO(r));
+            if (r.isActive()) {
+                listaDTO.add(new RoomDTO(r));
+            }
         }
 
         return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
+  
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{naziv}/{broj}")
-    public ResponseEntity<?> findDoctor(@RequestBody List<RoomDTO> lista, @PathVariable("naziv") String naziv,
+    public ResponseEntity<?> findRoom(@RequestBody List<RoomDTO> lista, @PathVariable("naziv") String naziv,
                                         @PathVariable("broj") String broj) {
         if(naziv.equals("~")){
             naziv = "";
