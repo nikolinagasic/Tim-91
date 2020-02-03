@@ -194,6 +194,7 @@ public class PatientController extends WebConfig {
                                            @PathVariable("order") String order) {
         return new ResponseEntity<>(doctorTermsService.sortByTip(listaTermina, order),
                 HttpStatus.OK);
+    }
   
     @GetMapping(produces = "application/json", value = "/getByMail/{mail}")
     public ResponseEntity<?> getPatient(@PathVariable("mail") String mail) {
