@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.zis.app.zis.domain.*;
+import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
@@ -250,6 +251,7 @@ public class DoctorTermsService {
         return true;
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getAllExaminations(Patient patient) {
         List<DoctorTermsDTO> dtoList = new ArrayList<>();
         for (DoctorTerms doctorTerms : findAll()) {
@@ -263,6 +265,7 @@ public class DoctorTermsService {
         return dtoList;
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getSortExaminations(List<DoctorTermsDTO> listaTermina,
                                                     Long datum, String tip, String vrsta) {
         List<DoctorTermsDTO> retList = new ArrayList<>();
@@ -288,5 +291,51 @@ public class DoctorTermsService {
             return true;
         }
         return false;
+    }
+
+    @Transactional(readOnly = false)
+    public List<DoctorTermsDTO> sortByDate(List<DoctorTermsDTO> listaTermina, String order) {
+        ArrayList<Long> lista_datuma = new ArrayList<>();
+        for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
+            lista_datuma.add(doctorTermsDTO.getDate());
+        }
+        java.util.Collections.sort(lista_datuma);
+        if(order.equals("d")) {         // descending
+            java.util.Collections.reverse(lista_datuma);
+        }
+
+        ArrayList<DoctorTermsDTO> retList = new ArrayList<>();
+        for (Long date : lista_datuma) {
+            for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
+                if(doctorTermsDTO.getDate() == date && !retList.contains(doctorTermsDTO)){
+                    retList.add(doctorTermsDTO);
+                }
+            }
+        }
+
+        return retList;
+    }
+
+    @Transactional(readOnly = false)
+    public List<DoctorTermsDTO> sortByTip(List<DoctorTermsDTO> listaTermina, String order) {
+        ArrayList<String> lista_tipova = new ArrayList<>();
+        for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
+            lista_tipova.add(doctorTermsDTO.getType());
+        }
+        java.util.Collections.sort(lista_tipova);
+        if(order.equals("d")) {         // descending
+            java.util.Collections.reverse(lista_tipova);
+        }
+
+        ArrayList<DoctorTermsDTO> retList = new ArrayList<>();
+        for (String tip : lista_tipova) {
+            for (DoctorTermsDTO doctorTermsDTO : listaTermina) {
+                if(doctorTermsDTO.getType().equals(tip) && !retList.contains(doctorTermsDTO)){
+                    retList.add(doctorTermsDTO);
+                }
+            }
+        }
+
+        return retList;
     }
 }

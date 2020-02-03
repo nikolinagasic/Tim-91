@@ -181,6 +181,19 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(doctorTermsService.getSortExaminations(listaTermina, datum, tip, vrsta),
                 HttpStatus.OK);
     }
+
+    @PostMapping(produces = "application/json", value = "/sortOrderTermsDate/{order}")
+    public ResponseEntity<?> sortOrderDate(@RequestBody List<DoctorTermsDTO> listaTermina,
+                                           @PathVariable("order") String order) {
+        return new ResponseEntity<>(doctorTermsService.sortByDate(listaTermina, order),
+                HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", value = "/sortOrderTermsTip/{order}")
+    public ResponseEntity<?> sortOrderTip(@RequestBody List<DoctorTermsDTO> listaTermina,
+                                           @PathVariable("order") String order) {
+        return new ResponseEntity<>(doctorTermsService.sortByTip(listaTermina, order),
+                HttpStatus.OK);
   
     @GetMapping(produces = "application/json", value = "/getByMail/{mail}")
     public ResponseEntity<?> getPatient(@PathVariable("mail") String mail) {

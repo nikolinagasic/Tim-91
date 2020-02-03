@@ -49,12 +49,12 @@ insert into tip_pregleda (active, name) values (true,'Стоматологија
 insert into tip_pregleda (active, name) values (true,'Кардиологија');
 
 -- za proveru KLINIKA-DOKTOR
-insert into clinic (address, description, location, name, sum_ratings, number_ratings)
+insert into clinic (address, description, location, name, sum_ratings, number_ratings, version)
     values ('Тополска 18', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        'Нови Сад', 'Моја клиника', 49, 5);
-insert into clinic (address, description, location, name, sum_ratings, number_ratings)
+        'Нови Сад', 'Моја клиника', 49, 5, 0);
+insert into clinic (address, description, location, name, sum_ratings, number_ratings, version)
     values ('Пионирска 10', 'Aliquet eget sit amet tellus cras adipiscing. Senectus et netus et malesuada. Morbi tristique senectus et netus et. Sed turpis tincidunt id aliquet risus. Ultrices sagittis orci a scelerisque purus. Elementum facilisis.',
-    'Футог', 'Наша клиника', 87, 11);
+    'Футог', 'Наша клиника', 87, 11, 0);
 --d1
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'doctor@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
@@ -141,7 +141,7 @@ insert into doctor_terms (active, date, examination, doctor_id, patient_id, proc
              values (true, 1578441600000, false, 3, 2, true, 0, false, 2, 7, 4200.00, 0, false, false); -- 8. januar
 insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, version, predefined, room_id, term_definition_id,
             price, discount, rate_clinic, rate_doctor)
-             values (true, 1578441600000, false, 3, 2, true, 0, false, 4, 8, 4200.00, 0, false, false); -- 8. januar
+             values (true, 157844160001, false, 3, 2, true, 0, false, 4, 8, 4200.00, 0, false, false); -- 8. januar
 insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, version, predefined, room_id, term_definition_id,
             price, discount, rate_clinic, rate_doctor)
              values (true, 1578441600000, false, 3, 2, true, 0, false, 2, 9, 4200.00, 0, false, false); -- 8. januar

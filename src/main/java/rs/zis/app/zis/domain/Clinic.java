@@ -12,6 +12,9 @@ public class Clinic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -146,5 +149,13 @@ public class Clinic {
 
     public void setNumber_ratings(int number_ratings) {
         this.number_ratings = number_ratings;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

@@ -114,7 +114,7 @@ public class ClinicService implements UserDetailsService {
             Long id = d.getClinic().getId();
             Clinic clinic = findOneById(id);
             double prosecna_ocena = izracunaj_ocenu(clinic);
-            if(prosecna_ocena == ocena){
+            if(prosecna_ocena == ocena || ocena == -1){
                 ClinicDTO clinicDTO = new ClinicDTO(clinic);
                 clinicDTO.setPrice(d.getPrice());                   // uzmi cenu doktora
 
@@ -301,9 +301,10 @@ public class ClinicService implements UserDetailsService {
         return retList;
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean oceniKliniku(Clinic clinic_param, double ocena, Patient patient) {
-        // TODO uradi zakljucavanje na findById
-        //  mora biti zakljucavanje (pesimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
+        // uradjeno zakljucavanje na findById
+        // mora biti zakljucavanje (optimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
         Clinic clinic;
         try {
             clinic = findOneById(clinic_param.getId());
@@ -329,5 +330,47 @@ public class ClinicService implements UserDetailsService {
         }
 
         return true;
+    }
+
+    public List<ClinicDTO> sortClinicByName(List<ClinicDTO> lista_klinika, String order) {
+        ArrayList<String> lista_naziva = new ArrayList<>();
+        for (ClinicDTO clinicDTO : lista_klinika) {
+            lista_naziva.add(clinicDTO.getName());
+        }
+        java.util.Collections.sort(lista_naziva);
+        ArrayList<ClinicDTO> retList = new ArrayList<>();
+        if(order.equals("d")) {         // descending
+            java.util.Collections.reverse(lista_naziva);
+        }
+
+        for (String naz : lista_naziva) {
+            Clinic clinic = findOneByName(naz);
+            ClinicDTO clinicDTO = new ClinicDTO(clinic);
+            retList.add(clinicDTO);
+        }
+
+        return retList;
+    }
+
+    public Object sortClinicByAddress(List<ClinicDTO> lista_klinika, String order) {
+        ArrayList<String> lista_adresa = new ArrayList<>();
+        for (ClinicDTO clinicDTO : lista_klinika) {
+            lista_adresa.add(clinicDTO.getAddress());
+        }
+        java.util.Collections.sort(lista_adresa);
+        ArrayList<ClinicDTO> retList = new ArrayList<>();
+        if(order.equals("d")) {         // descending
+            java.util.Collections.reverse(lista_adresa);
+        }
+
+        for (String adresa : lista_adresa) {
+            for (ClinicDTO clinicDTO : lista_klinika) {
+                if(clinicDTO.getAddress().equals(adresa) && !retList.contains(clinicDTO)){
+                    retList.add(clinicDTO);
+                }
+            }
+        }
+
+        return retList;
     }
 }
