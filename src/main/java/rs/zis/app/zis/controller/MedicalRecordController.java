@@ -5,12 +5,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
+import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.MedicalRecord;
+import rs.zis.app.zis.domain.MedicalReview;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.MedicalRecordDTO;
+import rs.zis.app.zis.dto.ReviewsRecordDTO;
+import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.MedicalRecordService;
+import rs.zis.app.zis.service.MedicalReviewService;
 import rs.zis.app.zis.service.PatientService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
@@ -22,7 +28,13 @@ public class MedicalRecordController extends WebConfig {
     MedicalRecordService medicalRecordService;
 
     @Autowired
+    MedicalReviewService medicalReviewService;
+
+    @Autowired
     PatientService patientService;
+
+    @Autowired
+    DoctorService doctorService;
 
     @PostMapping(consumes = "application/json" , value = "/save_record")
     public ResponseEntity<Integer> saveMedicalRecord(@RequestBody MedicalRecordDTO medicalRecordDTO){
@@ -91,6 +103,32 @@ public class MedicalRecordController extends WebConfig {
 
     }
 
+    //vracam listu medicinskih izvestaja koji postoje u kartonu
+    //mail pacijenta ciji je karton
+    //id lekara koji trazi istoriju bolesti
+    @GetMapping(value="/getReviewsinRecord/{mail}/{id}")
+    public ResponseEntity<List<ReviewsRecordDTO>>getReviewsinRecord(@PathVariable("mail") String mail,
+                                                                    @PathVariable("id") Long id){
+
+        MedicalRecord md = medicalRecordService.findOneByPatientMail(mail);
+        List<MedicalReview>medicalReviewList = medicalReviewService.getListReviews(md.getId());
+        List<ReviewsRecordDTO> reviewsRecordDTOS = new ArrayList<>();
+        for (MedicalReview medicalReview: medicalReviewList){
+            ReviewsRecordDTO reviewsRecordDTO = new ReviewsRecordDTO();
+            reviewsRecordDTO.setDate(medicalReview.getDate());
+            Doctor doctor = doctorService.findOneById(medicalReview.getId_doctor()); //doctor koji je napravio izvestaj
+            reviewsRecordDTO.setFirstName(doctor.getFirstName());
+            reviewsRecordDTO.setLastName(doctor.getLastName());
+            if(doctor.getId()==id){ //ako je isti doktor koji trazi istoriju bolesti i koji je napravio taj izvestaj
+                reviewsRecordDTO.setCouldChange(true);
+            }else{
+                reviewsRecordDTO.setCouldChange(false);
+            }
+            reviewsRecordDTO.setReviewId(medicalReview.getId());
+            reviewsRecordDTOS.add(reviewsRecordDTO);
+        }
+        return new ResponseEntity<>(reviewsRecordDTOS, HttpStatus.OK);
+    }
 
 
 

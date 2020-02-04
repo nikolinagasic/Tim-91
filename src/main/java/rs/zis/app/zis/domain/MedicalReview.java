@@ -11,7 +11,7 @@ public class MedicalReview {
     private Long id;
 
     @Column(name= "date")
-    private String date;
+    private long date;
 
     @Column(name= "medicalResults")
     private String medicalResults;  //rezulatati analiza, opis simptoma pacienta
@@ -31,7 +31,7 @@ public class MedicalReview {
     public MedicalReview() {
     }
 
-    public MedicalReview(Long id, String date, String medicalResults, String diagnosis, String therapy, Long id_doctor, MedicalRecord medicalRecord) {
+    public MedicalReview(Long id, long date, String medicalResults, String diagnosis, String therapy, Long id_doctor, MedicalRecord medicalRecord) {
         this.id = id;
         this.date = date;
         this.medicalResults = medicalResults;
@@ -49,11 +49,11 @@ public class MedicalReview {
         this.id = id;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 
