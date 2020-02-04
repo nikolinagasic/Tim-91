@@ -5,7 +5,7 @@ import rs.zis.app.zis.domain.MedicalReview;
 public class MedicalReviewDTO {
 
     private Long id;
-    private String date;
+    private long date;
     private String medicalResults;
     private String diagnosis;
     private String therapy;
@@ -15,7 +15,7 @@ public class MedicalReviewDTO {
     public MedicalReviewDTO() {
     }
 
-    public MedicalReviewDTO(Long id, String date, String medicalResults, String diagnosis, String therapy, String patient_mail, Long id_doctor) {
+    public MedicalReviewDTO(Long id, long date, String medicalResults, String diagnosis, String therapy, String patient_mail, Long id_doctor) {
         this.id = id;
         this.date = date;
         this.medicalResults = medicalResults;
@@ -28,7 +28,7 @@ public class MedicalReviewDTO {
     public MedicalReviewDTO(MedicalReview medicalReview) {
         this.id = medicalReview.getId();
         this.date = medicalReview.getDate();
-        this.medicalResults = medicalReview.getDiagnosis();
+        this.medicalResults = medicalReview.getMedicalResults();
         this.diagnosis = medicalReview.getDiagnosis();
         this.therapy = medicalReview.getTherapy();
         this.patient_mail = medicalReview.getMedicalRecord().getPatintMail();
@@ -43,11 +43,11 @@ public class MedicalReviewDTO {
         this.id = id;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 

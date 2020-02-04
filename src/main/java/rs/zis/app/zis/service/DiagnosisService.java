@@ -47,4 +47,18 @@ public class DiagnosisService {
         return diagnosisDTOList;
     }
 
+    public List<DiagnosisDTO> filterCures(String diagName){
+        if(diagName.equals("~")){
+            diagName = "";
+        }
+        List<DiagnosisDTO>diagnosisDTOList = new ArrayList<>();
+        List<Diagnosis>diagnosisList = diagnosisRepository.findAll();
+        for(Diagnosis diagnosis:diagnosisList){
+            if(diagnosis.getDiagnosis_name().toLowerCase().equals(diagName.toLowerCase())){
+                diagnosisDTOList.add(new DiagnosisDTO(diagnosis));
+            }
+        }
+        return diagnosisDTOList;
+    }
+
 }
