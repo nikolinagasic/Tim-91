@@ -240,4 +240,45 @@ public class DoctorController extends WebConfig {
         Doctor doctor = doctorService.findOneById(id);
         return new ResponseEntity<>(doctorService.oceniDoktora(doctor, ocena, patient), HttpStatus.OK);
     }
+
+    @GetMapping(produces = "application/json", value = "/getTermShedule/{id_doctor}")
+    public ResponseEntity<?> getScheduleTerm(@PathVariable("id_doctor") Long id_doctor){
+        Doctor doctor = doctorService.findOneById(id_doctor);
+        List<DoctorTerms>doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+        if(doctorTermsList.isEmpty()){
+            return new ResponseEntity<>(0, HttpStatus.OK);
+        }
+        List<ScheduleTermDTO>scheduleTermDTOList = new ArrayList<>(); //lista za return
+        int brojac = 1;
+        for(DoctorTerms doctorTerms : doctorTermsList){
+            ScheduleTermDTO scheduleTermDTO = new ScheduleTermDTO();
+            scheduleTermDTO.setId(new Long(brojac));
+            if(doctorTerms.isExamination()){
+                scheduleTermDTO.setNaziv_pregleda("pregled");
+            }else{
+                scheduleTermDTO.setNaziv_pregleda("operacija");
+            }
+            TermDefinition temp = doctorTerms.getTerm();
+            String sTime = temp.getStartTerm();
+            String[]tokens = sTime.split(":");
+            int a = Integer.parseInt(tokens[0]);
+            int b = Integer.parseInt(tokens[1]);
+            sTime = a+","+b;
+            String eTime = temp.getEndTerm();
+            String[]tokens1 = eTime.split(":");
+            int a1 = Integer.parseInt(tokens1[0]);
+            int b1 = Integer.parseInt(tokens1[1]);
+            eTime = a1+","+b1;
+            scheduleTermDTO.setDate(doctorTerms.getDate());
+            scheduleTermDTO.setStartTime(sTime);
+            scheduleTermDTO.setEndTime(eTime);
+            Patient p = doctorTerms.getPatient();
+            scheduleTermDTO.setPatient_mail(p.getMail());
+            scheduleTermDTOList.add(scheduleTermDTO);
+            brojac++;
+        }
+        return new ResponseEntity<>(scheduleTermDTOList,HttpStatus.OK);
+    }
+
+
 }
