@@ -10,6 +10,7 @@ import rs.zis.app.zis.domain.MedicalRecord;
 import rs.zis.app.zis.domain.MedicalReview;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.dto.MedicalRecordDTO;
+import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.dto.ReviewsRecordDTO;
 import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.MedicalRecordService;
@@ -59,6 +60,14 @@ public class MedicalRecordController extends WebConfig {
         MedicalRecordDTO medicalRecordDTO = new MedicalRecordDTO(medicalRecord);
         return new ResponseEntity<>(medicalRecordDTO,HttpStatus.OK);
      }
+
+     //na osnovu mejla pacijenta vrati njegovo ime i prezime
+    @GetMapping(value= "/getNamePatient/{mail}")
+    public ResponseEntity<?> getNamePatient(@PathVariable("mail")String mail){
+        Patient p = patientService.findOneByMail(mail);
+        PatientDTO patientDTO = new PatientDTO(p);
+        return new ResponseEntity<>(patientDTO,HttpStatus.OK);
+    }
 
 
      //cuvam azuriran zdravstveni karton pacijenta
