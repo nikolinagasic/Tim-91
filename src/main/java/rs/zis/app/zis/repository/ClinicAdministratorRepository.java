@@ -3,7 +3,10 @@ package rs.zis.app.zis.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import rs.zis.app.zis.domain.Clinic;
 import rs.zis.app.zis.domain.ClinicAdministrator;
+
+import java.util.List;
 
 
 /*
@@ -17,5 +20,6 @@ public interface ClinicAdministratorRepository extends JpaRepository<ClinicAdmin
     Page<ClinicAdministrator> findAll(Pageable pageable);
     ClinicAdministrator findOneById(long id);
     ClinicAdministrator findOneByMail(String mail);
+    List<ClinicAdministrator> findAllByClinic(Clinic clinic);
 
 }
