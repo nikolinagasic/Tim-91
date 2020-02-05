@@ -1,8 +1,11 @@
 package rs.zis.app.zis.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
@@ -10,13 +13,13 @@ import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
-
 import java.util.ArrayList;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "IfCanBeSwitch"})
 @RestController
 @RequestMapping("/clinicAdministrator")
 public class ClinicAdministratorController extends WebConfig {
+    private Logger logger = LoggerFactory.getLogger(ClinicCentreAdminController.class);
 
     @Autowired
     private DoctorTermsService doctorTermsService;
@@ -35,6 +38,8 @@ public class ClinicAdministratorController extends WebConfig {
 
     @Autowired
     private TokenUtils tokenUtils;
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private ClinicService clinicService;
@@ -122,12 +127,48 @@ public class ClinicAdministratorController extends WebConfig {
         System.out.println("ovde je");
         for (DoctorTerms t : terms) {
             System.out.println(t.getDate());
-            if (!t.isProcessedByAdmin())
+            if (!t.isProcessedByAdmin() && t.isExamination())
                 termsDTO.add(new DoctorTermsDTO(t));
             System.out.println("nije:"+t.getDate());
         }
         return new ResponseEntity<>(termsDTO, HttpStatus.OK);
 
+    }
+    @GetMapping(value = "/sendMail/{id}/{date}")
+    public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("date") long date){
+        try {       DoctorTerms doctorTerms = doctorTermsService.findOneById(id);
+            String pregled;
+            if (doctorTerms.isExamination()) {
+                pregled = "operacija";
+            }
+            else {
+                pregled = "pregled";
+            }
+            String napomena = "";
+            if (date != -1) {
+                napomena = "*Napomena: Datum je promenjen na "+date+"\n";
+            }
+
+            String tb="Postovani," + "\n" +
+                    "Zakazani "+pregled+" ce se odrzati u sali: "+doctorTerms.getRoom().getName() +".\n"+ napomena +
+                    "Pregled:\nDatum: "+doctorTerms.getDate()+"\nVreme: "+doctorTerms.getTerm().getStartTerm()+"-"+
+                    doctorTerms.getTerm().getEndTerm()+"\nDoktor: "+doctorTerms.getDoctor().getFirstName()+" "+doctorTerms.getDoctor().getLastName() +
+                    "\nPacijent: "+doctorTerms.getPatient().getFirstName()+" "+doctorTerms.getPatient().getLastName()+
+                    "\nTip pregleda: "+doctorTerms.getDoctor().getTip().getName() +"\nKlinika: "+doctorTerms.getDoctor().getClinic().getName() +
+                    ", "+doctorTerms.getDoctor().getClinic().getAddress();
+            System.out.println(tb);
+            notificationService.SendNotification(doctorTerms.getDoctor().getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+            notificationService.SendNotification(doctorTerms.getPatient().getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+
+                } catch (MailException e) {
+                    System.out.println("Error sending message.");
+                    logger.info("Error Sending Mail:" + e.getMessage());
+                    return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+                }
+
+        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
 
     // TODO obradi izuzetak za OPTIMISTIC LOCK

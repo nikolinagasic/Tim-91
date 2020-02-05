@@ -28,6 +28,10 @@ public class ClinicAdministratorService implements UserDetailsService {
     private AuthorityService authService;
     @Autowired
     private ClinicService clinicService;
+    @Autowired
+    private DoctorTermsService doctorTermsService;
+    @Autowired
+    private NotificationService notificationService;
 
     public List<ClinicAdministrator> findAll() {
         return clinicAdministartorRepository.findAll();
@@ -35,6 +39,10 @@ public class ClinicAdministratorService implements UserDetailsService {
 
     public Page<ClinicAdministrator> findAll(Pageable page) {
         return clinicAdministartorRepository.findAll(page);
+    }
+
+    public List<ClinicAdministrator> findAllByClinic(Clinic clinic) {
+        return clinicAdministartorRepository.findAllByClinic(clinic);
     }
 
     public ClinicAdministrator save(ClinicAdministratorDTO clinicAdministartorDTO) {

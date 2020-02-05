@@ -1,13 +1,20 @@
 package rs.zis.app.zis.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import rs.zis.app.zis.controller.ClinicCentreAdminController;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
 import java.util.ArrayList;
@@ -16,12 +23,19 @@ import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression", "IfStatementMissingBreakInLoop"})
 @Service
 public class DoctorService {
+    private Logger logger = LoggerFactory.getLogger(ClinicCentreAdminController.class);
 
     @Autowired
     private DoctorRepository doctorRepository;
 
     @Autowired
     private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private ClinicAdministratorService clinicAdministratorService;
 
     @Autowired
     private VacationService vacationService;
@@ -239,6 +253,23 @@ public class DoctorService {
         return true;
     }
 
+    public void sendMailAdministrator(DoctorTermsDTO doctorTermsDTO) {
+
+        try {
+            Doctor doctor = findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),doctorTermsDTO.getLastNameDoctor());
+            String mail = doctor.getMail();
+            String tb="Postovani," + "\n" +
+                    "Imate novi zahev za rezervaciju sale.\n";
+            System.out.println(tb);
+            for (ClinicAdministrator admin : clinicAdministratorService.findAllByClinic(doctor.getClinic())) {
+                notificationService.SendNotification(admin.getMail(), "billypiton43@gmail.com",
+                        "OBAVESTENJE", tb);
+            }
+        } catch (MailException e) {
+            System.out.println("Error sending message.");
+            logger.info("Error Sending Mail:" + e.getMessage());
+        }
+    }
     // vrati sve doktore kod kojih je ovaj pacijent bio, a da ih nije pre toga ocenio
     public List<DoctorDTO> getPatientHistoryDoctors(Patient patient) {
         List<Doctor> tmpList = new ArrayList<>();
@@ -287,6 +318,7 @@ public class DoctorService {
         }
 
         return true;
+
     }
 }
 

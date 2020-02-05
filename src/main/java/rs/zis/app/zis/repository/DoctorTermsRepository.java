@@ -19,9 +19,12 @@ public interface DoctorTermsRepository extends JpaRepository<DoctorTerms, Long> 
     DoctorTerms findOneById(long id);
     List<DoctorTerms> findAllByDate(long date);
     List<DoctorTerms> findAllByRoom(Room room);
+
+
+    List<DoctorTerms> findAllByProcessedByAdmin(boolean is);
+
     // vraca sve termine za tog doktora
     List<DoctorTerms> findAllByDoctor(Doctor d);
-
     DoctorTerms save(DoctorTerms doctorTerms);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

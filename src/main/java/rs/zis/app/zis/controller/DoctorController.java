@@ -167,7 +167,7 @@ public class DoctorController extends WebConfig {
                                          @RequestBody DoctorTermsDTO doctorTermsDTO) {
 
         String mail = tokenUtils.getUsernameFromToken(token);
-        boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
+        boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO,true);
         if(isReserved){
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
@@ -175,7 +175,19 @@ public class DoctorController extends WebConfig {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping(consumes = "application/json", produces = "application/json", value = "/reserveTermDoctor/{mail}/{examination}")
+    public ResponseEntity<?> reserveTermDoctor(@RequestHeader("Auth-Token") String token,
+                                         @RequestBody DoctorTermsDTO doctorTermsDTO,@PathVariable("mail") String mail,@PathVariable("examination") boolean examination) {
 
+        boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO,examination);
+        if(isReserved){
+            doctorService.sendMailAdministrator(doctorTermsDTO);
+            return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
     @PostMapping(produces = "application/json", consumes = "application/json",
             value = "/expandedSearchDoctor/{ime}/{prezime}/{ocena}/{date}/{select}")
     public ResponseEntity<?> expandedSearchDoctor(@RequestBody List<DoctorDTO> listaLekara,

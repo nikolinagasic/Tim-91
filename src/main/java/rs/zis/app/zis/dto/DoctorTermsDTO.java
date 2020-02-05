@@ -8,7 +8,9 @@ import rs.zis.app.zis.domain.TermDefinition;
 @SuppressWarnings("unused")
 public class DoctorTermsDTO {
     private Long id;
-    private Long date;
+
+    private long date;
+
     private String start_term;
     private String end_term;
     private String firstNameDoctor;
@@ -19,6 +21,7 @@ public class DoctorTermsDTO {
     private String type;           // tip pregleda
     private Long patient_id;       // id pacijenta
     private boolean isExamination;
+
 
     public DoctorTermsDTO() {
     }
@@ -39,6 +42,10 @@ public class DoctorTermsDTO {
         this.isExamination = isExamination;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public DoctorTermsDTO(Long date, TermDefinition termDefinition, Doctor doctor, Patient patient) {
         this.date = date;
         this.start_term = termDefinition.getStartTerm();
@@ -52,6 +59,7 @@ public class DoctorTermsDTO {
     }
 
     public DoctorTermsDTO(DoctorTerms doctorTerms) {
+        this.id = doctorTerms.getId();
         this.date = doctorTerms.getDate();
         this.start_term = doctorTerms.getTerm().getStartTerm();
         this.end_term = doctorTerms.getTerm().getEndTerm();
