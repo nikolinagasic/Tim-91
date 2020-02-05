@@ -1,4 +1,5 @@
 package rs.zis.app.zis.controller;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.MedicalRecord;
 import rs.zis.app.zis.domain.Patient;
 import rs.zis.app.zis.domain.Users;
+import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.dto.MedicalRecordDTO;
 import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.dto.RoomDTO;
@@ -44,6 +47,9 @@ public class PatientController extends WebConfig {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private DoctorTermsService doctorTermsService;
 
     @PostMapping(consumes = "application/json" , value = "/register")
     public ResponseEntity<PatientDTO> savePatient(@RequestBody PatientDTO patientDTO) {
@@ -150,13 +156,46 @@ public class PatientController extends WebConfig {
         }
     }
 
-    @PreAuthorize("hasRole('PATIENT')")
     @GetMapping(produces = "application/json", value = "/getPat")
-    public ResponseEntity<?> changeAttribute(@RequestHeader("Auth-Token") String token) {
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getPatProfile(@RequestHeader("Auth-Token") String token) {
         String mail = tokenUtils.getUsernameFromToken(token);
         return new ResponseEntity<>(patientService.findOneByMail(mail), HttpStatus.OK);
     }
 
+    @GetMapping(produces = "application/json", value = "/getAllExaminations")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getAllExaminations(@RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        Patient patient = patientService.findOneByMail(mail);
+        return new ResponseEntity<>(doctorTermsService.getAllExaminations(patient), HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", value = "/sortTerms/{date}/{tip}/{vrsta}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getSortTerms(@RequestHeader("Auth-Token") String token,
+                                          @RequestBody List<DoctorTermsDTO> listaTermina,
+                                          @PathVariable("date") Long datum,
+                                          @PathVariable("tip") String tip,
+                                          @PathVariable("vrsta") String vrsta) {
+        return new ResponseEntity<>(doctorTermsService.getSortExaminations(listaTermina, datum, tip, vrsta),
+                HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", value = "/sortOrderTermsDate/{order}")
+    public ResponseEntity<?> sortOrderDate(@RequestBody List<DoctorTermsDTO> listaTermina,
+                                           @PathVariable("order") String order) {
+        return new ResponseEntity<>(doctorTermsService.sortByDate(listaTermina, order),
+                HttpStatus.OK);
+    }
+
+    @PostMapping(produces = "application/json", value = "/sortOrderTermsTip/{order}")
+    public ResponseEntity<?> sortOrderTip(@RequestBody List<DoctorTermsDTO> listaTermina,
+                                           @PathVariable("order") String order) {
+        return new ResponseEntity<>(doctorTermsService.sortByTip(listaTermina, order),
+                HttpStatus.OK);
+    }
+  
     @GetMapping(produces = "application/json", value = "/getByMail/{mail}")
     public ResponseEntity<?> getPatient(@PathVariable("mail") String mail) {
         Patient patient = patientService.findOneByMail(mail);

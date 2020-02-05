@@ -2,9 +2,8 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
 @Table(name = "Room")
@@ -20,8 +19,8 @@ public class Room {
     @Column(name = "number", nullable = false)
     private String number;
 
-    @Column(name = "enabled", nullable = false)
-    private boolean enabled;
+    @Column(name = "active", nullable = false)
+    private boolean active;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;
@@ -34,7 +33,7 @@ public class Room {
         this.name = name;
         this.number = number;
         this.clinic = clinic;
-        this.enabled = true;
+        this.active = true;
         this.doctorTerms = doctorTerms;
     }
 
@@ -84,11 +83,11 @@ public class Room {
         this.doctorTerms.add(doctorTerms);
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

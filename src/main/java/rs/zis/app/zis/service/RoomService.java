@@ -8,13 +8,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Clinic;
+
 import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.DoctorTerms;
+
 import rs.zis.app.zis.domain.Room;
-import rs.zis.app.zis.dto.ClinicDTO;
-import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.RoomDTO;
-import rs.zis.app.zis.repository.ClinicRepository;
 import rs.zis.app.zis.repository.RoomRepository;
 
 import java.util.ArrayList;
@@ -41,11 +40,10 @@ public class RoomService implements UserDetailsService {
         List<Room> rooms = findRoomByClinic(clinic);
         for (Room r : rooms) {
             if (r.getNumber().equals(roomDTO.getNumber())) {
-                if (r.isEnabled()) {
+                if (r.isActive()) {
                     return null;
                 }
-                System.out.println("enable:"+r.isEnabled());
-                r.setEnabled(true);
+                r.setActive(true);
                 r.setName(roomDTO.getName());
                 r.setNumber(roomDTO.getNumber());
                 r.setClinic(clinic);
@@ -53,11 +51,11 @@ public class RoomService implements UserDetailsService {
                 return r;
             }
         }
-        System.out.println("enable2:"+c.isEnabled());
+        System.out.println("enable2:"+c.isActive());
         c.setName(roomDTO.getName());
         c.setNumber(roomDTO.getNumber());
         c.setClinic(clinic);
-        c.setEnabled(true);
+        c.setActive(true);
         c = this.roomRepository.save(c);
         return c;
     }
@@ -82,11 +80,14 @@ public class RoomService implements UserDetailsService {
         List<Room> svi = roomRepository.findRoomByClinic(clinic);
         List<Room> retVal = new ArrayList<>();
         for (Room r : svi) {
+            if (r.isActive()) {
                 retVal.add(r);
-                System.out.println("sobe u klinici"+r.getNumber());
+                System.out.println("sobe u klinici" + r.getNumber());
+            }
 
         }
-        return retVal;    }
+        return retVal;
+    }
 
     public Room findOneById(Long id) { return roomRepository.findOneById(id); }
 
@@ -110,6 +111,17 @@ public class RoomService implements UserDetailsService {
             }
         }
 
+        return retList;
+    }
+
+    public List<Room> getRoomsInClinic(String clinic_name){
+        List<Room> retList = new ArrayList<>();
+
+        for (Room room : clinicService.findOneByName(clinic_name).getRooms()) {
+            if(room.isActive()) {
+                retList.add(room);
+            }
+        }
         return retList;
     }
 

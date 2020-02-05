@@ -15,7 +15,7 @@ import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 import java.util.ArrayList;
 import java.util.List;
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "IfCanBeSwitch"})
 @RestController
 @RequestMapping("/clinicAdministrator")
 public class ClinicAdministratorController extends WebConfig {
@@ -43,8 +43,10 @@ public class ClinicAdministratorController extends WebConfig {
 
     @Autowired
     private ClinicService clinicService;
+
     @Autowired
     private TipPregledaService tipPregledaService;
+
     @Autowired
     private ClinicAdministratorService clinicAdministratorService;
 
@@ -65,7 +67,7 @@ public class ClinicAdministratorController extends WebConfig {
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
 
-    @PostMapping(consumes = "application/json" , value = "/registerNurse")
+    @PostMapping(consumes = "application/json", value = "/registerNurse")
     public ResponseEntity<Integer> saveNurse(@RequestBody NurseDTO nurseDTO) {
         Users proveriMail = userService.findOneByMail(nurseDTO.getMail());
         if(proveriMail != null){
@@ -167,6 +169,21 @@ public class ClinicAdministratorController extends WebConfig {
                 }
 
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+    }
+
+    // TODO obradi izuzetak za OPTIMISTIC LOCK
+    @PostMapping(produces = "application/json",
+            value = "/createPredefinedTerm/{date}/{sat_id}/{room_id}/{type_id}/{doctor_id}/{price}/{discount}")
+    public ResponseEntity<?> createPredefinedTerm(@PathVariable("date") Long date,
+                                                  @PathVariable("sat_id") Long satnica_id,
+                                                  @PathVariable("room_id") Long room_id,
+                                                  @PathVariable("type_id") Long type_id,
+                                                  @PathVariable("doctor_id") Long doctor_id,
+                                                  @PathVariable("price") double price,
+                                                  @PathVariable("discount") int discount){
+
+        return new ResponseEntity<>(doctorTermsService.createPredefinedTerm(date, satnica_id, room_id, type_id,
+                        doctor_id, price, discount), HttpStatus.OK);
     }
 
 }

@@ -6,13 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.dto.DoctorDTO;
-import rs.zis.app.zis.dto.DoctorTermsDTO;
-import rs.zis.app.zis.dto.NurseDTO;
+import rs.zis.app.zis.domain.*;
+import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 
@@ -32,9 +27,14 @@ public class DoctorController extends WebConfig {
     @Autowired
     private ClinicService clinicService;
     @Autowired
+    private PatientService patientService;
+    @Autowired
     private DoctorTermsService doctorTermsService;
     @Autowired
     private TipPregledaService tipPregledaService;
+    @Autowired
+    private TermDefinitionService termDefinitionService;
+
     @GetMapping(produces = "application/json", value = "/getAll")
    // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<List<DoctorDTO>> getDoctor() {
@@ -47,6 +47,33 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
+    @GetMapping(produces = "application/json", value = "/getDoctor/{id}")
+    public ResponseEntity<?> getTypeByDoctor(@PathVariable("id") Long id) {
+        Doctor doctor = doctorService.findOneById(id);
+        TipPregledaDTO tipPregledaDTO = new TipPregledaDTO(doctor.getTip());
+        return new ResponseEntity<>(tipPregledaDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getDoctorsByType/{id}")
+    public ResponseEntity<?> getDoctorsByType(@PathVariable("id") Long id) {
+        List<DoctorDTO> doctorList = new ArrayList<>();
+        for (Doctor doctor : doctorService.findDoctorByType(tipPregledaService.findOneById(id))) {
+            doctorList.add(new DoctorDTO(doctor));
+        }
+
+        return new ResponseEntity<>(doctorList, HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getTermsByWorkShift/{id}")
+    public ResponseEntity<?> getTermsByWorkShift(@PathVariable("id") Long id) {
+        Doctor doctor = doctorService.findOneById(id);
+        List<TermDefinition> termDefinitionList = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
+        List<TermDefinitionDTO> termDefinitionDTOS =  new ArrayList<>();
+        for (TermDefinition termDefinition : termDefinitionList) {
+            termDefinitionDTOS.add(new TermDefinitionDTO(termDefinition));
+        }
+        return new ResponseEntity<>(termDefinitionDTOS, HttpStatus.OK);
+    }
 
     @GetMapping(produces = "application/json", value = "/getDoctors/{clinic}")
     // @PreAuthorize("hasRole('CADMIN')")
@@ -107,7 +134,7 @@ public class DoctorController extends WebConfig {
 
     @PostMapping(produces = "application/json", consumes = "application/json",
             value = "/getFilterDoctor/{ocenaOd}/{ocenaDo}")
-    public ResponseEntity<?> searchDoctors(@RequestBody List<DoctorDTO> listaLekara,
+    public ResponseEntity<?> filterDoctors(@RequestBody List<DoctorDTO> listaLekara,
                                            @PathVariable("ocenaOd") String ocenaOd,
                                            @PathVariable("ocenaDo") String ocenaDo){
 
@@ -175,7 +202,8 @@ public class DoctorController extends WebConfig {
     }
 
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}")
-    public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara, @PathVariable("ime") String ime,
+    public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara,
+                                        @PathVariable("ime") String ime,
                                         @PathVariable("prezime") String prezime) {
         if(ime.equals("~")){
             ime = "";
@@ -205,4 +233,64 @@ public class DoctorController extends WebConfig {
         System.out.println(doc.isEnabled());
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
+
+    @GetMapping (produces = "application/json", value = "/getPatientHistoryDoctors")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getHistoryClinic(@RequestHeader("Auth-Token") String token) {
+        String mail = tokenUtils.getUsernameFromToken(token);
+        Patient patient = patientService.findOneByMail(mail);
+
+        return new ResponseEntity<>(doctorService.getPatientHistoryDoctors(patient), HttpStatus.OK);
+    }
+
+    @PostMapping (produces = "application/json", value = "/oceniDoktora/{doctor_id}/{ocena}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<?> getHistoryClinic(@PathVariable("doctor_id") Long id,
+                                              @PathVariable("ocena") double ocena,
+                                              @RequestHeader("Auth-Token") String token) {
+        Patient patient = patientService.findOneByMail(tokenUtils.getUsernameFromToken(token));
+        Doctor doctor = doctorService.findOneById(id);
+        return new ResponseEntity<>(doctorService.oceniDoktora(doctor, ocena, patient), HttpStatus.OK);
+    }
+
+    @GetMapping(produces = "application/json", value = "/getTermShedule/{id_doctor}")
+    public ResponseEntity<?> getScheduleTerm(@PathVariable("id_doctor") Long id_doctor){
+        Doctor doctor = doctorService.findOneById(id_doctor);
+        List<DoctorTerms>doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+        if(doctorTermsList.isEmpty()){
+            return new ResponseEntity<>(0, HttpStatus.OK);
+        }
+        List<ScheduleTermDTO>scheduleTermDTOList = new ArrayList<>(); //lista za return
+        int brojac = 1;
+        for(DoctorTerms doctorTerms : doctorTermsList){
+            ScheduleTermDTO scheduleTermDTO = new ScheduleTermDTO();
+            scheduleTermDTO.setId(new Long(brojac));
+            if(doctorTerms.isExamination()){
+                scheduleTermDTO.setNaziv_pregleda("pregled");
+            }else{
+                scheduleTermDTO.setNaziv_pregleda("operacija");
+            }
+            TermDefinition temp = doctorTerms.getTerm();
+            String sTime = temp.getStartTerm();
+            String[]tokens = sTime.split(":");
+            int a = Integer.parseInt(tokens[0]);
+            int b = Integer.parseInt(tokens[1]);
+            sTime = a+","+b;
+            String eTime = temp.getEndTerm();
+            String[]tokens1 = eTime.split(":");
+            int a1 = Integer.parseInt(tokens1[0]);
+            int b1 = Integer.parseInt(tokens1[1]);
+            eTime = a1+","+b1;
+            scheduleTermDTO.setDate(doctorTerms.getDate());
+            scheduleTermDTO.setStartTime(sTime);
+            scheduleTermDTO.setEndTime(eTime);
+            Patient p = doctorTerms.getPatient();
+            scheduleTermDTO.setPatient_mail(p.getMail());
+            scheduleTermDTOList.add(scheduleTermDTO);
+            brojac++;
+        }
+        return new ResponseEntity<>(scheduleTermDTOList,HttpStatus.OK);
+    }
+
+
 }

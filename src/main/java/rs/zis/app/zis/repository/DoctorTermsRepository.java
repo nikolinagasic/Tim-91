@@ -20,6 +20,7 @@ public interface DoctorTermsRepository extends JpaRepository<DoctorTerms, Long> 
     List<DoctorTerms> findAllByDate(long date);
     List<DoctorTerms> findAllByRoom(Room room);
 
+
     List<DoctorTerms> findAllByProcessedByAdmin(boolean is);
 
     // vraca sve termine za tog doktora

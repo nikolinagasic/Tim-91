@@ -57,6 +57,7 @@ public class ClinicAdministratorService implements UserDetailsService {
         a.setTelephone(clinicAdministartorDTO.getTelephone());
         a.setClinic(clinicService.findOneByName(clinicAdministartorDTO.getClinic()));
         a.setEnabled(true);
+        a.setFirstLogin(true);
         List<Authority> auth = authService.findByname("ROLE_CADMIN");
         a.setAuthorities(auth);
 

@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Authority;
-import rs.zis.app.zis.domain.Doctor;
 import rs.zis.app.zis.domain.TipPregleda;
-import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.TipPregledaDTO;
 import rs.zis.app.zis.repository.TipPregledaRepository;
 
@@ -29,7 +26,7 @@ public class TipPregledaService {
         List<TipPregleda> retVal = new ArrayList<>();
         List<TipPregleda> svi = tipPregledaRepository.findAll();
         for (TipPregleda tip : svi) {
-            if (tip.isEnabled()) {
+            if (tip.isActive()) {
                 retVal.add(tip);
             }
         }
@@ -45,6 +42,10 @@ public class TipPregledaService {
         return tipPregledaRepository.findOneByName(name);
     }
 
+    public TipPregleda findOneById(Long id) {
+        return tipPregledaRepository.findOneById(id);
+    }
+
     public TipPregleda update(TipPregleda tipPregleda){
         return tipPregledaRepository.save(tipPregleda);
     }
@@ -53,14 +54,14 @@ public class TipPregledaService {
         TipPregleda t = new TipPregleda();
         TipPregleda tip = findOneByName(tipPregledaDTO.getName());
         if(tip != null){
-            if (tip.isEnabled())
+            if (tip.isActive())
                  return null;
-            tip.setEnabled(true);
+            tip.setActive(true);
             update(tip);
-            System.out.println("saving"+tip.isEnabled());
+            System.out.println("saving"+tip.isActive());
             return tip;
         }
-        t.setEnabled(true);
+        t.setActive(true);
         t.setName(tipPregledaDTO.getName());
         t = this.tipPregledaRepository.save(t);
         return t;

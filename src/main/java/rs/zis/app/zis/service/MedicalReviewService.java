@@ -9,6 +9,7 @@ import rs.zis.app.zis.domain.MedicalReview;
 import rs.zis.app.zis.dto.MedicalReviewDTO;
 import rs.zis.app.zis.repository.MedicalReviewRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
@@ -47,4 +48,18 @@ public class MedicalReviewService  {
         System.out.println("Zavrsio sam save");
         return medicalReview;
     }
+
+    //izvuci izvestaje iz kartona(prosledjujem id zdravstvenog kartona)
+    public List<MedicalReview> getListReviews (Long recordId){
+        List<MedicalReview> medicalAllReviewList = this.findAll(); //svi izvestaji
+        List<MedicalReview> medicalReviewList = new ArrayList<>(); //lista izvestaja iz kartona
+        for(MedicalReview medicalReview : medicalAllReviewList){
+            if(medicalReview.getMedicalRecord().getId().equals(recordId)){
+                medicalReviewList.add(medicalReview);
+            }
+        }
+        return medicalReviewList;
+    }
+
+
 }
