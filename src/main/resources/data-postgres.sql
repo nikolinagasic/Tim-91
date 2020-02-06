@@ -81,7 +81,7 @@ insert into user_authority (user_id, authority_id) values (5, 5);
 
 -- CLINIC ADMINISTRATOR
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
-    values (true, true, true, '2017-10-01 21:58:58.508-07', 'cadmin@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
+    values (true, true, false, '2017-10-01 21:58:58.508-07', 'cadmin@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
 insert into clinic_administrator (address, city, country, first_name, last_name, role, telephone, id, clinic_id)
     values ('Цара Лазара 12', 'Нови Сад', 'Србија', 'Предраг', 'Шпагић', 'cadmin', '879-456', 6, 1);
 

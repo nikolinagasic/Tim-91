@@ -3,6 +3,7 @@ package rs.zis.app.zis.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +12,11 @@ import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
+import javax.persistence.LockModeType;
 import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection", "DefaultAnnotationParam", "NumberEquality", "UnusedAssignment", "RedundantIfStatement"})
 @Service
@@ -145,59 +148,68 @@ public class DoctorTermsService {
         return new DoctorTermsDTO(date, termDefinition, doctor, new Patient());
     }
 
+    ReentrantLock lock = new ReentrantLock();
+
     // TODO test 3.10
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
-        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
-                doctorTermsDTO.getLastNameDoctor());
-        TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
-        Patient patient = patientService.findOneByMail(mail_patient);
+        lock.lock();
+        try {
+            // Critical section here
 
-        if(patient == null){
-            return false;
-        }
-        if(term_def == null){
-            return false;
-        }
-        if(doctor == null){
-            return false;
-        }
+            Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
+                    doctorTermsDTO.getLastNameDoctor());
+            TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
+            Patient patient = patientService.findOneByMail(mail_patient);
 
-        DoctorTerms dt = new DoctorTerms();
-        dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
-                term_def,
-                doctor);
-
-        List<ClinicAdministrator> lista_cadmina = new ArrayList<>();
-        for (ClinicAdministrator clinicAdministrator : clinicAdministratorService.findAll()) {
-            if(clinicAdministrator.getClinic().getId() == doctor.getClinic().getId()){
-                lista_cadmina.add(clinicAdministrator);
+            if(patient == null){
+                return false;
             }
-        }
-
-        if(dt == null) {
-            DoctorTerms doctorTerms = new DoctorTerms();
-            doctorTerms.setDate(doctorTermsDTO.getDate());
-            doctorTerms.setDoctor(doctor);
-            doctorTerms.setPatient(patient);
-            doctorTerms.setTerm(term_def);
-            doctorTerms.setPrice(doctor.getPrice());
-            doctorTerms.setDiscount(doctor.getDiscount());
-
-            doctorTerms.setProcessedByAdmin(false);
-            doctorTermsRepository.save(doctorTerms);
-            // poslati mejl administratoru/ima klinike
-            for (ClinicAdministrator clinicAdministrator : lista_cadmina) {
-                String textBody = "Поштовани,\nПристигао вам је нови захтев за прегледом у Вашој клиници. Захтев је следећи:\n" +
-                        "Доктор: " + doctor.getFirstName() + " " + doctor.getLastName() + "\n" +
-                        "Пацијент: " + patient.getFirstName() + " " + patient.getLastName() + "\n";
-                notificationService.SendNotification(clinicAdministrator.getMail(), "billypiton43@gmail.com",
-                        "Нови захтев за преглед", textBody);
+            if(term_def == null){
+                return false;
             }
-            return true;        // uspesno sam napravio tvoj termin
-        }
-        else{
-            return false ;      // vec postoji jedan takav kreiran termin
+            if(doctor == null){
+                return false;
+            }
+
+            DoctorTerms dt = new DoctorTerms();
+            dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
+                    term_def,
+                    doctor);
+
+            List<ClinicAdministrator> lista_cadmina = new ArrayList<>();
+            for (ClinicAdministrator clinicAdministrator : clinicAdministratorService.findAll()) {
+                if(clinicAdministrator.getClinic().getId() == doctor.getClinic().getId()){
+                    lista_cadmina.add(clinicAdministrator);
+                }
+            }
+
+            if(dt == null) {
+                DoctorTerms doctorTerms = new DoctorTerms();
+                doctorTerms.setDate(doctorTermsDTO.getDate());
+                doctorTerms.setDoctor(doctor);
+                doctorTerms.setPatient(patient);
+                doctorTerms.setTerm(term_def);
+                doctorTerms.setPrice(doctor.getPrice());
+                doctorTerms.setDiscount(doctor.getDiscount());
+
+                doctorTerms.setProcessedByAdmin(false);
+                doctorTermsRepository.save(doctorTerms);
+                // poslati mejl administratoru/ima klinike
+                for (ClinicAdministrator clinicAdministrator : lista_cadmina) {
+                    String textBody = "Поштовани,\nПристигао вам је нови захтев за прегледом у Вашој клиници. Захтев је следећи:\n" +
+                            "Доктор: " + doctor.getFirstName() + " " + doctor.getLastName() + "\n" +
+                            "Пацијент: " + patient.getFirstName() + " " + patient.getLastName() + "\n";
+                    notificationService.SendNotification(clinicAdministrator.getMail(), "billypiton43@gmail.com",
+                            "Нови захтев за преглед", textBody);
+                }
+                return true;        // uspesno sam napravio tvoj termin
+            }
+            else{
+                return false ;      // vec postoji jedan takav kreiran termin
+            }
+        } finally {
+            lock.unlock();
         }
     }
 

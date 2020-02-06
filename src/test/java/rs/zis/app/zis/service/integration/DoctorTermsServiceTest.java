@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static rs.zis.app.zis.constants.UserConstants.*;
 
-@SuppressWarnings("WrapperTypeMayBePrimitive")
+@SuppressWarnings({"WrapperTypeMayBePrimitive", "CatchMayIgnoreException"})
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -229,41 +229,40 @@ public class DoctorTermsServiceTest {
 
     @Test
     public void testReserveTermConcurrent() {
-//        final CountDownLatch latch = new CountDownLatch(2);
-//        DoctorTermsDTO doctorTermsDTO = new DoctorTermsDTO();
-//        doctorTermsDTO.setDate(1581033600000L);
-//        doctorTermsDTO.setStart_term("10:30");
-//        doctorTermsDTO.setStart_term("11:00");
-//        doctorTermsDTO.setFirstNameDoctor("Марко");
-//        doctorTermsDTO.setLastNameDoctor("Марковић");
-//        doctorTermsDTO.setPrice(4200.0);
-//        doctorTermsDTO.setType("Стоматологија");
-//        doctorTermsDTO.setExamination(false);
-//
-//        Runnable r1 = () -> {
-//            doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermsDTO);
-//            latch.countDown();
-//        };
-//
-//        Runnable r2 = () -> {
-//            try { Thread.sleep(3000); } catch (InterruptedException e) { }
-//            try {
-//                boolean reserve = doctorTermsService.reserveTerm(DB_PATIENT2_MAIL, doctorTermsDTO);
-//                fail();
-//            }catch(Exception e) {
-//                assertTrue(e instanceof PessimisticLockingFailureException);
-//            }
-//
-//            latch.countDown();
-//        };
-//
-//        new Thread(r1).start();
-//        new Thread(r2).start();
-//        try {
-//            latch.await();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        final CountDownLatch latch = new CountDownLatch(2);
+        DoctorTermsDTO doctorTermsDTO = new DoctorTermsDTO();
+        doctorTermsDTO.setDate(1581033600000L);
+        doctorTermsDTO.setStart_term("10:30");
+        doctorTermsDTO.setStart_term("11:00");
+        doctorTermsDTO.setFirstNameDoctor("Марко");
+        doctorTermsDTO.setLastNameDoctor("Марковић");
+        doctorTermsDTO.setPrice(4200.0);
+        doctorTermsDTO.setType("Стоматологија");
+        doctorTermsDTO.setExamination(false);
+
+        Runnable r1 = () -> {
+            boolean reserve1 = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermsDTO);
+            latch.countDown();
+
+            assertTrue(reserve1);           // prvi je rezervisao
+        };
+
+        Runnable r2 = () -> {
+            try { Thread.sleep(3000); } catch (InterruptedException e) { }
+            boolean reserve2 = doctorTermsService.reserveTerm(DB_PATIENT2_MAIL, doctorTermsDTO);
+            latch.countDown();
+
+            assertFalse(reserve2);          // drugi nije
+        };
+
+        new Thread(r1).start();
+        new Thread(r2).start();
+        try {
+            latch.await();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
