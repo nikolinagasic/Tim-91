@@ -84,6 +84,17 @@ public class PatientController extends WebConfig {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
+    @GetMapping(produces = "application/json", value = "/getPatientsSorted")
+    public ResponseEntity<List<PatientDTO>> getPatientsSorted() {
+        List<Patient>patientList = patientService.findAll();
+        List<PatientDTO>patientDTOS = new ArrayList<>();
+        for(Patient patient: patientList){
+            PatientDTO patientDTO = new PatientDTO(patient);
+            patientDTOS.add(patientDTO);
+        }
+        return new ResponseEntity<>(patientService.sortPatientByLastName(patientDTOS),HttpStatus.OK);
+    }
+
     @GetMapping(produces = "application/json", value = "/find/{ime}/{prezime}/{lbo}")
     public ResponseEntity<?> findPatient(@PathVariable("ime") String ime, @PathVariable("prezime") String prezime,
                                         @PathVariable("lbo") String lbo) {

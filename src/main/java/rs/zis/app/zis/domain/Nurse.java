@@ -2,6 +2,7 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,11 @@ public class Nurse extends Users {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;                     // klinika u kojoj je zaposlen
 
+    //formiram medjutabelu sestre-recepti->sistem pamti koja sestra je overila recept
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<MedicalRecipe> medicalRecipes =  new HashSet<MedicalRecipe>();
+
+
  //   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
  //   private Set<Godisnji_odmor> vacation;
 
@@ -33,13 +39,14 @@ public class Nurse extends Users {
     }
 
     public Nurse(String mail, String password, String firstName, String lastName, int workShift, Clinic clinic, Set<Vacation> vacation,
-                 Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+                 Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin, Set<MedicalRecipe> medicalRecipes) {
         super(mail, password,true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;
         this.role = "nurse";
         this.workShift = workShift;
+        this.medicalRecipes = medicalRecipes;
       //  this.vacation = vacation;
     }
 
@@ -91,4 +98,12 @@ public class Nurse extends Users {
         this.vacation = vacation;
     }
 */
+
+    public Set<MedicalRecipe> getMedicalRecipes() {
+        return medicalRecipes;
+    }
+
+    public void addMedicalRecipe(MedicalRecipe medicalRecipe){
+        this.medicalRecipes.add(medicalRecipe);
+    }
 }
