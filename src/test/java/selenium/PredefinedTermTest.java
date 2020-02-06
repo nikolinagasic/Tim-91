@@ -1,6 +1,9 @@
 package selenium;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.PageFactory;
@@ -9,12 +12,16 @@ import org.testng.annotations.Test;
 import pages.CreatePredefinedPage;
 import pages.ReservePredefinedPage;
 
-@SuppressWarnings({"FieldCanBeLocal", "unused"})
+import java.util.List;
+
+@SuppressWarnings({"FieldCanBeLocal", "unused", "IfStatementWithIdenticalBranches"})
 public class PredefinedTermTest {
 
     private WebDriver browser;
 
     private CreatePredefinedPage createPredefinedPage;
+
+    private ReservePredefinedPage reservePredefinedPage;
 
     @BeforeMethod
     public void setUp() {
@@ -27,15 +34,101 @@ public class PredefinedTermTest {
         //maximize window
         browser.manage().window().maximize();
 
-        // TODO URL do stranice koju treba testirati
-        browser.navigate().to("http://localhost:3000/#/pageadmin");
+        browser.navigate().to("http://localhost:3000/#/login");
 
         createPredefinedPage = PageFactory.initElements(browser, CreatePredefinedPage.class);
+        reservePredefinedPage = PageFactory.initElements(browser, ReservePredefinedPage.class);
     }
 
     @Test
-    public void test(){
+    public void testCreatePredefined() {
+        createPredefinedPage.ensureIsDisplayedInput();
 
+        createPredefinedPage.getInputMail().sendKeys("cadmin@gmail.com");
+        createPredefinedPage.getInputPassword().sendKeys("admin");
+        createPredefinedPage.getBtnPrijaviSe().click();
+
+        createPredefinedPage.ensureAlertDisplayed();
+        threadSleep(1500);
+        createPredefinedPage.getDriver().switchTo().alert().accept();
+        createPredefinedPage.ensureIsDisplayedPage();
+
+        threadSleep(1000);
+        createPredefinedPage.getLiTermini().click();
+        createPredefinedPage.ensureIsDisplayedNaslov();
+
+        threadSleep(500);
+        ((JavascriptExecutor)createPredefinedPage.getDriver()).executeScript
+                ("document.getElementById('a_date_predefinedExam').removeAttribute('readonly',0);");
+        WebElement fromDateBox= createPredefinedPage.getDatumPregleda();
+        fromDateBox.clear();
+        fromDateBox.sendKeys("2020-02-10");
+
+        threadSleep(500);
+        createPredefinedPage.getSelectDoctor().selectByIndex(1);
+        threadSleep(500);
+        createPredefinedPage.getInputCena().sendKeys("999.99");
+        threadSleep(500);
+        createPredefinedPage.getInputPopust().sendKeys("5");
+        threadSleep(500);
+        createPredefinedPage.getBtnNapraviPregled().click();
+
+        createPredefinedPage.ensureAlertDisplayed();
+        threadSleep(1500);
+        String text_alert = createPredefinedPage.getDriver().switchTo().alert().getText();
+        if(text_alert.equals("Успешно сте креирали термин.")){
+            createPredefinedPage.getDriver().switchTo().alert().accept();
+            System.out.println("Bravo Aco");
+        }
+        else{
+            createPredefinedPage.getDriver().switchTo().alert().accept();
+            System.out.println("Termin je vec kreiran");
+        }
     }
 
+    @Test
+    public void testReservePredefined(){
+        reservePredefinedPage.ensureIsDisplayedInput();
+
+        reservePredefinedPage.getInputMail().sendKeys("patient@gmail.com");
+        reservePredefinedPage.getInputPassword().sendKeys("12345678");
+        reservePredefinedPage.getBtnPrijaviSe().click();
+
+        reservePredefinedPage.ensureAlertDisplayed();
+        threadSleep(1500);
+        reservePredefinedPage.getDriver().switchTo().alert().accept();
+        reservePredefinedPage.ensureIsDisplayedPagePatient();
+
+        threadSleep(1000);
+        reservePredefinedPage.getLiListaKlinika().click();
+        reservePredefinedPage.ensureIsDisplayedTableClinics();
+
+        threadSleep(1000);
+        reservePredefinedPage.getBtnPrikazi().click();
+        reservePredefinedPage.ensureIsDisplayedClinicProfile();
+        threadSleep(1000);
+        reservePredefinedPage.getLinkPredefined().click();
+        reservePredefinedPage.ensureIsDisplayedPredefinedPage();
+
+        reservePredefinedPage.getBtnReserve().click();
+        reservePredefinedPage.ensureAlertDisplayed();
+        String text_alert = reservePredefinedPage.getDriver().switchTo().alert().getText();
+        threadSleep(1000);
+        if(text_alert.equals("Термин успешно резервисан.")){
+            reservePredefinedPage.getDriver().switchTo().alert().accept();
+            System.out.println("Bravo Aco");
+        }
+        else{
+            reservePredefinedPage.getDriver().switchTo().alert().accept();
+            System.out.println("Neko je rezervisao pre tebe");
+        }
+    }
+
+    private void threadSleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

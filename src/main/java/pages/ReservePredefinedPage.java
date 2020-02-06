@@ -11,25 +11,35 @@ public class ReservePredefinedPage {
 
     private WebDriver driver;
 
+    @FindBy(xpath = "/html/body/div/div/div/div/form/input[1]")
+    private WebElement inputMail;
+
+    @FindBy(xpath = "/html/body/div/div/div/div/form/input[2]")
+    private WebElement inputPassword;
+
+    @FindBy(xpath = "/html/body/div/div/div/div/form/input[3]")
+    private WebElement btnPrijaviSe;
+
+    @FindBy(xpath = "//*[@id=\"klinike\"]")
+    private WebElement liListaKlinika;
+
+    @FindBy(xpath = "/html/body/div/div/div/div/div[2]/div/form[2]/table")
+    private WebElement tabelaKlinika;
+
+    @FindBy(xpath = "//*[@id=\"a_tr_clinic_search_prikazi\"]")
+    private WebElement btnPrikazi;
+
     @FindBy(xpath = "//*[@id=\"a_click_unapredDef\"]")
     private WebElement linkPredefined;
 
     @FindBy(xpath = "//*[@id=\"a_h1_unapredDef\"]")
-    private WebElement h1PredefinedTerm;
+    private WebElement naslovPredefinedTerm;
 
     @FindBy(xpath = "//*[@id=\"a_table_predefinedTerm\"]")
     private WebElement tablePredefined;
 
     @FindBy(xpath = "//*[@id=\"a_btn_predefined_term\"]")
     private WebElement btnReserve;
-
-    @FindBy(xpath = "//*[@id=\"klinike\"]")
-    private WebElement liListaKlinika;
-
-    @FindBy(xpath = "//*[@id=\"a_tr_clinic_search_prikazi\"]")
-    private WebElement btnPrikazi;
-
-    // alert mi treba isto
 
     public ReservePredefinedPage() {
     }
@@ -38,24 +48,66 @@ public class ReservePredefinedPage {
         this.driver = driver;
     }
 
-    // prikazana je pocetna stranica kada vidim link za unapred def
+    public WebDriver getDriver() {
+        return driver;
+    }
+
+    public void ensureIsDisplayedInput(){
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.elementToBeClickable(inputMail));
+    }
+
+    public void ensureIsDisplayedPagePatient(){
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(liListaKlinika));
+    }
+
+    public void ensureIsDisplayedTableClinics(){
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(tabelaKlinika));
+    }
+
     public void ensureIsDisplayedClinicProfile(){
         (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.visibilityOf(linkPredefined));
     }
 
-    // prikazana je lista predefinisanih termina tek kad vidim naslov Unapred definisani
     public void ensureIsDisplayedPredefinedPage(){
         (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(h1PredefinedTerm));
+                .until(ExpectedConditions.visibilityOf(naslovPredefinedTerm));
+    }
+
+    public void ensureAlertDisplayed(){
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.alertIsPresent());
+    }
+
+    public WebElement getInputMail() {
+        return inputMail;
+    }
+
+    public WebElement getInputPassword() {
+        return inputPassword;
+    }
+
+    public WebElement getBtnPrijaviSe() {
+        return btnPrijaviSe;
+    }
+
+    public WebElement getLiListaKlinika() {
+        return liListaKlinika;
+    }
+
+    public WebElement getBtnPrikazi() {
+        return btnPrikazi;
     }
 
     public WebElement getLinkPredefined() {
         return linkPredefined;
     }
 
-    public WebElement getH1PredefinedTerm() {
-        return h1PredefinedTerm;
+    public WebElement getNaslovPredefinedTerm() {
+        return naslovPredefinedTerm;
     }
 
     public WebElement getTablePredefined() {
@@ -64,5 +116,9 @@ public class ReservePredefinedPage {
 
     public WebElement getBtnReserve() {
         return btnReserve;
+    }
+
+    public WebElement getTabelaKlinika() {
+        return tabelaKlinika;
     }
 }

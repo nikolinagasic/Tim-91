@@ -122,7 +122,7 @@ insert into doctor_terms (active, date, examination, doctor_id, patient_id, proc
             values (true, 1578441600000, true, 3, 2, true, 0, false, 1, 1, 4200.00, 0, false, false); -- 8. januar
 insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, version, predefined, room_id, term_definition_id,
             price, discount, rate_clinic, rate_doctor)
-             values (true, 1578441600000, true, 3, 2, true, 0, false, 3, 2, 4200.00, 0, false, false); -- 8. januar
+             values (true, 1578441600000, true, 3, 2, true, 0, true, 3, 2, 4200.00, 0, false, false); -- 8. januar
 insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, version, predefined, room_id, term_definition_id,
             price, discount, rate_clinic, rate_doctor)
              values (true, 1578441600000, true, 3, 2, true, 0, false, 1, 3, 4200.00, 0, false, false); -- 8. januar
