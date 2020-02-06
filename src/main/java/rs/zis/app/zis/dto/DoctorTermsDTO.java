@@ -42,9 +42,7 @@ public class DoctorTermsDTO {
         this.isExamination = isExamination;
     }
 
-    public Long getId() {
-        return id;
-    }
+
 
     public DoctorTermsDTO(Long date, TermDefinition termDefinition, Doctor doctor, Patient patient) {
         this.date = date;

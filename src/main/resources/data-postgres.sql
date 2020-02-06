@@ -100,8 +100,8 @@ insert into user_authority (user_id, authority_id) values (6, 3);
 insert into user_authority (user_id, authority_id) values (7, 3);
 
 -- VACATION
-insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (1, true, 1579824000000, 1580428800000, 3);     -- 24.01. - 31.01.
-insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (2, true, 1580428800000, 1581033600000, 5);     -- 31.01. - 07.02.
+--insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (1, true, 1579824000000, 1580428800000, 3);     -- 24.01. - 31.01.
+--insert into vacation (id, active, start_vacation, end_vacation, doctor_id) values (2, true, 1580428800000, 1581033600000, 5);     -- 31.01. - 07.02.
 
 -- ROOM
 insert into room(active, name, number, clinic_id) values (true, 'Сала 1', 1, 1);
