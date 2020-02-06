@@ -45,6 +45,7 @@ public class Doctor extends Users {
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Vacation> vacation = new HashSet<>();
 
+
     public Doctor() {
         this.role = "doctor";
         this.workShift = 1;

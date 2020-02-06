@@ -98,6 +98,14 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(new DoctorDTO(doctor), HttpStatus.OK);
     }
 
+    @GetMapping(produces = "application/json", value = "getDoctorById/{id}")
+    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long id){
+        Doctor doctor = doctorService.findOneById(id);
+        return new ResponseEntity<>(new DoctorDTO(doctor), HttpStatus.OK);
+    }
+
+
+
     @PostMapping(value = "/changeAttribute/{changedName}/{newValue}/{email}")
     public ResponseEntity<?> changeAttributes( @PathVariable("changedName") String changed, @PathVariable("newValue") String value,@PathVariable("email") String mail) {
         System.out.println("usao sam ovde CHANGE" + changed + " " + value);

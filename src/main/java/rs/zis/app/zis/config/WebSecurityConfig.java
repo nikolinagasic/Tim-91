@@ -64,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
                 // NAVODIM PUTANJE KOJIMA SVI MOGU DA PRISTUPE (white list)
                 .authorizeRequests().antMatchers("/auth/**")
+                .permitAll().antMatchers("/patient/**")
                 .permitAll().antMatchers("/patient/register")
                 .permitAll().antMatchers("/patient/changeAttribute/**")
                 .permitAll().antMatchers("/patient/getAll/**")
@@ -81,6 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .permitAll().antMatchers("/term_definition/**")
                 .permitAll().antMatchers("/medicalrecord/**")
                 .permitAll().antMatchers("/medicalreview/**")
+                .permitAll().antMatchers("/medicalrecipe/**")
                 .permitAll().antMatchers("/room/**")
                 .permitAll().antMatchers("/api/foo").permitAll()
 

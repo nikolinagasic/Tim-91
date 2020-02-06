@@ -84,6 +84,8 @@ insert into user_authority (user_id, authority_id) values (4, 5);
 insert into clinic_doctors (clinic_id, doctors_id) values (1,5);
 insert into user_authority (user_id, authority_id) values (5, 5);
 
+
+
 -- CLINIC ADMINISTRATOR
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'cadmin@gmail.com','$2a$04$SwzgBrIJZhfnzOw7KFcdzOTiY6EFVwIpG7fkF/D1w26G1.fWsi.aK');
@@ -167,3 +169,17 @@ insert into room_doctor_terms (room_id, doctor_terms_id) values (4, 8);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 9);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (3, 10);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (6, 11);
+
+
+--DIAGNOSIS AND CURES
+insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values(2,'AMOKSIKLAV(500mg+125mg)','10215','Zapaljenje sinusa','J01');
+insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values(3,'AMOKSIKLAV(500mg)','10216','Zapaljenje sinusa','J01');
+insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values(4,'AMOKSIKLAV(500mg+125mg)','10215','Zapaljenje krajnika','J07');
+insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values(5,'BRUFEN(400mg)','2035','Temperatura','K168');
+insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values(6,'BRUFEN(800mg)','2036','Temperatura','K168');
+
