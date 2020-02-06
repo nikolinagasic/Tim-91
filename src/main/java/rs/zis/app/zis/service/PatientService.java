@@ -128,4 +128,23 @@ public class PatientService {
             return false;
         }
     }
+
+
+    public List<PatientDTO> sortPatientByLastName(List<PatientDTO> patientDTOList){
+        ArrayList<String> lista_prezimena = new ArrayList<>();
+        for(PatientDTO patientDTO: patientDTOList){
+            lista_prezimena.add(patientDTO.getLastName());
+        }
+        java.util.Collections.sort(lista_prezimena);
+        ArrayList<PatientDTO>retList = new ArrayList<>();
+        for (String prezime : lista_prezimena){
+            List<Patient>patientList = findPatientByLastName(prezime);
+            for(Patient patient:patientList) {
+                PatientDTO patientDTO = new PatientDTO(patient);
+                retList.add(patientDTO);
+            }
+        }
+        return retList;
+    }
+
 }
