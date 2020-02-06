@@ -253,23 +253,6 @@ public class DoctorService {
         return true;
     }
 
-    public void sendMailAdministrator(DoctorTermsDTO doctorTermsDTO) {
-
-        try {
-            Doctor doctor = findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),doctorTermsDTO.getLastNameDoctor());
-            String mail = doctor.getMail();
-            String tb="Postovani," + "\n" +
-                    "Imate novi zahev za rezervaciju sale.\n";
-            System.out.println(tb);
-            for (ClinicAdministrator admin : clinicAdministratorService.findAllByClinic(doctor.getClinic())) {
-                notificationService.SendNotification(admin.getMail(), "billypiton43@gmail.com",
-                        "OBAVESTENJE", tb);
-            }
-        } catch (MailException e) {
-            System.out.println("Error sending message.");
-            logger.info("Error Sending Mail:" + e.getMessage());
-        }
-    }
     // vrati sve doktore kod kojih je ovaj pacijent bio, a da ih nije pre toga ocenio
     public List<DoctorDTO> getPatientHistoryDoctors(Patient patient) {
         List<Doctor> tmpList = new ArrayList<>();

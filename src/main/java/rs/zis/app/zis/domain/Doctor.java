@@ -68,7 +68,7 @@ public class Doctor extends Users {
         this.sum_ratings = sum_ratings;
         this.number_rating = number_rating;
     }
-
+    public void addVacation(Vacation vacation) {this.vacation.add(vacation);}
     public int getDiscount() {
         return discount;
     }

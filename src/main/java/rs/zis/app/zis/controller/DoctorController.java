@@ -29,6 +29,8 @@ public class DoctorController extends WebConfig {
     @Autowired
     private PatientService patientService;
     @Autowired
+    private VacationService vacationService;
+    @Autowired
     private DoctorTermsService doctorTermsService;
     @Autowired
     private TipPregledaService tipPregledaService;
@@ -189,7 +191,6 @@ public class DoctorController extends WebConfig {
 
         boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO,examination);
         if(isReserved){
-            doctorService.sendMailAdministrator(doctorTermsDTO);
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
         else{
@@ -300,5 +301,15 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(scheduleTermDTOList,HttpStatus.OK);
     }
 
+    @PostMapping(consumes="application/json", value = "/reserveVacation/{id}")
+    public ResponseEntity<?> reserveVacation(@RequestBody VacationDTO vacationDTO,@PathVariable("id") Long id) {
+        Doctor doctor = doctorService.findOneById(id);
+        vacationDTO.setFirstName(doctor.getFirstName());
+        vacationDTO.setLastName(doctor.getLastName());
+        Vacation vacation = vacationService.save(vacationDTO,doctor);
+        doctor.addVacation(vacation);
+        doctorService.update(doctor);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
 
+    }
 }

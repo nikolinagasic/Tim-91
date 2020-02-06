@@ -1,4 +1,6 @@
 package rs.zis.app.zis.domain;
+import rs.zis.app.zis.dto.VacationDTO;
+
 import javax.persistence.*;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -19,16 +21,28 @@ public class Vacation {
 
     @Column(name = "active", nullable = false)
     private boolean active;
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
 
     public Vacation() {
     }
 
-    public Vacation(Long id, long pocetak, long kraj, Doctor doctor, boolean active) {
+    public Vacation(Long id, long pocetak, long kraj, Doctor doctor, boolean active,boolean enabled) {
         this.id = id;
         this.pocetak = pocetak;
         this.kraj = kraj;
         this.doctor = doctor;
         this.active = active;
+        this.enabled = enabled;
+    }
+
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Long getId() {

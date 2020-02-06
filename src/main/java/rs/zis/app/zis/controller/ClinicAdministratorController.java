@@ -1,5 +1,7 @@
 package rs.zis.app.zis.controller;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class ClinicAdministratorController extends WebConfig {
 
     @Autowired
     private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private VacationService vacationService;
 
     @Autowired
     private DoctorService doctorService;
@@ -185,5 +190,32 @@ public class ClinicAdministratorController extends WebConfig {
         return new ResponseEntity<>(doctorTermsService.createPredefinedTerm(date, satnica_id, room_id, type_id,
                         doctor_id, price, discount), HttpStatus.OK);
     }
-
+    @GetMapping(produces = "application/json", value = "/getVacation/{clinic}")
+    public ResponseEntity<?> getVacation(@PathVariable("clinic") String clinic){
+        List<VacationDTO> vacations = new ArrayList<>();
+        for (Vacation v: vacationService.findAll()) {
+            if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                if (!v.isEnabled() && v.isActive())
+                  vacations.add(new VacationDTO(v));
+            }
+        }
+         return new ResponseEntity<>(vacations,HttpStatus.OK);
+    }
+    @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
+    public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
+                                                  @PathVariable("odobren") boolean odobren,
+                                                  @PathVariable("razlog") String razlog){
+        String body;
+        Vacation vacation = vacationService.findOneById(id);
+        if (odobren) {
+            vacation.setEnabled(true);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odobren.";
+        } else {
+            vacation.setActive(false);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
+        }
+        vacationService.update(vacation); //TODO za doktora
+        notificationService.SendNotification(vacation.getDoctor().getMail(),"billypiton43@gmail.com","OBAVESTENJE",body);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
 }

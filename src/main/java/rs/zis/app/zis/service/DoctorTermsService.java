@@ -62,16 +62,7 @@ public class DoctorTermsService {
     private TipPregledaService tipPregledaService;
 
     @Autowired
-    private RoomService roomService;
-
-    @Autowired
     private VacationService vacationService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private ClinicAdministratorService clinicAdministratorService;
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAll() {
@@ -318,9 +309,6 @@ public class DoctorTermsService {
         return 0;
     }
 
-    public List<DoctorTerms> findAllByRoom (Room room) {
-        return doctorTermsRepository.findAllByRoom(room);
-    }
     public List<DoctorTerms> findAllByProcessedByAdmin (boolean is) {
         return doctorTermsRepository.findAllByProcessedByAdmin(is);
     }
