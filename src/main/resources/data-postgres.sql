@@ -9,7 +9,6 @@ insert into users (enabled, active, first_login, last_password_reset_date, mail,
 insert into clinic_centre_admin (first_name, last_name, predefined, role, id)
     values ('Aдмин', 'Aдмин', true, 'ccadmin', 1);
 
-
 insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
     values (true, true, true, '2017-10-01 21:58:58.508-07', 'patient@gmail.com','$2a$10$dHUB7Rc9.w6lCB1QRcNIJe2ZPSnbRORDQPtVszxtsSSAN965P8MRm'); --password: 12345678
 insert into patient (address, city, country, first_name, last_name, lbo, role, telephone, id)
@@ -151,6 +150,9 @@ insert into doctor_terms (active, date, examination, doctor_id, patient_id, proc
 insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, version, predefined, room_id, term_definition_id,
             price, discount, rate_clinic, rate_doctor)
              values (true, 1578441600000, false, 4, 2, true, 0, false, 6, 11, 4700.00, 0, false, false);
+insert into doctor_terms (active, date, examination, doctor_id, patient_id, processed_by_cadmin, version, predefined, room_id, term_definition_id,
+            price, discount, rate_clinic, rate_doctor)
+             values (true, 1578441600000, false, 4, 2, true, 0, true, 6, 10, 4700.00, 0, false, false);
 
 insert into room_doctor_terms (room_id, doctor_terms_id) values (1, 1);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (3, 2);
@@ -163,3 +165,10 @@ insert into room_doctor_terms (room_id, doctor_terms_id) values (4, 8);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (2, 9);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (3, 10);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (6, 11);
+
+insert into users (enabled, active, first_login, last_password_reset_date, mail, password)
+    values (true, true, true, '2017-10-01 21:58:58.508-07', 'patient2@gmail.com','$2a$10$dHUB7Rc9.w6lCB1QRcNIJe2ZPSnbRORDQPtVszxtsSSAN965P8MRm'); --password: 12345678
+insert into patient (address, city, country, first_name, last_name, lbo, role, telephone, id)
+    values ('Пацијент адреса', 'Нови Сад', 'Србија', 'Круно', 'Симон', 12345678925, 'patient', 456789, 8);
+
+insert into user_authority (user_id, authority_id) values (8, 2);

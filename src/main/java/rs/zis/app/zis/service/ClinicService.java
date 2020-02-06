@@ -64,6 +64,7 @@ public class ClinicService implements UserDetailsService {
 
     public Clinic findOneById(Long id) { return clinicRepository.findOneById(id); }
 
+    // TODO test 3.13
     public List<ClinicDTO> searchClinic(long datum, String tip, double ocena){
         // 1) return: doktori koji su datog tipa
         List<Doctor> doctorsType;
@@ -78,7 +79,7 @@ public class ClinicService implements UserDetailsService {
         // 2) return: doktori koji imaju slobodnih termina u tom danu
         List<Doctor> slobodni_doktori = new ArrayList<>();
         for (Doctor d : doctorsType) {                      // za sve doktore koji su tog tipa (stomatolog, urolog, ...)
-            List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d);       // svi zauzeti termini doktora
+            List<DoctorTerms> doctorTerm = doctorTermsService.findAllByDoctor(d.getId());       // svi zauzeti termini doktora
             List<Vacation> vacationList = vacationService.findAllByDoctor(d);           // godisnji odmori tog doktora
             int counter_term = 0;
 
@@ -149,12 +150,13 @@ public class ClinicService implements UserDetailsService {
         }
     }
 
+    // TODO test 3.13
     public List<Doctor> findDoctorsByClinic(String clinic_name, Long date){
         List<Doctor> retList = new ArrayList<>();
         Clinic clinic = findOneByName(clinic_name);
         if(clinic != null) {
             for (Doctor doctor: doctorService.findAllByClinic(clinic)) {
-                List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+                List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor.getId());
                 List<Vacation> vacationList = vacationService.findAllByDoctor(doctor);
 
                 boolean godisnji = false;
@@ -185,6 +187,7 @@ public class ClinicService implements UserDetailsService {
         return retList;
     }
 
+    // TODO test 3.13
     public List<ClinicDTO> filterClinic(String cOd, String cDo, String ocOd, String ocDo, String naziv, List<ClinicDTO> listaKlinika){
         double cenaOd, cenaDo, ocenaOd, ocenaDo;
         if(cOd.equals("min")){
@@ -253,6 +256,7 @@ public class ClinicService implements UserDetailsService {
         return retList;
     }
 
+    // TODO test 3.12
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reservePredefinedTerm(Long id_term, Patient patient) {
         DoctorTerms doctorTerms = doctorTermsService.findOneById(id_term);

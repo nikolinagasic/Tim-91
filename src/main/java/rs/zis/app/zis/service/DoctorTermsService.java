@@ -95,8 +95,8 @@ public class DoctorTermsService {
 
 
     @Transactional(readOnly = false)
-    public List<DoctorTerms> findAllByDoctor(Doctor doctor){
-        return doctorTermsRepository.findAllByDoctor(doctor);
+    public List<DoctorTerms> findAllByDoctor(Long id) {
+        return doctorTermsRepository.findAllByDoctor(doctorService.findOneById(id));
     }
 
     @Transactional(readOnly = false)
@@ -107,10 +107,11 @@ public class DoctorTermsService {
         return doctorTermsRepository.findAllByRoom(room);
     }
 
+    // TODO test 3.10/3.13
     @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
         List<DoctorTermsDTO> retList = new ArrayList<>();
-        List<DoctorTerms> listaTermina = findAllByDoctor(doctor);           // lista termina mog doktora
+        List<DoctorTerms> listaTermina = findAllByDoctor(doctor.getId());           // lista termina mog doktora
 
         // svi termini za tu smenu (prva/druga smena)
         List<TermDefinition> listaSvihTermina = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
@@ -134,6 +135,7 @@ public class DoctorTermsService {
         return retList;
     }
 
+    // TODO test 3.10/3.13
     @Transactional(readOnly = false)
     public DoctorTermsDTO detailTerm(Long doctor_id, Long date, String start_term, String mail_patient){
         Doctor doctor = doctorService.findOneById(doctor_id);
@@ -143,6 +145,7 @@ public class DoctorTermsService {
         return new DoctorTermsDTO(date, termDefinition, doctor, new Patient());
     }
 
+    // TODO test 3.10
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
         Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
@@ -150,15 +153,20 @@ public class DoctorTermsService {
         TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
         Patient patient = patientService.findOneByMail(mail_patient);
 
-        DoctorTerms dt = new DoctorTerms();
-        try {
-            dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
-                    term_def,
-                    doctor);
-        }catch (Exception e){
-            System.out.println("Okinut exception: " + e.getClass());
+        if(patient == null){
             return false;
         }
+        if(term_def == null){
+            return false;
+        }
+        if(doctor == null){
+            return false;
+        }
+
+        DoctorTerms dt = new DoctorTerms();
+        dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
+                term_def,
+                doctor);
 
         List<ClinicAdministrator> lista_cadmina = new ArrayList<>();
         for (ClinicAdministrator clinicAdministrator : clinicAdministratorService.findAll()) {
@@ -173,6 +181,8 @@ public class DoctorTermsService {
             doctorTerms.setDoctor(doctor);
             doctorTerms.setPatient(patient);
             doctorTerms.setTerm(term_def);
+            doctorTerms.setPrice(doctor.getPrice());
+            doctorTerms.setDiscount(doctor.getDiscount());
 
             doctorTerms.setProcessedByAdmin(false);
             doctorTermsRepository.save(doctorTerms);
@@ -191,6 +201,7 @@ public class DoctorTermsService {
         }
     }
 
+    // TODO test 3.12
     @Transactional(readOnly = false)
     public int createPredefinedTerm(Long date, Long satnica_id, Long room_id, Long type_id, Long doctor_id,
                                         double price, int discount){
@@ -222,7 +233,7 @@ public class DoctorTermsService {
     }
 
     private boolean checkDoctor(Doctor doctor, Long date, TermDefinition termDefinition){
-        for (DoctorTerms doctorTerm : findAllByDoctor(doctor)) {
+        for (DoctorTerms doctorTerm : findAllByDoctor(doctor.getId())) {
             if(doctorTerm.getDate() == date){
                 if(doctorTerm.getTerm().equals(termDefinition)){
                     return false;
@@ -256,7 +267,7 @@ public class DoctorTermsService {
         List<DoctorTermsDTO> dtoList = new ArrayList<>();
         for (DoctorTerms doctorTerms : findAll()) {
             if(doctorTerms.getPatient() != null){
-                if(doctorTerms.getPatient().equals(patient)){
+                if(doctorTerms.getPatient().equals(patient) && doctorTerms.isProcessedByAdmin()){
                     dtoList.add(new DoctorTermsDTO(doctorTerms));
                 }
             }

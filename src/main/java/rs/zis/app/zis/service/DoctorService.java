@@ -212,7 +212,7 @@ public class DoctorService {
     }
 
     private boolean doctor_free_at_date(Doctor doctor, long datum) {
-        List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+        List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor.getId());
 
         boolean godisnji = false;
         for (Vacation vacation : vacationService.findAllByDoctor(doctor)) {
@@ -261,7 +261,7 @@ public class DoctorService {
     }
 
     public boolean oceniDoktora(Doctor doctor_param, double ocena, Patient patient) {
-        // TODO uradi zakljucavanje na findById
+        // TODOO uradi zakljucavanje na findById
         //  mora biti zakljucavanje (pesimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
         Doctor doctor;
         try {

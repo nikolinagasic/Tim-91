@@ -25,8 +25,8 @@ public interface DoctorTermsRepository extends JpaRepository<DoctorTerms, Long> 
     DoctorTerms save(DoctorTerms doctorTerms);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
     @Query("select dt from DoctorTerms dt where dt.date = :date and dt.term = :start and dt.doctor = :doctor")
+    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
     DoctorTerms findOneByDateAndStartTermAndDoctorId(@Param("date")Long date,
                                                      @Param("start") TermDefinition start,
                                                      @Param("doctor") Doctor doctor);
