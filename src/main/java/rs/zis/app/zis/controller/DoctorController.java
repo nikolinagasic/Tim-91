@@ -306,7 +306,7 @@ public class DoctorController extends WebConfig {
         Doctor doctor = doctorService.findOneById(id);
         vacationDTO.setFirstName(doctor.getFirstName());
         vacationDTO.setLastName(doctor.getLastName());
-        Vacation vacation = vacationService.save(vacationDTO,doctor);
+        Vacation vacation = vacationService.saveDoctorVocation(vacationDTO,doctor);
         doctor.addVacation(vacation);
         doctorService.update(doctor);
         return new ResponseEntity<>("ok", HttpStatus.OK);
