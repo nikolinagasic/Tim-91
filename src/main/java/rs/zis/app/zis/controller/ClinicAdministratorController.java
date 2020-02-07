@@ -190,17 +190,44 @@ public class ClinicAdministratorController extends WebConfig {
         return new ResponseEntity<>(doctorTermsService.createPredefinedTerm(date, satnica_id, room_id, type_id,
                         doctor_id, price, discount), HttpStatus.OK);
     }
+
+    //ovde vracamo godisnje odmore lekara samo
     @GetMapping(produces = "application/json", value = "/getVacation/{clinic}")
     public ResponseEntity<?> getVacation(@PathVariable("clinic") String clinic){
         List<VacationDTO> vacations = new ArrayList<>();
         for (Vacation v: vacationService.findAll()) {
-            if (v.getDoctor().getClinic().getName().equals(clinic)) {
-                if (!v.isEnabled() && v.isActive())
-                  vacations.add(new VacationDTO(v));
+            if(v.getDoctor_nurse().equals("doctor")) {
+                if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
             }
         }
          return new ResponseEntity<>(vacations,HttpStatus.OK);
     }
+
+    //ovde vracam listu SVIH zahteva za godisnji odmor
+    @GetMapping(produces = "application/json", value = "/getAllVacation/{clinic}")
+    public ResponseEntity<?> getAllVacation(@PathVariable("clinic") String clinic){
+        List<VacationDTO> vacations = new ArrayList<>();
+        for (Vacation v: vacationService.findAll()) {
+            if(v.getDoctor_nurse().equals("doctor")) {
+                if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }else{
+                if(v.getNurse().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }
+        }
+        return new ResponseEntity<>(vacations,HttpStatus.OK);
+    }
+
+
+
     @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
     public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
                                                   @PathVariable("odobren") boolean odobren,
@@ -215,7 +242,12 @@ public class ClinicAdministratorController extends WebConfig {
             body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
         }
         vacationService.update(vacation); //TODO za doktora
-        notificationService.SendNotification(vacation.getDoctor().getMail(),"billypiton43@gmail.com","OBAVESTENJE",body);
+        if(vacation.getDoctor_nurse().equals("doctor")) {
+            notificationService.SendNotification(vacation.getDoctor().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }else{
+            notificationService.SendNotification(vacation.getNurse().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }
+
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }

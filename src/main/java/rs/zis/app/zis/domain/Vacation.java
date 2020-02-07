@@ -16,8 +16,14 @@ public class Vacation {
     @Column(name = "endVacation", nullable = false)
     private long kraj;
 
+    @Column(name = "doctor_nurse")
+    private String doctor_nurse;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Doctor doctor;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Nurse nurse;
 
     @Column(name = "active", nullable = false)
     private boolean active;
@@ -83,5 +89,21 @@ public class Vacation {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getDoctor_nurse() {
+        return doctor_nurse;
+    }
+
+    public void setDoctor_nurse(String doctor_nurse) {
+        this.doctor_nurse = doctor_nurse;
+    }
+
+    public Nurse getNurse() {
+        return nurse;
+    }
+
+    public void setNurse(Nurse nurse) {
+        this.nurse = nurse;
     }
 }
