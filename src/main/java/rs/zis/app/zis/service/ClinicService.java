@@ -240,6 +240,7 @@ public class ClinicService implements UserDetailsService {
         }
     }
 
+    @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getPredefinedTerms(long clinic_id) {
         List<DoctorTermsDTO> retList = new ArrayList<>();
         Clinic clinic = findOneById(clinic_id);
@@ -256,7 +257,6 @@ public class ClinicService implements UserDetailsService {
         return retList;
     }
 
-    // TODO test 3.12
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reservePredefinedTerm(Long id_term, Patient patient) {
         DoctorTerms doctorTerms = doctorTermsService.findOneById(id_term);

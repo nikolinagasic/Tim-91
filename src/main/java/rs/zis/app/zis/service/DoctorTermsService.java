@@ -145,6 +145,13 @@ public class DoctorTermsService {
         TermDefinition termDefinition = termDefinitionService.findOneByStart_term(start_term);
         Patient patient = patientService.findOneByMail(mail_patient);
 
+        if(doctor == null){
+            return null;
+        }
+        if(termDefinition == null){
+            return null;
+        }
+
         return new DoctorTermsDTO(date, termDefinition, doctor, new Patient());
     }
 

@@ -175,14 +175,14 @@ public class DoctorController extends WebConfig {
             isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
         }catch (Exception e){
             System.out.println("Okinut exception: " + e.getClass());
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.LOCKED);
         }
 
         if(isReserved){
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
 

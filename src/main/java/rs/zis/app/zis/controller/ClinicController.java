@@ -76,6 +76,7 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaKlinika, HttpStatus.OK);
     }
 
+    // TODO test 3.13
     @GetMapping (produces = "application/json", value = "/getDoctorsByClinic/{clinic_name}/{date}")
     public ResponseEntity<?> getDoctorsInClinic(@PathVariable("clinic_name") String clinic_name,
                                                 @PathVariable("date") Long date){
@@ -87,6 +88,7 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
+    // TODO test 3.13
     @PostMapping(produces = "application/json", consumes = "application/json" ,
             value = "/getFilterClinic/{cenaOd}/{cenaDo}/{ocenaOd}/{ocenaDo}/{naziv}")
     public ResponseEntity<?> getDoctorsInClinic(@RequestBody List<ClinicDTO> lKlinika,
@@ -100,6 +102,7 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(listaKlinikaDTO, HttpStatus.OK);
     }
 
+    // TODO test 3.13
     @GetMapping (produces = "application/json", value = "/getClinicByName/{clinic_id}")
     public ResponseEntity<?> getClinicById(@PathVariable("clinic_id") Long clinic_id){
         Clinic clinic = clinicService.findOneById(clinic_id);
@@ -152,11 +155,13 @@ public class ClinicController extends WebConfig {
         return new ResponseEntity<>(roomDTOS, HttpStatus.OK);
     }
 
+    // TODO test 3.12
     @PostMapping (consumes = "application/json", produces = "application/json", value = "/getPredefinedTerms")
     public ResponseEntity<?> getPredefinedTerms(@RequestBody ClinicDTO klinika) {
         return new ResponseEntity<>(clinicService.getPredefinedTerms(klinika.getId()), HttpStatus.OK);
     }
 
+    // TODO test 3.12
     @PostMapping (produces = "application/json", value = "/reservePredefinedTerm/{id_term}")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<?> getPredefinedTerms(@PathVariable("id_term") Long id_term,

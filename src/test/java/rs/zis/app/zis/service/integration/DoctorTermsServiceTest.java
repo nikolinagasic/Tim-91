@@ -34,6 +34,9 @@ public class DoctorTermsServiceTest {
     @Test
     public void testFindAll() {
         List<DoctorTerms> doctorTerms = doctorTermsService.findAll();
+
+        assertThat(doctorTerms).isNotNull();
+        assertThat(doctorTerms).isNotEmpty();
         assertThat(doctorTerms).hasSize(DB_DOCTOR_TERMS_COUNT);
     }
 
@@ -146,16 +149,21 @@ public class DoctorTermsServiceTest {
         assertThat(doctorTermsDTOList.get(6).getLastNameDoctor()).isEqualTo("Маринковић");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test()
     public void testDetailTermNonexistentDoctor() {
         Long doctor_id = -2L;
-        doctorTermsService.detailTerm(doctor_id, DB_DOCTOR_TERMS_DATE, DB_DOCTOR_TERMS_START_TERM, DB_PATIENT_MAIL);
+        DoctorTermsDTO doctorTermsDTO =  doctorTermsService.detailTerm(doctor_id,
+                DB_DOCTOR_TERMS_DATE, DB_DOCTOR_TERMS_START_TERM, DB_PATIENT_MAIL);
+
+        assertThat(doctorTermsDTO).isNull();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test()
     public void testDetailTermNonexistentStartTerm() {
         String start_term = "23:05";
-        doctorTermsService.detailTerm(DB_DOCTOR_TERMS_DOCTOR_ID, DB_DOCTOR_TERMS_DATE, start_term, DB_PATIENT_MAIL);
+        DoctorTermsDTO doctorTermsDTO = doctorTermsService.detailTerm(DB_DOCTOR_TERMS_DOCTOR_ID, DB_DOCTOR_TERMS_DATE, start_term, DB_PATIENT_MAIL);
+
+        assertThat(doctorTermsDTO).isNull();
     }
 
     @Test()
@@ -169,8 +177,8 @@ public class DoctorTermsServiceTest {
         assertThat(doctorTermsDTO.getDate()).isEqualTo(DB_DOCTOR_TERMS_DATE);
 
         assertThat(doctorTermsDTO.getPatient_id()).isNull();
-        assertThat(doctorTermsDTO.getFirstNameDoctor()).isEqualTo("Марко");
-        assertThat(doctorTermsDTO.getLastNameDoctor()).isEqualTo("Марковић");
+        assertThat(doctorTermsDTO.getFirstNameDoctor()).isEqualTo(DB_DOCTOR_FIRST_NAME);
+        assertThat(doctorTermsDTO.getLastNameDoctor()).isEqualTo(DB_DOCTOR_LAST_NAME);
     }
 
     @Test()
@@ -234,8 +242,8 @@ public class DoctorTermsServiceTest {
         doctorTermsDTO.setDate(1581033600000L);
         doctorTermsDTO.setStart_term("10:30");
         doctorTermsDTO.setStart_term("11:00");
-        doctorTermsDTO.setFirstNameDoctor("Марко");
-        doctorTermsDTO.setLastNameDoctor("Марковић");
+        doctorTermsDTO.setFirstNameDoctor(DB_DOCTOR_FIRST_NAME);
+        doctorTermsDTO.setLastNameDoctor(DB_DOCTOR_LAST_NAME);
         doctorTermsDTO.setPrice(4200.0);
         doctorTermsDTO.setType("Стоматологија");
         doctorTermsDTO.setExamination(false);
