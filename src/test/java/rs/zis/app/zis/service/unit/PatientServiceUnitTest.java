@@ -48,7 +48,6 @@ class PatientServiceUnitTest {
             add(new Patient());     // 2. aktivan
         }});
 
-
         //Patient p = new Patient(null, )
         Patient p1 = new Patient();
         p1.setId(null);

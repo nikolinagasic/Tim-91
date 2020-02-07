@@ -84,8 +84,7 @@ public class DoctorTermsService {
     }
 
     @Transactional(readOnly = false)
-    public List<DoctorTerms> findAllByClinic(Clinic clinic)
-    {
+    public List<DoctorTerms> findAllByClinic(Clinic clinic) {
         List<DoctorTerms> all = doctorTermsRepository.findAll();
         List<DoctorTerms> retVal = new ArrayList<>();
         for (DoctorTerms t: all) {
@@ -95,7 +94,6 @@ public class DoctorTermsService {
         }
         return retVal;
     }
-
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAllByDoctor(Long id) {
@@ -110,11 +108,10 @@ public class DoctorTermsService {
         return doctorTermsRepository.findAllByRoom(room);
     }
 
-    // TODO test 3.10/3.13
     @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
         List<DoctorTermsDTO> retList = new ArrayList<>();
-        List<DoctorTerms> listaTermina = findAllByDoctor(doctor.getId());           // lista termina mog doktora
+        List<DoctorTerms> listaTermina = doctorTermsRepository.findAllByDoctor(doctor);           // lista termina mog doktora
 
         // svi termini za tu smenu (prva/druga smena)
         List<TermDefinition> listaSvihTermina = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
@@ -138,7 +135,6 @@ public class DoctorTermsService {
         return retList;
     }
 
-    // TODO test 3.10/3.13
     @Transactional(readOnly = false)
     public DoctorTermsDTO detailTerm(Long doctor_id, Long date, String start_term, String mail_patient){
         Doctor doctor = doctorService.findOneById(doctor_id);
@@ -156,14 +152,10 @@ public class DoctorTermsService {
     }
 
     ReentrantLock lock = new ReentrantLock();
-
-    // TODO test 3.10
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO){
         lock.lock();
         try {
-            // Critical section here
-
             Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
                     doctorTermsDTO.getLastNameDoctor());
             TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
@@ -270,7 +262,7 @@ public class DoctorTermsService {
     }
 
     private boolean checkRoom(Room room, Long date, TermDefinition termDefinition){
-        for (DoctorTerms doctorTerm : findAllByRoom(room)) {
+        for (DoctorTerms doctorTerm : doctorTermsRepository.findAllByRoom(room)) {
             if(doctorTerm.getDate() == date){
                 if(doctorTerm.getTerm().equals(termDefinition)){
                     return false;
