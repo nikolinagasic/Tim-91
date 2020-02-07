@@ -45,11 +45,13 @@ public class PredefinedTermTest {
         createPredefinedPage.ensureIsDisplayedInput();
 
         createPredefinedPage.getInputMail().sendKeys("cadmin@gmail.com");
+        threadSleep(350);
         createPredefinedPage.getInputPassword().sendKeys("admin");
+        threadSleep(350);
         createPredefinedPage.getBtnPrijaviSe().click();
 
         createPredefinedPage.ensureAlertDisplayed();
-        threadSleep(1500);
+        threadSleep(1000);
         createPredefinedPage.getDriver().switchTo().alert().accept();
         createPredefinedPage.ensureIsDisplayedPage();
 
@@ -64,17 +66,17 @@ public class PredefinedTermTest {
         fromDateBox.clear();
         fromDateBox.sendKeys("2020-02-10");
 
-        threadSleep(500);
+        threadSleep(1000);
         createPredefinedPage.getSelectDoctor().selectByIndex(1);
-        threadSleep(500);
+        threadSleep(1000);
         createPredefinedPage.getInputCena().sendKeys("999.99");
-        threadSleep(500);
+        threadSleep(1000);
         createPredefinedPage.getInputPopust().sendKeys("5");
-        threadSleep(500);
+        threadSleep(1000);
         createPredefinedPage.getBtnNapraviPregled().click();
 
         createPredefinedPage.ensureAlertDisplayed();
-        threadSleep(1500);
+        threadSleep(1200);
         String text_alert = createPredefinedPage.getDriver().switchTo().alert().getText();
         if(text_alert.equals("Успешно сте креирали термин.")){
             createPredefinedPage.getDriver().switchTo().alert().accept();
@@ -91,29 +93,31 @@ public class PredefinedTermTest {
         reservePredefinedPage.ensureIsDisplayedInput();
 
         reservePredefinedPage.getInputMail().sendKeys("patient@gmail.com");
+        threadSleep(350);
         reservePredefinedPage.getInputPassword().sendKeys("12345678");
+        threadSleep(350);
         reservePredefinedPage.getBtnPrijaviSe().click();
 
         reservePredefinedPage.ensureAlertDisplayed();
-        threadSleep(1500);
+        threadSleep(1000);
         reservePredefinedPage.getDriver().switchTo().alert().accept();
         reservePredefinedPage.ensureIsDisplayedPagePatient();
 
-        threadSleep(1000);
+        threadSleep(1200);
         reservePredefinedPage.getLiListaKlinika().click();
         reservePredefinedPage.ensureIsDisplayedTableClinics();
 
-        threadSleep(1000);
+        threadSleep(1200);
         reservePredefinedPage.getBtnPrikazi().click();
         reservePredefinedPage.ensureIsDisplayedClinicProfile();
-        threadSleep(1000);
+        threadSleep(1200);
         reservePredefinedPage.getLinkPredefined().click();
         reservePredefinedPage.ensureIsDisplayedPredefinedPage();
 
         reservePredefinedPage.getBtnReserve().click();
         reservePredefinedPage.ensureAlertDisplayed();
         String text_alert = reservePredefinedPage.getDriver().switchTo().alert().getText();
-        threadSleep(1000);
+        threadSleep(1200);
         if(text_alert.equals("Термин успешно резервисан.")){
             reservePredefinedPage.getDriver().switchTo().alert().accept();
             System.out.println("Bravo Aco");

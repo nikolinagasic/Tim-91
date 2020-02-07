@@ -14,6 +14,7 @@ public class UserConstants {
     public static final String DB_PATIENT2_MAIL = "patient2@gmail.com";
     public static final String DB_PATIENT_FIRST_NAME = "Петар";
     public static final String DB_PATIENT_LAST_NAME = "Петровић";
+    public static final String DB_NEKI_MAIL = "nekimail@gmail.com";
 
     // doctor terms
     public static final Long DB_DOCTOR_TERMS_ID_REMOVE = 7L;
