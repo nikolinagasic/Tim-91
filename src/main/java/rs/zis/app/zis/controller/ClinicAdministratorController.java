@@ -132,8 +132,10 @@ public class ClinicAdministratorController extends WebConfig {
         System.out.println("ovde je");
         for (DoctorTerms t : terms) {
             System.out.println(t.getDate());
-            if (!t.isProcessedByAdmin() && t.isExamination())
+            if (!t.isProcessedByAdmin() && t.isExamination()) {
+                System.out.println(t.isProcessedByAdmin() + " " + t.isExamination());
                 termsDTO.add(new DoctorTermsDTO(t));
+            }
             System.out.println("nije:"+t.getDate());
         }
         return new ResponseEntity<>(termsDTO, HttpStatus.OK);
@@ -214,7 +216,7 @@ public class ClinicAdministratorController extends WebConfig {
             vacation.setActive(false);
             body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
         }
-        vacationService.update(vacation); //TODO za doktora
+        vacationService.update(vacation); //TODO dodati za sestru
         notificationService.SendNotification(vacation.getDoctor().getMail(),"billypiton43@gmail.com","OBAVESTENJE",body);
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }

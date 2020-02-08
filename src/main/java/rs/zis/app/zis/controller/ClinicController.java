@@ -9,13 +9,15 @@ import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.ReportDTO;
 import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.security.TokenUtils;
-import rs.zis.app.zis.service.ClinicService;
-import rs.zis.app.zis.service.PatientService;
-import rs.zis.app.zis.service.RoomService;
+import rs.zis.app.zis.service.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -26,9 +28,13 @@ public class ClinicController extends WebConfig {
 
     @Autowired
     private ClinicService clinicService;
-
+    @Autowired
+    private DoctorTermsService doctorTermsService;
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private DoctorService doctorService;
 
     @Autowired
     private TokenUtils tokenUtils;
@@ -200,6 +206,99 @@ public class ClinicController extends WebConfig {
     public ResponseEntity<?> sortClinicByAddress(@RequestBody List<ClinicDTO> lista_klinika,
                                                  @PathVariable("order") String order) {
         return new ResponseEntity<>(clinicService.sortClinicByAddress(lista_klinika, order), HttpStatus.OK);
+    }
+    @GetMapping (produces = "application/json", value = "/getRatings/{clinic}")
+    //@PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<?> getRatings(@PathVariable("clinic") String clinic) {
+        Clinic c =clinicService.findOneByName(clinic);
+        List<Doctor> doctors = doctorService.findAllByClinic(c);
+        double numDoc = doctors.size();
+        double sumDoc = 0;
+        for (Doctor d : doctors) {
+           sumDoc += d.getSum_ratings()/d.getNumber_rating();
+        }
+        double ocenaDoc = sumDoc/numDoc;
+        double ocenaClinic = c.getSum_ratings()/c.getNumber_ratings();
+        double ret[] = {ocenaDoc,ocenaClinic};
+
+        return new ResponseEntity<>(ret, HttpStatus.OK);
+    }
+    @GetMapping (produces = "application/json", value = "/getReport/{clinic}/{date}")
+    //@PreAuthorize("hasRole('CADMIN')")
+    public ResponseEntity<?> getReport(@PathVariable("clinic") String clinic,@PathVariable("date") long date) {
+        Clinic c =clinicService.findOneByName(clinic);
+        long week = date -1000*60*60*24;
+        double sumWeek[] = new double[7];
+        double sumDay = 0;
+        double sumDayTerm = 0;
+        double sumWeekTerm[] = new double[7];
+        int i=6;
+        while (i>=0) {
+            sumDay = 0;
+            sumDayTerm =0;
+            for (DoctorTerms term : doctorTermsService.findAllByClinic(c)) {
+                System.out.println((new Date(term.getDate()))+" "+(new Date(week)));
+                if (term.getDate() == week) {
+                    sumDay += term.getDoctor().getPrice();
+                    sumDayTerm+= 1;
+                }
+            }
+            sumWeek[i] = sumDay;
+            sumWeekTerm[i] = sumDayTerm;
+            i--;
+            week = week -1000*60*60*24;
+            System.out.println("dan:"+sumDay+" "+sumDayTerm);
+        }
+        long month = date - 1000*60*60*24;
+
+        double sumDays = 0;
+        double sumMonth[] = new double[30];
+        double sumDaysTerm =0;
+        double sumMonthTerm[] = new double[30];
+        i=29;
+        while (i>=0) {
+            sumDays = 0;
+            sumDaysTerm = 0;
+            for (DoctorTerms term : doctorTermsService.findAllByClinic(c)) {
+                if (term.getDate() == month) {
+                    sumDays += term.getDoctor().getPrice();
+                    sumDaysTerm += 1;
+                }
+            }
+            sumMonth[i] = sumDays;
+            sumMonthTerm[i] = sumDaysTerm;
+            i--;
+            month = month - 1000*60*60*24;
+            System.out.println("mesec dan:"+sumDays+" "+sumDaysTerm);
+
+        }
+        long year = date - 1000*60*60*24;
+        double sumMonths = 0;
+        double sumYear[] = new double[12];
+        double sumMonthsTerm = 0;
+        double sumYearTerm[] = new double[12];
+        i=11;
+        int j=0;
+        while (j<360) {
+            sumMonths = 0;
+            sumMonthsTerm = 0;
+            do {
+                for (DoctorTerms term : doctorTermsService.findAllByClinic(c)) {
+                    if (term.getDate() == year) {
+                        sumMonths += term.getDoctor().getPrice();
+                        sumMonthsTerm += 1;
+                    }
+                }
+                j++;
+                year = year - 1000*60*60*24;
+            } while(!(j%30==0));
+            sumYear[i] = sumMonths;
+            sumYearTerm[i] = sumMonthsTerm;
+            i--;
+            System.out.println("godina mesec:"+sumMonths +" "+sumMonthsTerm);
+        }
+        ReportDTO reportDTO = new ReportDTO(sumWeek,sumMonth,sumYear,sumWeekTerm,sumMonthTerm,sumYearTerm);
+        return new ResponseEntity<>(reportDTO, HttpStatus.OK);
     }
 
 }

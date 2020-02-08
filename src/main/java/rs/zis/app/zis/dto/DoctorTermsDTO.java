@@ -72,7 +72,11 @@ public class DoctorTermsDTO {
         else{
             this.patient_id = -1L;
         }
-        this.room = doctorTerms.getRoom().getName();
+        try {
+            this.room = doctorTerms.getRoom().getName();
+        } catch (Exception e) {
+            this.room = null;
+        }
         this.id = doctorTerms.getId();
         this.isExamination = doctorTerms.isExamination();
     }
