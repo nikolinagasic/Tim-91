@@ -19,13 +19,21 @@ public class VacationDTO {
         this.firstName = firstName;
         this.lastName = lastName;
     }
-public VacationDTO(Vacation vacation) {
+
+    public VacationDTO(Vacation vacation) {
         this.id = vacation.getId();
         this.pocetak = vacation.getPocetak();
         this.kraj = vacation.getKraj();
-        this.firstName = vacation.getDoctor().getFirstName();
-        this.lastName = vacation.getDoctor().getLastName();
-}
+        if(vacation.getDoctor_nurse().equals("doctor")){
+            this.firstName = vacation.getDoctor().getFirstName();
+            this.lastName = vacation.getDoctor().getLastName();
+        }
+        else{
+            this.firstName = vacation.getNurse().getFirstName();
+            this.lastName = vacation.getNurse().getLastName();
+        }
+    }
+
     public Long getId() {
         return id;
     }

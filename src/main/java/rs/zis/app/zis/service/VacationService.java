@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Clinic;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.Room;
-import rs.zis.app.zis.domain.Vacation;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.dto.VacationDTO;
 import rs.zis.app.zis.repository.VacationRepository;
@@ -50,15 +47,31 @@ public class VacationService {
         return vacationRepository.findAllByDoctor(doctor);
     }
 
+    public List<Vacation> findAllByNurse(Nurse nurse) {return vacationRepository.findAllByNurse(nurse);}
+
     public Vacation update(Vacation u) {return vacationRepository.save(u);}
-    public Vacation save(VacationDTO vacationDTO,Doctor doctor) {
+    public Vacation saveDoctorVocation(VacationDTO vacationDTO,Doctor doctor) {
         Vacation c = new Vacation();
         c.setPocetak(vacationDTO.getPocetak());
         c.setKraj(vacationDTO.getKraj());
         c.setDoctor(doctor);
         c.setActive(true);
         c.setEnabled(false);
+        c.setDoctor_nurse("doctor");
         c = this.vacationRepository.save(c);
         return c;
     }
+
+    public Vacation saveNurseVocation(VacationDTO vacationDTO, Nurse nurse) {
+        Vacation c = new Vacation();
+        c.setPocetak(vacationDTO.getPocetak());
+        c.setKraj(vacationDTO.getKraj());
+        c.setNurse(nurse);
+        c.setActive(true);
+        c.setEnabled(false);
+        c.setDoctor_nurse("nurse");
+        c = this.vacationRepository.save(c);
+        return c;
+    }
+
 }
