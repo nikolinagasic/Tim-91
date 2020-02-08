@@ -18,7 +18,7 @@ public class Users implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "mail", unique = false, nullable = false)
+    @Column(name = "mail", nullable = false)
     private String mail;
 
     @Column(name = "password", nullable = false)
@@ -36,7 +36,8 @@ public class Users implements UserDetails {
     @Column(name = "active")                // za logicko brisanje
     private boolean active;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // obrisan >> cascade = CascadeType.ALL << zbog testova
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))

@@ -45,6 +45,9 @@ public class Doctor extends Users {
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Vacation> vacation = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<DoctorTerms> termini = new HashSet<DoctorTerms>();
+
 
     public Doctor() {
         this.role = "doctor";
@@ -68,7 +71,7 @@ public class Doctor extends Users {
         this.sum_ratings = sum_ratings;
         this.number_rating = number_rating;
     }
-
+    public void addVacation(Vacation vacation) {this.vacation.add(vacation);}
     public int getDiscount() {
         return discount;
     }
@@ -155,6 +158,14 @@ public class Doctor extends Users {
 
     public void setNumber_rating(double number_rating) {
         this.number_rating = number_rating;
+    }
+
+    public Set<DoctorTerms> getTermini() {
+        return termini;
+    }
+
+    public void addTermin (DoctorTerms d){
+        termini.add(d);
     }
 
 }
