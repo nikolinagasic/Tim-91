@@ -226,7 +226,7 @@ public class DoctorService {
         return retList;
     }
 
-    private boolean doctor_free_at_date(Doctor doctor, long datum) {
+    public boolean doctor_free_at_date(Doctor doctor, long datum) {
         List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
 
         boolean godisnji = false;

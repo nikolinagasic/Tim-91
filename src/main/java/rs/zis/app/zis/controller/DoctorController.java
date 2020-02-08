@@ -12,6 +12,7 @@ import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 
 import javax.print.Doc;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
@@ -290,7 +291,17 @@ public class DoctorController extends WebConfig {
     public ResponseEntity<?> delete(@PathVariable("id") long id,@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
         Doctor doctor = doctorService.findOneById(id);
+        for (DoctorTerms term : doctorTermsService.findAllByDoctor(doctor))
+            if (term.getDate() > Instant.now().toEpochMilli()) {
+                List<Doctor> listaDoktora = doctorService.findAllByClinic(c);
+                List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
+                for (Doctor d: listaDoktora) {
+                    listaDoktoraDTO.add(new DoctorDTO(d));
+                }
+                return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+            }
         doctor.setEnabled(false);
+        doctor.setActive(false);
         doctorService.update(doctor);
         List<Doctor> listaDoktora = doctorService.findAllByClinic(c);
         List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
