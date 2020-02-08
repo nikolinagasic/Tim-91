@@ -243,7 +243,11 @@ public class ClinicService implements UserDetailsService {
     @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getPredefinedTerms(long clinic_id) {
         List<DoctorTermsDTO> retList = new ArrayList<>();
-        Clinic clinic = findOneById(clinic_id);
+        Clinic clinic = clinicRepository.findOneById(clinic_id);
+        if(clinic == null){
+            return retList;
+        }
+
         for (DoctorTerms doctorTerm : doctorTermsService.findAll()) {
             for (Doctor doctor : clinic.getDoctors()) {
                 if(doctorTerm.getDoctor().getId().equals(doctor.getId())){       // isti doktor => to je ta klinika
