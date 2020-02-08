@@ -99,7 +99,7 @@ public class ClinicControllerTest {
         assertThat(termDTO.getLastNameDoctor()).isEqualTo(DB_DOCTOR_LAST_NAME);
     }
 
-    @Test(expected = RestClientException.class)
+    @Test()
     public void testPredefinedTermsUnexistentClinic(){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Auth-Token", accessTokenPatient);
@@ -110,6 +110,9 @@ public class ClinicControllerTest {
         HttpEntity<Object> httpEntity = new HttpEntity<>(clinicBody, headers);
         ResponseEntity<DoctorTermsDTO[]> responseEntity =
                 restTemplate.exchange("/clinic/getPredefinedTerms", HttpMethod.POST, httpEntity, DoctorTermsDTO[].class);
+
+        DoctorTermsDTO[] listDoctorTermsDTO = responseEntity.getBody();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test

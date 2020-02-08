@@ -58,7 +58,7 @@ class PatientServiceUnitTest {
 
         Patient p2 = new Patient();
         p2.setId(5L);
-        p1.setMail(DB_NEKI_MAIL);
+        p2.setMail(DB_NEKI_MAIL);
 
 //        Mockito.when(patientRepository.save(p1)).then(invocationOnMock -> p2);
         Mockito.when(patientRepository.save(any(Patient.class))).then(invocationOnMock -> p2);
@@ -68,6 +68,8 @@ class PatientServiceUnitTest {
         }});
 
         Mockito.when(patientService.findOneByMail(DB_NEKI_MAIL)).then(invocationOnMock -> p2);
+
+        Mockito.when(patientRepository.findOneByMail(DB_NEKI_MAIL)).then(invocationOnMock -> p2);
     }
 
     @Test

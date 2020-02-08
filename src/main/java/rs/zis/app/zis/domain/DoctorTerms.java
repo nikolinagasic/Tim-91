@@ -58,7 +58,7 @@ public class DoctorTerms {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Room room;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Doctor> dodatni_lekari = new HashSet<Doctor>();
 
 
