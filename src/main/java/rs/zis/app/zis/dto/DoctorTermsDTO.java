@@ -81,6 +81,8 @@ public class DoctorTermsDTO {
         this.isExamination = doctorTerms.isExamination();
     }
 
+
+
     public long getDate() {
         return date;
     }
