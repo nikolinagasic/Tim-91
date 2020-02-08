@@ -16,6 +16,7 @@ public class DoctorDTO {
     private boolean firstLogin;//
     private int workShift;//
     private int discount;//
+    private double price;
 
     public DoctorDTO() {
     }
@@ -38,6 +39,11 @@ public class DoctorDTO {
         this.discount = doctor.getDiscount();
         this.clinic = doctor.getClinic().getName();
         this.tip = doctor.getTip().getName();
+        this.price = doctor.getPrice();
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public Long getId() {

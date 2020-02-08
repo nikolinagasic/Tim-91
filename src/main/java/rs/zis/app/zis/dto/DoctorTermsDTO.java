@@ -72,8 +72,10 @@ public class DoctorTermsDTO {
         else{
             this.patient_id = -1L;
         }
+
         if(doctorTerms.getRoom()!=null) {
             this.room = doctorTerms.getRoom().getName();
+
         }
         this.id = doctorTerms.getId();
         this.isExamination = doctorTerms.isExamination();

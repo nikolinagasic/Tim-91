@@ -67,6 +67,7 @@ public class DoctorService {
         d.setTip(tipPregledaService.findOneByName(doctorDTO.getTip()));
         d.setWorkShift(doctorDTO.getWorkShift());
         d.setEnabled(true);
+        d.setActive(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
         d.setSum_ratings(0);
@@ -230,7 +231,7 @@ public class DoctorService {
 
         boolean godisnji = false;
         for (Vacation vacation : vacationService.findAllByDoctor(doctor)) {
-            if(vacation.isActive() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
+            if(vacation.isActive() && vacation.isEnabled() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
                 godisnji = true;
             }
         }
