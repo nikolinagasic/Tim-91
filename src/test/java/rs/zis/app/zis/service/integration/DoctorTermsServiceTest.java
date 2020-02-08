@@ -96,7 +96,8 @@ public class DoctorTermsServiceTest {
 
     @Test
     public void testNonexistentMail() {
-        boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_NONEXISTENT_MAIL, new DoctorTermsDTO());
+        boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_NONEXISTENT_MAIL, new DoctorTermsDTO(), true);
+
         assertThat(reserved).isEqualTo(false);
     }
 
@@ -105,7 +106,8 @@ public class DoctorTermsServiceTest {
         DoctorTermsDTO doctorTermDTO = new DoctorTermsDTO();
         doctorTermDTO.setStart_term("23:00");
 
-        boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermDTO);
+
+        boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermDTO, true);
         assertThat(reserved).isEqualTo(false);
     }
 
@@ -115,7 +117,7 @@ public class DoctorTermsServiceTest {
         doctorTermDTO.setFirstNameDoctor("Doktor");
         doctorTermDTO.setLastNameDoctor("Doktorovic");
 
-        boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermDTO);
+        boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermDTO, true);
         assertThat(reserved).isEqualTo(false);
     }
 
@@ -249,7 +251,7 @@ public class DoctorTermsServiceTest {
         doctorTermsDTO.setExamination(false);
 
         Runnable r1 = () -> {
-            boolean reserve1 = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermsDTO);
+            boolean reserve1 = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermsDTO, true);
             latch.countDown();
 
             assertTrue(reserve1);           // prvi je rezervisao
@@ -257,7 +259,7 @@ public class DoctorTermsServiceTest {
 
         Runnable r2 = () -> {
             try { Thread.sleep(3000); } catch (InterruptedException e) { }
-            boolean reserve2 = doctorTermsService.reserveTerm(DB_PATIENT2_MAIL, doctorTermsDTO);
+            boolean reserve2 = doctorTermsService.reserveTerm(DB_PATIENT2_MAIL, doctorTermsDTO, true);
             latch.countDown();
 
             assertFalse(reserve2);          // drugi nije

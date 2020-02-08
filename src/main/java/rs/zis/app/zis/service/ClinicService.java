@@ -145,6 +145,9 @@ public class ClinicService implements UserDetailsService {
         if(clinic.getNumber_ratings() != 0){
             return clinic.getSum_ratings() / clinic.getNumber_ratings();
         }
+        else if(clinic.getNumber_ratings() == 0){
+            return 0;
+        }
         else{
             return -1;
         }

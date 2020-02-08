@@ -240,7 +240,7 @@ class DoctorTermsServiceUnitTest {
         doctorTermsDTO.setLastNameDoctor(DB_DOCTOR_LAST_NAME);
         doctorTermsDTO.setStart_term(DB_DOCTOR_TERMS_START_TERM);
         doctorTermsDTO.setDate(DB_DOCTOR_TERMS_FREE_DATE);
-        boolean isReserved = doctorTermsService.reserveTerm(patient.getMail(), doctorTermsDTO);
+        boolean isReserved = doctorTermsService.reserveTerm(patient.getMail(), doctorTermsDTO, true);
 
         assertThat(isReserved).isNotNull();
         assertThat(isReserved).isTrue();
@@ -253,7 +253,7 @@ class DoctorTermsServiceUnitTest {
         doctorTermsDTO.setLastNameDoctor(DB_DOCTOR_LAST_NAME);
         doctorTermsDTO.setStart_term(DB_DOCTOR_TERMS_START_TERM);
         doctorTermsDTO.setDate(DB_DOCTOR_TERMS_DATE);
-        boolean isReserved = doctorTermsService.reserveTerm(patient.getMail(), doctorTermsDTO);
+        boolean isReserved = doctorTermsService.reserveTerm(patient.getMail(), doctorTermsDTO, true);
 
         assertThat(isReserved).isNotNull();
         assertThat(isReserved).isFalse();

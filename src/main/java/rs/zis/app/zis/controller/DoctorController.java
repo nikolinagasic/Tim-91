@@ -187,7 +187,7 @@ public class DoctorController extends WebConfig {
         String mail = tokenUtils.getUsernameFromToken(token);
         boolean isReserved;
         try {
-            isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
+            isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO, true);
         }catch (Exception e){
             System.out.println("Okinut exception: " + e.getClass());
             return new ResponseEntity<>(null, HttpStatus.LOCKED);

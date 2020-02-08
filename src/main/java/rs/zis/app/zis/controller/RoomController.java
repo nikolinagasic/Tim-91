@@ -80,6 +80,7 @@ public class RoomController extends WebConfig {
         }
         return new ResponseEntity<>(roomDTO, HttpStatus.CREATED);
     }
+
     @PostMapping(value = "/changeAttribute/{changed}/{value}/{name}")
     // @PreAuthorize("hasRole('CADMIN')")
     public ResponseEntity<?> changeAttribute(@PathVariable("changed") String changed,@PathVariable("value") String value,@PathVariable("name") String name) {

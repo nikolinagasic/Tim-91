@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "CollectionAddAllCanBeReplacedWithConstructor"})
 @RestController
 @RequestMapping("/clinic")
 public class ClinicController extends WebConfig {

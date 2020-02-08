@@ -73,7 +73,11 @@ public class DoctorService {
         d.setSum_ratings(0);
         d.setNumber_rating(0);
 
-        d = this.doctorRepository.save(d);
+        Clinic clinic = clinicService.findOneByName(doctorDTO.getClinic());
+        clinic.getDoctors().add(d);
+        clinicService.update(clinic);
+
+//        d = this.doctorRepository.save(d);
         return d;
     }
 
@@ -229,7 +233,7 @@ public class DoctorService {
         return retList;
     }
 
-    private boolean doctor_free_at_date(Doctor doctor, long datum) {
+    public boolean doctor_free_at_date(Doctor doctor, long datum) {
         List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor.getId());
 
         boolean godisnji = false;

@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection", "DefaultAnnotationParam", "NumberEquality", "UnusedAssignment", "RedundantIfStatement"})
 @Service
@@ -190,10 +191,6 @@ public class DoctorTermsService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO,boolean examination){
         lock.lock();
-        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
-                doctorTermsDTO.getLastNameDoctor());
-        TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
-        Patient patient = patientService.findOneByMail(mail_patient);
 
         DoctorTerms dt = new DoctorTerms();
         try {
@@ -212,7 +209,6 @@ public class DoctorTermsService {
                 return false;
             }
 
-            DoctorTerms dt = new DoctorTerms();
             dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
                     term_def,
                     doctor);
@@ -244,7 +240,7 @@ public class DoctorTermsService {
             String textBody = "Поштовани,\n\n\tУспешно сте резервисали термин:\n" +
                         "\tДоктор: " + doctor.getFirstName() + " " + doctor.getLastName() + "\n" +
                         "\tКлиника: " + doctor.getClinic().getName() + "\n" +
-                        "\tЦена: " + doctorTerms.getPrice() + "рсд\n" +
+                        "\tЦена: " + doctor.getPrice() + "рсд\n" +
                         "\n\nСвако добро";
             notificationService.SendNotification(mail_patient, "billypiton43@gmail.com",
                     "Успешна резервација термина", textBody);
@@ -369,33 +365,33 @@ public class DoctorTermsService {
         DoctorTerms doctorTerms = findOneById(id);
         String pregled;
         if (!doctorTerms.isExamination()) {
-            pregled = "Operacija";
+            pregled = "Операција";
         }
         else {
-            pregled = "Pregled";
+            pregled = "Преглед";
         }
         Date d=new Date(doctorTerms.getDate());
         SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
         String dateText = df2.format(d);
         String napomena = "";
         if (date != -1) {
-            napomena = "*Napomena: Datum je promenjen na "+dateText+"\n";
+            napomena = "*Напомена: Датум је промењен на "+dateText+"\n";
         }
 
-        String tb="Postovani," + "\n" +
-                pregled+" ce se odrzati u sali: "+soba.getName() +".\n"+ napomena +
-                "Datum: "+dateText+"\nVreme: "+
+        String tb="Поштовани," + "\n" +
+                pregled+" ће се одржати у: "+soba.getName() +".\n"+ napomena +
+                "Датум: "+dateText+"\nВреме: "+
                 termin.getStartTerm() +"-"+
-                termin.getEndTerm()+"\nDoktor: "+
+                termin.getEndTerm()+"\nДоктор: "+
                 doktor.getFirstName()+" "+
                 doktor.getLastName() +
-                "\nPacijent: "+pacijent.getFirstName()+" "+
+                "\nПацијент: "+pacijent.getFirstName()+" "+
                 pacijent.getLastName();
         System.out.println(tb);
         notificationService.SendNotification(doktor.getMail(), "billypiton43@gmail.com",
-                "OBAVESTENJE", tb);
+                "Обавештење", tb);
         notificationService.SendNotification(pacijent.getMail(), "billypiton43@gmail.com",
-                "OBAVESTENJE", tb);
+                "Обавештење", tb);
     }
 
     @Transactional(readOnly = false)
