@@ -202,6 +202,14 @@ public class DoctorTermsService {
                     notificationService.SendNotification(clinicAdministrator.getMail(), "billypiton43@gmail.com",
                             "Нови захтев за преглед", textBody);
                 }
+                String textBody = "Поштовани,\n\n\tУспешно сте резервисали термин:\n" +
+                        "\tДоктор: " + doctor.getFirstName() + " " + doctor.getLastName() + "\n" +
+                        "\tКлиника: " + doctor.getClinic().getName() + "\n" +
+                        "\tЦена: " + doctorTerms.getPrice() + "рсд\n" +
+                        "\n\nСвако добро";
+                notificationService.SendNotification(mail_patient, "billypiton43@gmail.com",
+                        "Успешна резервација термина", textBody);
+
                 return true;        // uspesno sam napravio tvoj termin
             }
             else{
