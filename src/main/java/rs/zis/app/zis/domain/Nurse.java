@@ -35,6 +35,7 @@ public class Nurse extends Users {
 
     public Nurse() {
         this.role = "nurse";
+        this.setFirstLogin(true);
     }
 
     public Nurse(String mail, String password, String firstName, String lastName, int workShift, Clinic clinic, Set<Vacation> vacation,

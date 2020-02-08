@@ -55,6 +55,7 @@ public class Doctor extends Users {
         this.discount = 0;
         this.sum_ratings = 0;
         this.number_rating = 0;
+        this.setFirstLogin(true);
     }
 
     public Doctor(String mail, String password, String firstName, String lastName, Clinic clinic, TipPregleda tip, double price,
