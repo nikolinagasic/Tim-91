@@ -238,14 +238,13 @@ public class DoctorController extends WebConfig {
    public ResponseEntity<?> createTermOperation(@RequestBody List<String> listaMejlovaLekara,
                                                 @PathVariable("id_term") Long id_term){
 
-        System.out.println("JELENAAAAAA");
-        System.out.println(id_term);
-        for(String s:listaMejlovaLekara){
-            System.out.println(s);
-        }
+        /* DoctorTerms doctorTerms = doctorTermsService.findOneById(id_term); //imamo termin
+          for(String mail : listaMejlovaLekara){
+              Doctor doctor = doctorService.findOneByMail(mail);
+              DoctorTerms d = new DoctorTerms();
 
 
-
+        }*/
 
         return new ResponseEntity<>(0,HttpStatus.OK);
    }
