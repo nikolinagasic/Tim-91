@@ -83,9 +83,12 @@ public class ClinicServiceTest {
         assertThat(dtoList.get(0).getDate()).isEqualTo(DB_DOCTOR_TERMS_DATE);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test()
     public void testGetPredefinedTermsNonexistentClinic() {
         List<DoctorTermsDTO> dtoList = clinicService.getPredefinedTerms(-1L);
+
+        assertThat(dtoList).isNotNull();
+        assertThat(dtoList).isEmpty();
     }
 
     @Test
