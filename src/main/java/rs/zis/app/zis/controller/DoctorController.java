@@ -12,7 +12,9 @@ import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 
 import javax.print.Doc;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
 @RestController
@@ -36,6 +38,8 @@ public class DoctorController extends WebConfig {
     private TipPregledaService tipPregledaService;
     @Autowired
     private TermDefinitionService termDefinitionService;
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
    // @PreAuthorize("hasRole('CADMIN')")
@@ -238,19 +242,30 @@ public class DoctorController extends WebConfig {
    public ResponseEntity<?> createTermOperation(@RequestBody List<String> listaMejlovaLekara,
                                                 @PathVariable("id_term") Long id_term){
 
-        /* DoctorTerms doctorTerms = doctorTermsService.findOneById(id_term); //imamo termin
+         System.out.println("USLAAAAA");
+         DoctorTerms operation_term = doctorTermsService.findOneById(id_term); //imamo termin
           for(String mail : listaMejlovaLekara){
               Doctor doctor = doctorService.findOneByMail(mail);
-              DoctorTerms d = new DoctorTerms();
-
-
-        }*/
+              doctor.addTermin(operation_term);
+              operation_term.addDodatniLekari(doctor);
+              doctor = doctorService.update(doctor);
+              //tom lekaru saljemo mejl
+              Date d=new Date(operation_term.getDate());
+              SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+              String dateText = df2.format(d);
+              String tb="Postovani," + "\n" +
+                      "operacija ce se odrzati u sali: "+operation_term.getRoom().getName() +".\n"+
+                      "Datum: "+dateText+"\nVreme: "+
+                      operation_term.getTerm().getStartTerm() +"-"+
+                      operation_term.getTerm().getEndTerm();
+              System.out.println(tb);
+              notificationService.SendNotification(doctor.getMail(), "billypiton43@gmail.com",
+                      "OBAVESTENJE", tb);
+         }
+         doctorTermsService.update(operation_term);
 
         return new ResponseEntity<>(0,HttpStatus.OK);
    }
-
-
-
 
 
 
@@ -353,7 +368,12 @@ public class DoctorController extends WebConfig {
             scheduleTermDTO.setStartTime(sTime);
             scheduleTermDTO.setEndTime(eTime);
             Patient p = doctorTerms.getPatient();
-            scheduleTermDTO.setPatient_mail(p.getMail());
+            if(p != null) {
+                scheduleTermDTO.setPatient_mail(p.getMail());
+            }
+            else{
+                scheduleTermDTO.setPatient_mail("Nema pacijenta");
+            }
             scheduleTermDTOList.add(scheduleTermDTO);
             brojac++;
         }
