@@ -52,7 +52,9 @@ public class DoctorTermsDTO {
         this.lastNameDoctor = doctor.getLastName();
         this.price = doctor.getPrice();
         this.discount = doctor.getDiscount();
-        this.type = doctor.getTip().getName();
+        if(doctor.getTip() != null) {
+            this.type = doctor.getTip().getName();
+        }
         this.patient_id = patient.getId();
     }
 
@@ -72,10 +74,8 @@ public class DoctorTermsDTO {
         else{
             this.patient_id = -1L;
         }
-
-        if(doctorTerms.getRoom()!=null) {
+        if(doctorTerms.getRoom() != null) {
             this.room = doctorTerms.getRoom().getName();
-
         }
         this.id = doctorTerms.getId();
         this.isExamination = doctorTerms.isExamination();

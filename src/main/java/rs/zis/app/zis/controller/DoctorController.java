@@ -157,6 +157,7 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
+    // TODO test 3.12
     @GetMapping(produces = "application/json", value = "/getTermini/{id}/{date}")
     public ResponseEntity<?> getTermine(@PathVariable("id") Long id,
                                         @PathVariable("date") long datum) {
@@ -165,7 +166,8 @@ public class DoctorController extends WebConfig {
         List<DoctorTermsDTO> listTerms = doctorTermsService.getTermine(datum, doctor);
         return new ResponseEntity<>(listTerms, HttpStatus.OK);
     }
-  
+
+    // TODO test 3.12
     @GetMapping(produces = "application/json", value = "/detailTermin/{id_doctor}/{date}/{start_term}")
     public ResponseEntity<?> getDetailTermin(@RequestHeader("Auth-Token") String token,
                                         @PathVariable("id_doctor") Long id_doctor,
@@ -177,17 +179,25 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
     }
 
+    // TODO test 3.10
     @PostMapping(consumes = "application/json", produces = "application/json", value = "/reserveTerm")
     public ResponseEntity<?> reserveTerm(@RequestHeader("Auth-Token") String token,
                                          @RequestBody DoctorTermsDTO doctorTermsDTO) {
 
         String mail = tokenUtils.getUsernameFromToken(token);
-        boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO,true);
+        boolean isReserved;
+        try {
+            isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO);
+        }catch (Exception e){
+            System.out.println("Okinut exception: " + e.getClass());
+            return new ResponseEntity<>(null, HttpStatus.LOCKED);
+        }
+
         if(isReserved){
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
 
@@ -201,7 +211,7 @@ public class DoctorController extends WebConfig {
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
 

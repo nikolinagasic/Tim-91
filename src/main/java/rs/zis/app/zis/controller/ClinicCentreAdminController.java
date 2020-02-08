@@ -121,8 +121,8 @@ public class ClinicCentreAdminController extends WebConfig
                  medicalRecord = medicalRecordService.save(medicalRecord);
 
                  try {
-                     String tb="Postovani," + "\n" +
-                                "Vas zahtev za registraciju je prihvacen! Aktivirajte vas nalog prijavom na sledecem linku"+"\n"+
+                     String tb="Поштовани,\n\t" +
+                                "Ваш захтев за регистрацију је прихваћен! Активирајте Ваш налог кликом на следећи линк: "+
                                 "http://localhost:3000/#/login";
                      notificationService.SendNotification(mail, "billypiton43@gmail.com",
                              "PSW", tb);

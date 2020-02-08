@@ -23,6 +23,7 @@ public class ClinicCentreAdmin extends Users {
 
     public ClinicCentreAdmin() {
         this.role = "ccadmin";
+        this.setFirstLogin(true);
     }
 
     public ClinicCentreAdmin(Long id, String mail, String password, boolean predefined, String firstName, String lastName,

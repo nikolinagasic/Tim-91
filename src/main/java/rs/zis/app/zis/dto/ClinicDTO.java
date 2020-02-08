@@ -14,8 +14,11 @@ public class ClinicDTO {
     private String description;
     private double price;       // cena pregleda
 
+    public ClinicDTO() {
+    }
+
     public ClinicDTO(long id, String name, String address, String description, double price,
-                             String location, double rating) {
+                     String location, double rating) {
         this.id = id;
         this.name = name;
         this.address = address;

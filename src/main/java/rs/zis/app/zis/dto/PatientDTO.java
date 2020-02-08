@@ -97,4 +97,52 @@ public class PatientDTO {
     public boolean isFirstLogin() {
         return firstLogin;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public void setLbo(long lbo) {
+        this.lbo = lbo;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setFirstLogin(boolean firstLogin) {
+        this.firstLogin = firstLogin;
+    }
 }
