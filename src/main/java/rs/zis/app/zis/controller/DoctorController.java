@@ -185,6 +185,8 @@ public class DoctorController extends WebConfig {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+
     @PostMapping(consumes = "application/json", produces = "application/json", value = "/reserveTermDoctor/{mail}/{examination}")
     public ResponseEntity<?> reserveTermDoctor(@RequestHeader("Auth-Token") String token,
                                          @RequestBody DoctorTermsDTO doctorTermsDTO,@PathVariable("mail") String mail,@PathVariable("examination") boolean examination) {
@@ -197,6 +199,63 @@ public class DoctorController extends WebConfig {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+
+
+    //za prosledjeni termin vratiti listu doktora na toj klinici koji su slobodni
+    @GetMapping(produces = "application/json", value = "/getFreeDoctors/{clinic}/{id_term}")
+    public ResponseEntity<?> getFreeDoctor(@PathVariable("clinic") String clinic,
+                                           @PathVariable("id_term") Long id_term ) {
+        DoctorTerms doctT = doctorTermsService.findOneById(id_term);
+        Clinic c = clinicService.findOneByName(clinic);
+        List<Doctor>doctors = doctorService.findAllByClinic(c);
+        List<DoctorDTO>ret = new ArrayList<>();
+        int zauzet = 0;
+        for(Doctor doctor: doctors){
+            List<DoctorTerms>doctorTerms = doctorTermsService.findAllByDoctor(doctor);
+            for(DoctorTerms dt : doctorTerms){
+                if(dt.getDate() == doctT.getDate()){
+                    TermDefinition termDefinition = dt.getTerm();
+                    if(termDefinition.getStartTerm() == doctT.getTerm().getStartTerm()){
+                        zauzet=1;
+                    }
+                }
+            }
+            if(zauzet==0){
+                DoctorDTO doctorDTO = new DoctorDTO(doctor);
+                ret.add(doctorDTO);
+            }else{
+                zauzet = 0; //restart
+            }
+        }
+        return new ResponseEntity<>(ret,HttpStatus.OK);
+
+    }
+
+
+    //saljem selectovane lekare, id termina
+   @PostMapping(consumes="application/json", value = "/createTermOperation/{id_term}")
+   public ResponseEntity<?> createTermOperation(@RequestBody List<String> listaMejlovaLekara,
+                                                @PathVariable("id_term") Long id_term){
+
+        System.out.println("JELENAAAAAA");
+        System.out.println(id_term);
+        for(String s:listaMejlovaLekara){
+            System.out.println(s);
+        }
+
+
+
+
+        return new ResponseEntity<>(0,HttpStatus.OK);
+   }
+
+
+
+
+
+
+
     @PostMapping(produces = "application/json", consumes = "application/json",
             value = "/expandedSearchDoctor/{ime}/{prezime}/{ocena}/{date}/{select}")
     public ResponseEntity<?> expandedSearchDoctor(@RequestBody List<DoctorDTO> listaLekara,
@@ -209,6 +268,7 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(doctorService.expandedSearchDoctor(ime, prezime, ocena, datum, tip, listaLekara)
                 , HttpStatus.OK);
     }
+
 
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}")
     public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara,

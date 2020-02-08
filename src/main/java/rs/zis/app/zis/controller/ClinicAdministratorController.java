@@ -124,6 +124,8 @@ public class ClinicAdministratorController extends WebConfig {
         ClinicAdministratorDTO clinicAdministratorDTO = new ClinicAdministratorDTO(clinicAdministrator);
         return new ResponseEntity<>(clinicAdministratorDTO, HttpStatus.OK);
     }
+
+    //vracam termine koje nije odobrio admin i koji su pregledi
     @GetMapping(produces = "application/json", value = "/getTerms/{clinic}")
     public ResponseEntity<?> getTerms(@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
@@ -139,6 +141,29 @@ public class ClinicAdministratorController extends WebConfig {
         return new ResponseEntity<>(termsDTO, HttpStatus.OK);
 
     }
+
+
+    //vracam termine koje admin nije odobrio i koji su operacije
+    @GetMapping(produces = "application/json", value = "/getTermsOperation/{clinic}")
+    public ResponseEntity<?> getTermsOperation(@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        List<DoctorTerms> terms = doctorTermsService.findAllByClinic(c);
+        List<DoctorTermsDTO> termsDTO = new ArrayList<>();
+        System.out.println("ovde je");
+        for (DoctorTerms t : terms) {
+            System.out.println(t.getDate());
+            if (!t.isProcessedByAdmin() && !(t.isExamination()))
+                termsDTO.add(new DoctorTermsDTO(t));
+            System.out.println("nije:"+t.getDate());
+        }
+        return new ResponseEntity<>(termsDTO, HttpStatus.OK);
+
+    }
+
+
+
+
+
     @GetMapping(value = "/sendMail/{id}/{date}")
     public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("date") long date){
         try {       DoctorTerms doctorTerms = doctorTermsService.findOneById(id);
@@ -227,7 +252,7 @@ public class ClinicAdministratorController extends WebConfig {
     }
 
 
-
+   //obrada zahteva za godisnji odmor
     @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
     public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
                                                   @PathVariable("odobren") boolean odobren,

@@ -19,8 +19,8 @@ insert into user_authority (user_id, authority_id) values (1, 1);
 insert into user_authority (user_id, authority_id) values (2, 2);
 
 -- MEDICAL RECORD
-insert into medical_record (id, allergy, blood_group, dioptre_left_eye, dioptre_right_eye, height, weight, patient_id)
-    values (2,'polen','A+',0.5,1,160,50,2);
+insert into medical_record (allergy, blood_group, dioptre_left_eye, dioptre_right_eye, height, weight, patient_id)
+    values ('polen','A+',0.5,1,160,50,2);
 
 -- TERM DEFINITION
 insert into term_definition (end_term, start_term, work_shift) values ('08:30', '08:00', 1);
