@@ -25,7 +25,7 @@ public class Room {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<DoctorTerms> doctorTerms = new ArrayList<>();
 
     public Room(Long id, String name, String number, Clinic clinic, List<DoctorTerms> doctorTerms) {
@@ -78,6 +78,9 @@ public class Room {
 
     public void setDoctorTerms(List<DoctorTerms> doctorTerms) {
         this.doctorTerms = doctorTerms;
+    }
+    public void addDoctorTerms(DoctorTerms doctorTerms) {
+        this.doctorTerms.add(doctorTerms);
     }
 
     public boolean isActive() {

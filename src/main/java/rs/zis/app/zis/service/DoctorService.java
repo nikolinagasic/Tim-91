@@ -1,13 +1,20 @@
 package rs.zis.app.zis.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import rs.zis.app.zis.controller.ClinicCentreAdminController;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorDTO;
+import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
 import java.util.ArrayList;
@@ -16,12 +23,19 @@ import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression", "IfStatementMissingBreakInLoop"})
 @Service
 public class DoctorService {
+    private Logger logger = LoggerFactory.getLogger(ClinicCentreAdminController.class);
 
     @Autowired
     private DoctorRepository doctorRepository;
 
     @Autowired
     private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private ClinicAdministratorService clinicAdministratorService;
 
     @Autowired
     private VacationService vacationService;
@@ -53,6 +67,7 @@ public class DoctorService {
         d.setTip(tipPregledaService.findOneByName(doctorDTO.getTip()));
         d.setWorkShift(doctorDTO.getWorkShift());
         d.setEnabled(true);
+        d.setActive(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
         d.setSum_ratings(0);
@@ -219,7 +234,7 @@ public class DoctorService {
 
         boolean godisnji = false;
         for (Vacation vacation : vacationService.findAllByDoctor(doctor)) {
-            if(vacation.isActive() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
+            if(vacation.isActive() && vacation.isEnabled() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
                 godisnji = true;
             }
         }
@@ -290,6 +305,7 @@ public class DoctorService {
         }
 
         return true;
+
     }
 }
 

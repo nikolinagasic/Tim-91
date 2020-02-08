@@ -1,8 +1,13 @@
 package rs.zis.app.zis.controller;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
@@ -10,16 +15,19 @@ import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
-
 import java.util.ArrayList;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "IfCanBeSwitch"})
 @RestController
 @RequestMapping("/clinicAdministrator")
 public class ClinicAdministratorController extends WebConfig {
+    private Logger logger = LoggerFactory.getLogger(ClinicCentreAdminController.class);
 
     @Autowired
     private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private VacationService vacationService;
 
     @Autowired
     private DoctorService doctorService;
@@ -35,6 +43,8 @@ public class ClinicAdministratorController extends WebConfig {
 
     @Autowired
     private TokenUtils tokenUtils;
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private ClinicService clinicService;
@@ -114,6 +124,8 @@ public class ClinicAdministratorController extends WebConfig {
         ClinicAdministratorDTO clinicAdministratorDTO = new ClinicAdministratorDTO(clinicAdministrator);
         return new ResponseEntity<>(clinicAdministratorDTO, HttpStatus.OK);
     }
+
+    //vracam termine koje nije odobrio admin i koji su pregledi
     @GetMapping(produces = "application/json", value = "/getTerms/{clinic}")
     public ResponseEntity<?> getTerms(@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
@@ -122,12 +134,73 @@ public class ClinicAdministratorController extends WebConfig {
         System.out.println("ovde je");
         for (DoctorTerms t : terms) {
             System.out.println(t.getDate());
-            if (!t.isProcessedByAdmin())
+            if (!t.isProcessedByAdmin() && t.isExamination()) {
+                System.out.println(t.isProcessedByAdmin() + " " + t.isExamination());
+                termsDTO.add(new DoctorTermsDTO(t));
+            }
+            System.out.println("nije:"+t.getDate());
+        }
+        return new ResponseEntity<>(termsDTO, HttpStatus.OK);
+
+    }
+
+
+    //vracam termine koje admin nije odobrio i koji su operacije
+    @GetMapping(produces = "application/json", value = "/getTermsOperation/{clinic}")
+    public ResponseEntity<?> getTermsOperation(@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        List<DoctorTerms> terms = doctorTermsService.findAllByClinic(c);
+        List<DoctorTermsDTO> termsDTO = new ArrayList<>();
+        System.out.println("ovde je");
+        for (DoctorTerms t : terms) {
+            System.out.println(t.getDate());
+            if (!t.isProcessedByAdmin() && !(t.isExamination()))
                 termsDTO.add(new DoctorTermsDTO(t));
             System.out.println("nije:"+t.getDate());
         }
         return new ResponseEntity<>(termsDTO, HttpStatus.OK);
 
+    }
+
+
+
+
+
+    @GetMapping(value = "/sendMail/{id}/{date}")
+    public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("date") long date){
+        try {       DoctorTerms doctorTerms = doctorTermsService.findOneById(id);
+            String pregled;
+            if (doctorTerms.isExamination()) {
+                pregled = "operacija";
+            }
+            else {
+                pregled = "pregled";
+            }
+            String napomena = "";
+            if (date != -1) {
+                napomena = "*Napomena: Datum je promenjen na "+date+"\n";
+            }
+
+            String tb="Postovani," + "\n" +
+                    "Zakazani "+pregled+" ce se odrzati u sali: "+doctorTerms.getRoom().getName() +".\n"+ napomena +
+                    "Pregled:\nDatum: "+doctorTerms.getDate()+"\nVreme: "+doctorTerms.getTerm().getStartTerm()+"-"+
+                    doctorTerms.getTerm().getEndTerm()+"\nDoktor: "+doctorTerms.getDoctor().getFirstName()+" "+doctorTerms.getDoctor().getLastName() +
+                    "\nPacijent: "+doctorTerms.getPatient().getFirstName()+" "+doctorTerms.getPatient().getLastName()+
+                    "\nTip pregleda: "+doctorTerms.getDoctor().getTip().getName() +"\nKlinika: "+doctorTerms.getDoctor().getClinic().getName() +
+                    ", "+doctorTerms.getDoctor().getClinic().getAddress();
+            System.out.println(tb);
+            notificationService.SendNotification(doctorTerms.getDoctor().getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+            notificationService.SendNotification(doctorTerms.getPatient().getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+
+                } catch (MailException e) {
+                    System.out.println("Error sending message.");
+                    logger.info("Error Sending Mail:" + e.getMessage());
+                    return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+                }
+
+        return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
     }
 
     // TODO obradi izuzetak za OPTIMISTIC LOCK
@@ -145,4 +218,63 @@ public class ClinicAdministratorController extends WebConfig {
                         doctor_id, price, discount), HttpStatus.OK);
     }
 
+    //ovde vracamo godisnje odmore lekara samo
+    @GetMapping(produces = "application/json", value = "/getVacation/{clinic}")
+    public ResponseEntity<?> getVacation(@PathVariable("clinic") String clinic){
+        List<VacationDTO> vacations = new ArrayList<>();
+        for (Vacation v: vacationService.findAll()) {
+            if(v.getDoctor_nurse().equals("doctor")) {
+                if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }
+        }
+         return new ResponseEntity<>(vacations,HttpStatus.OK);
+    }
+
+    //ovde vracam listu SVIH zahteva za godisnji odmor
+    @GetMapping(produces = "application/json", value = "/getAllVacation/{clinic}")
+    public ResponseEntity<?> getAllVacation(@PathVariable("clinic") String clinic){
+        List<VacationDTO> vacations = new ArrayList<>();
+        for (Vacation v: vacationService.findAll()) {
+            if(v.getDoctor_nurse().equals("doctor")) {
+                if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }else{
+                if(v.getNurse().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }
+        }
+        return new ResponseEntity<>(vacations,HttpStatus.OK);
+    }
+
+
+   //obrada zahteva za godisnji odmor
+    @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
+    public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
+                                                  @PathVariable("odobren") boolean odobren,
+                                                  @PathVariable("razlog") String razlog){
+        String body;
+        Vacation vacation = vacationService.findOneById(id);
+        if (odobren) {
+            vacation.setEnabled(true);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odobren.";
+        } else {
+            vacation.setActive(false);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
+        }
+
+        vacationService.update(vacation);
+        if(vacation.getDoctor_nurse().equals("doctor")) {
+            notificationService.SendNotification(vacation.getDoctor().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }else{
+            notificationService.SendNotification(vacation.getNurse().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
 }

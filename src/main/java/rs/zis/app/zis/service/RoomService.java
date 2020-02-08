@@ -8,6 +8,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import rs.zis.app.zis.domain.Clinic;
+
+import rs.zis.app.zis.domain.Doctor;
+import rs.zis.app.zis.domain.DoctorTerms;
+
 import rs.zis.app.zis.domain.Room;
 import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.repository.RoomRepository;
@@ -87,12 +91,22 @@ public class RoomService implements UserDetailsService {
 
     public Room findOneById(Long id) { return roomRepository.findOneById(id); }
 
-    public List<RoomDTO> findRoom(List<RoomDTO> lista, String naziv, String broj) {
+    public List<RoomDTO> findRoom(List<RoomDTO> lista, String naziv, String broj, String date) {
         List<RoomDTO> retList = new ArrayList<>();
+        boolean zauzeta = false;
+
         for (RoomDTO roomDTO: lista) {
+            if (!date.equals("")) {
+                Room room = roomRepository.findOneById(roomDTO.getId());
+                if (room.getDoctorTerms().size() == 20) {
+                    zauzeta = true;
+                }
+            }
             if(roomDTO.getName().toLowerCase().contains(naziv.toLowerCase())){
-                if(roomDTO.getNumber().toLowerCase().contains(broj.toLowerCase())){
-                    retList.add(roomDTO);
+                if(roomDTO.getNumber().toLowerCase().contains(broj.toLowerCase())) {
+                    if (!zauzeta) {
+                        retList.add(roomDTO);
+                    }
                 }
             }
         }

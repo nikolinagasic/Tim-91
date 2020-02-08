@@ -41,12 +41,17 @@ import java.util.List;
             return nurseRepository.findAll(page);
         }
 
+        public Nurse findOneById(Long id){ return nurseRepository.findOneById(id); }
+
+        public Nurse save(Nurse nurse) { return nurseRepository.save(nurse);}
+
         public Nurse save(NurseDTO nurseDTO) {
             Nurse d = new Nurse();
             d.setMail(nurseDTO.getMail());
             d.setWorkShift(nurseDTO.getWorkShift());
             d.setPassword(passwordEncoder.encode(nurseDTO.getPassword()));
             d.setEnabled(true);
+            d.setActive(true);
             d.setClinic(clinicService.findOneByName(nurseDTO.getClinic()));
             List<Authority> auth = authService.findByname("ROLE_NURSE");
             d.setAuthorities(auth);

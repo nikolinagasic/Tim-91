@@ -113,11 +113,12 @@ public class ClinicCentreAdminController extends WebConfig
                  u.setEnabled(true); //sada je registrovan
                  userService.save(u);
                  //kada registrujem novog pacijenta otvaram mu odmah i karton
-                 MedicalRecordDTO medicalRecordDTO =  new MedicalRecordDTO();
-                 medicalRecordDTO.setPatientMail(mail);
-                 medicalRecordDTO.setBloodGroup("");
-                 medicalRecordDTO.setAllergy("");
-                 MedicalRecord medicalRecord = medicalRecordService.save(medicalRecordDTO);
+                 MedicalRecord medicalRecord = new MedicalRecord();
+                 Patient p = patientService.findOneByMail(mail);
+                 medicalRecord.setPatient(p);
+                 medicalRecord.setBloodGroup("");
+                 medicalRecord.setAllergy("");
+                 medicalRecord = medicalRecordService.save(medicalRecord);
 
                  try {
                      String tb="Поштовани,\n\t" +
@@ -166,9 +167,18 @@ public class ClinicCentreAdminController extends WebConfig
     @GetMapping(value="/diagnosisByName/{naziv}")
     public ResponseEntity<List<DiagnosisDTO>> getDiagnosisByName(@PathVariable("naziv") String naziv){
        System.out.println(naziv);
-       List<DiagnosisDTO>diagnosisDTOList=diagnosisService.filterDiagnosis(naziv);
+       List<DiagnosisDTO>diagnosisDTOList = diagnosisService.filterDiagnosis(naziv);
        return new ResponseEntity<>(diagnosisDTOList, HttpStatus.OK);
     }
+
+    //na osnovu dobijenog naziva dijagnoze, na front vracam listu lekova
+    @GetMapping(value="/curesByDiagnosis/{diagName}")
+    public ResponseEntity<List<DiagnosisDTO>> getCuresByName(@PathVariable("diagName") String diagName){
+        System.out.println(diagName);
+        List<DiagnosisDTO>diagnosisDTOList = diagnosisService.filterCures(diagName);
+        return new ResponseEntity<>(diagnosisDTOList, HttpStatus.OK);
+    }
+
 
     //cuvam u bazi azuriran sifarnik koji je poslat sa fronta
     @PostMapping(consumes = "application/json" , value = "/savediagnosis")
