@@ -250,12 +250,13 @@ public class DoctorTermsService {
                                     moze = true;
                                     date = date + (1000 * 60 * 60 * 24);
                                     List<DoctorTerms> doctors = findAllByDoctor(doctorTerms.getDoctor());
-                                    //TODO vacation
-                                    for (DoctorTerms t : doctors) {
-                                        if (t.getDate() == doctorTerms.getDate()) {
-                                            if (t.getTerm() == doctorTerms.getTerm()) {
-                                                moze = false;
-                                                break;
+                                    if (doctorService.doctor_free_at_date(doctorTerms.getDoctor(),date)){
+                                        for (DoctorTerms t : doctors) {
+                                            if (t.getDate() == doctorTerms.getDate()) {
+                                                if (t.getTerm() == doctorTerms.getTerm()) {
+                                                    moze = false;
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
