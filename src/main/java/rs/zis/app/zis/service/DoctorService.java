@@ -220,8 +220,10 @@ public class DoctorService {
             if(doctor.getTip().getName().toLowerCase().contains(tip.toLowerCase())){
                 if(doctor_free_at_date(doctor, datum) || datum == -1){
                     if((doctor.getSum_ratings()/doctor.getNumber_rating()) == ocena || ocena == -1){
-                        if(doctor.getLastName().toLowerCase().contains(prezime.toLowerCase())){
-                            if(doctor.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+                        if((doctor.getLastName() == null ? "" : doctor.getLastName())
+                                .toLowerCase().contains(prezime.toLowerCase())){
+                            if((doctor.getFirstName() == null ? "" : doctor.getFirstName())
+                                    .toLowerCase().contains(ime.toLowerCase())){
                                 retList.add(doctorDTO);
                             }
                         }
