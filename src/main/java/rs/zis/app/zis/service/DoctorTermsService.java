@@ -191,6 +191,7 @@ public class DoctorTermsService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO,boolean examination){
         lock.lock();
+
         DoctorTerms dt = new DoctorTerms();
         try {
             Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),

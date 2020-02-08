@@ -97,6 +97,7 @@ public class DoctorTermsServiceTest {
     @Test
     public void testNonexistentMail() {
         boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_NONEXISTENT_MAIL, new DoctorTermsDTO(), true);
+
         assertThat(reserved).isEqualTo(false);
     }
 
@@ -104,6 +105,7 @@ public class DoctorTermsServiceTest {
     public void testNonexistentTerm() {
         DoctorTermsDTO doctorTermDTO = new DoctorTermsDTO();
         doctorTermDTO.setStart_term("23:00");
+
 
         boolean reserved = doctorTermsService.reserveTerm(DB_PATIENT_MAIL, doctorTermDTO, true);
         assertThat(reserved).isEqualTo(false);
