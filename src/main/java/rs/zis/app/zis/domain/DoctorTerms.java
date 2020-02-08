@@ -1,6 +1,8 @@
 package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
@@ -55,6 +57,10 @@ public class DoctorTerms {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Room room;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Doctor> dodatni_lekari = new HashSet<Doctor>();
+
 
     public DoctorTerms() {
         this.active = true;
@@ -199,4 +205,13 @@ public class DoctorTerms {
     public void setRate_doctor(boolean rate_doctor) {
         this.rate_doctor = rate_doctor;
     }
+
+    public Set<Doctor> getDodatni_lekari() {
+        return dodatni_lekari;
+    }
+
+    public void addDodatniLekari(Doctor d){
+        this.dodatni_lekari.add(d);
+    }
+
 }

@@ -172,14 +172,14 @@ insert into room_doctor_terms (room_id, doctor_terms_id) values (6, 11);
 
 
 --DIAGNOSIS AND CURES
-insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
-   values(2,'AMOKSIKLAV(500mg+125mg)','10215','Zapaljenje sinusa','J01');
-insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
-   values(3,'AMOKSIKLAV(500mg)','10216','Zapaljenje sinusa','J01');
-insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
-   values(4,'AMOKSIKLAV(500mg+125mg)','10215','Zapaljenje krajnika','J07');
-insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
-   values(5,'BRUFEN(400mg)','2035','Temperatura','K168');
-insert into diagnosis (id, cure_name, cure_password, diagnosis_name, diagnosis_password)
-   values(6,'BRUFEN(800mg)','2036','Temperatura','K168');
+insert into diagnosis (cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values('AMOKSIKLAV(500mg+125mg)','10215','Запаљење синуса','J01');
+insert into diagnosis (cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values('AMOKSIKLAV(500mg)','10216','Запаљење синуса','J01');
+insert into diagnosis (cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values('AMOKSIKLAV(500mg+125mg)','10215','Запаљење крајника','J07');
+insert into diagnosis (cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values('BRUFEN(400mg)','2035','Teмпература','K168');
+insert into diagnosis (cure_name, cure_password, diagnosis_name, diagnosis_password)
+   values('BRUFEN(800mg)','2036','Teмпература','K168');
 

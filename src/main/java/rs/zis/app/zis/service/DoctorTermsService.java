@@ -24,9 +24,7 @@ import javax.print.Doc;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -112,8 +110,25 @@ public class DoctorTermsService {
 
 
     @Transactional(readOnly = false)
-    public List<DoctorTerms> findAllByDoctor(Doctor doctor){
-        return doctorTermsRepository.findAllByDoctor(doctor);
+    public List<DoctorTerms> findAllByDoctor(Doctor doctor)
+    {
+         List<DoctorTerms> all_terms = findAll();
+         List<DoctorTerms> ret = new ArrayList<>();
+         Set<Doctor> dodatni = new HashSet<>();
+         for(DoctorTerms d : all_terms){
+             if(d.getDoctor().getId()==doctor.getId()){
+                 ret.add(d);
+                 continue;
+             }
+             dodatni = d.getDodatni_lekari();
+             for(Doctor doctor1 : dodatni){
+                 if(doctor1.getId()==doctor.getId()){
+                     ret.add(d);
+                     break;
+                 }
+             }
+         }
+         return ret;
     }
 
     @Transactional(readOnly = false)
@@ -494,5 +509,9 @@ public class DoctorTermsService {
 
         return retList;
 
+    }
+
+    public DoctorTerms update (DoctorTerms doctorTerms){
+       return doctorTermsRepository.save(doctorTerms);
     }
 }
