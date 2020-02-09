@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicAdministratorDTO;
 import rs.zis.app.zis.repository.ClinicAdministratorRepository;
@@ -32,6 +34,10 @@ public class ClinicAdministratorService implements UserDetailsService {
     private DoctorTermsService doctorTermsService;
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private VacationService vacationService;
+
 
     public List<ClinicAdministrator> findAll() {
         return clinicAdministartorRepository.findAll();
@@ -99,6 +105,25 @@ public class ClinicAdministratorService implements UserDetailsService {
         }
         else{
             return false;
+        }
+    }
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void obradiZahtev(Long id, boolean odobren, String razlog) {
+        String body;
+        Vacation vacation = vacationService.findOneById(id);
+        if (odobren) {
+            vacation.setEnabled(true);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odobren.";
+        } else {
+            vacation.setActive(false);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
+        }
+
+        vacationService.update(vacation);
+        if(vacation.getDoctor_nurse().equals("doctor")) {
+            notificationService.SendNotification(vacation.getDoctor().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }else{
+            notificationService.SendNotification(vacation.getNurse().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
         }
     }
 }

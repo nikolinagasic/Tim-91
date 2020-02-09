@@ -1,5 +1,7 @@
 package rs.zis.app.zis.constants;
 
+import java.util.Date;
+
 public class UserConstants {
     public static final int DB_PATIENT_COUNT = 2;
     public static final int DB_ADMIN_COUNT = 1;
@@ -38,4 +40,17 @@ public class UserConstants {
     // clinic
     public static final Long DB_CLINIC_ID = 1L;
 
+
+    //room
+    public static final String DB_ROOM_NAME1 = "Сала 1";
+    public static final String DB_ROOM_NAME2 = "Сала 2";
+    public static final String DB_ROOM_NAME3 = "Сала 3";
+    public static final String DB_ROOM_NAME4 = "Сала 4";
+    public static final String DB_ROOM_NUMBER1 = "1";
+    public static final String DB_ROOM_NUMBER2 = "2";
+    public static final String DB_ROOM_NUMBER3 = "3";
+    public static final String DB_ROOM_NUMBER4 = "4";
+
+    //date
+    public static final long DB_DATE = 1583280000000L;
 }

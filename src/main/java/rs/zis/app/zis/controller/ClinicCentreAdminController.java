@@ -101,6 +101,7 @@ public class ClinicCentreAdminController extends WebConfig
     //br=1(zahtev odobren),br=2(zahtev odbijen)
 
     //razlog je neki string
+
     @GetMapping( value = "accept/{mail}/{br}/{reason}")
     public  ResponseEntity<Integer> acceptRequest(@PathVariable("mail") String mail, @PathVariable("br") Integer br,
                                                   @PathVariable("reason") String reason ){

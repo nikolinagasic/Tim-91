@@ -254,32 +254,14 @@ public class DoctorController extends WebConfig {
                                                 @PathVariable("id_term") Long id_term){
 
          System.out.println("USLAAAAA");
-         DoctorTerms operation_term = doctorTermsService.findOneById(id_term); //imamo termin
-          for(String mail : listaMejlovaLekara){
-              Doctor doctor = doctorService.findOneByMail(mail);
-              doctor.addTermin(operation_term);
-              operation_term.addDodatniLekari(doctor);
-              doctor = doctorService.update(doctor);
-              //tom lekaru saljemo mejl
-              Date d=new Date(operation_term.getDate());
-              SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
-              String dateText = df2.format(d);
-              String tb="Postovani," + "\n" +
-                      "operacija ce se odrzati u sali: "+operation_term.getRoom().getName() +".\n"+
-                      "Datum: "+dateText+"\nVreme: "+
-                      operation_term.getTerm().getStartTerm() +"-"+
-                      operation_term.getTerm().getEndTerm();
-              System.out.println(tb);
-              notificationService.SendNotification(doctor.getMail(), "billypiton43@gmail.com",
-                      "OBAVESTENJE", tb);
+         boolean uspeo = doctorService.createTermOperation(listaMejlovaLekara,id_term);
+         if (!uspeo) {
+             return new ResponseEntity<>(1,HttpStatus.CONFLICT);
+
          }
-         doctorTermsService.update(operation_term);
 
         return new ResponseEntity<>(0,HttpStatus.OK);
    }
-
-
-
 
     @PostMapping(produces = "application/json", consumes = "application/json",
             value = "/expandedSearchDoctor/{ime}/{prezime}/{ocena}/{date}/{select}")

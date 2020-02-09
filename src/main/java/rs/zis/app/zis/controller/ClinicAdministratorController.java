@@ -17,7 +17,10 @@ import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.*;
 import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "IfCanBeSwitch"})
 @RestController
@@ -169,18 +172,45 @@ public class ClinicAdministratorController extends WebConfig {
 
 
     @GetMapping(value = "/sendMail/{id}/{date}")
-    public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("changed") long date){
+    public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("date") long date){
         try {
-                DoctorTerms term = doctorTermsService.findOneById(id);
-                doctorTermsService.sendMail(id,date,term.getTerm(),term.getRoom(),term.getDoctor(),term.getPatient());
+            DoctorTerms doctorTerms = doctorTermsService.findOneById(id);
+            String pregled;
+            Date d=new Date(doctorTerms.getDate());
+            SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+            String dateText = df2.format(d);
+            if (doctorTerms.isExamination()) {
+                pregled = "Pregled";
+            }
+            else {
+                pregled = "Operacija";
+            }
+            String napomena = "";
+            if (date != -1) {
+                napomena = "*Napomena: Datum je promenjen na "+dateText+"\n";
+            }
 
-                } catch (MailException e) {
-                    System.out.println("Error sending message.");
-                    logger.info("Error Sending Mail:" + e.getMessage());
-                    return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
-                }
+            String tb="Postovani," + "\n" +
+                    pregled+" ce se odrzati u sali: "+doctorTerms.getRoom().getName() +".\n"+ napomena +
+                    "Pregled:\nDatum: "+dateText+"\nVreme: "+doctorTerms.getTerm().getStartTerm()+"-"+
+                    doctorTerms.getTerm().getEndTerm()+"\nDoktor: "+doctorTerms.getDoctor().getFirstName()+" "+doctorTerms.getDoctor().getLastName() +
+                    "\nPacijent: "+doctorTerms.getPatient().getFirstName()+" "+doctorTerms.getPatient().getLastName()+
+                    "\nTip pregleda: "+doctorTerms.getDoctor().getTip().getName() +"\nKlinika: "+doctorTerms.getDoctor().getClinic().getName() +
+                    ", "+doctorTerms.getDoctor().getClinic().getAddress();
+            System.out.println(tb);
+            notificationService.SendNotification(doctorTerms.getDoctor().getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+            notificationService.SendNotification(doctorTerms.getPatient().getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+
+        } catch (MailException e) {
+            System.out.println("Error sending message.");
+            logger.info("Error Sending Mail:" + e.getMessage());
+            return new ResponseEntity<>(-2, HttpStatus.CONFLICT);  // -2 -> nije okej
+        }
 
         return new ResponseEntity<>(0, HttpStatus.CREATED);     // 0 -> sve okej
+
     }
 
     // TODO obradi izuzetak za OPTIMISTIC LOCK
@@ -235,27 +265,13 @@ public class ClinicAdministratorController extends WebConfig {
 
 
    //obrada zahteva za godisnji odmor
-   @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
    @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
     public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
                                                   @PathVariable("odobren") boolean odobren,
                                                   @PathVariable("razlog") String razlog){
-        String body;
-        Vacation vacation = vacationService.findOneById(id);
-        if (odobren) {
-            vacation.setEnabled(true);
-            body = "Postovani,\nVas zahtev za godisnji odmor je odobren.";
-        } else {
-            vacation.setActive(false);
-            body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
-        }
 
-        vacationService.update(vacation);
-        if(vacation.getDoctor_nurse().equals("doctor")) {
-            notificationService.SendNotification(vacation.getDoctor().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
-        }else{
-            notificationService.SendNotification(vacation.getNurse().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
-        }
+        clinicAdministratorService.obradiZahtev(id,odobren,razlog);
+
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }
