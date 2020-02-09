@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import rs.zis.app.zis.config.WebConfig;
 import rs.zis.app.zis.domain.*;
@@ -167,32 +169,10 @@ public class ClinicAdministratorController extends WebConfig {
 
 
     @GetMapping(value = "/sendMail/{id}/{date}")
-    public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("date") long date){
-        try {       DoctorTerms doctorTerms = doctorTermsService.findOneById(id);
-            String pregled;
-            if (doctorTerms.isExamination()) {
-                pregled = "operacija";
-            }
-            else {
-                pregled = "pregled";
-            }
-            String napomena = "";
-            if (date != -1) {
-                napomena = "*Napomena: Datum je promenjen na "+date+"\n";
-            }
-
-            String tb="Postovani," + "\n" +
-                    "Zakazani "+pregled+" ce se odrzati u sali: "+doctorTerms.getRoom().getName() +".\n"+ napomena +
-                    "Pregled:\nDatum: "+doctorTerms.getDate()+"\nVreme: "+doctorTerms.getTerm().getStartTerm()+"-"+
-                    doctorTerms.getTerm().getEndTerm()+"\nDoktor: "+doctorTerms.getDoctor().getFirstName()+" "+doctorTerms.getDoctor().getLastName() +
-                    "\nPacijent: "+doctorTerms.getPatient().getFirstName()+" "+doctorTerms.getPatient().getLastName()+
-                    "\nTip pregleda: "+doctorTerms.getDoctor().getTip().getName() +"\nKlinika: "+doctorTerms.getDoctor().getClinic().getName() +
-                    ", "+doctorTerms.getDoctor().getClinic().getAddress();
-            System.out.println(tb);
-            notificationService.SendNotification(doctorTerms.getDoctor().getMail(), "billypiton43@gmail.com",
-                    "OBAVESTENJE", tb);
-            notificationService.SendNotification(doctorTerms.getPatient().getMail(), "billypiton43@gmail.com",
-                    "OBAVESTENJE", tb);
+    public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("changed") long date){
+        try {
+                DoctorTerms term = doctorTermsService.findOneById(id);
+                doctorTermsService.sendMail(id,date,term.getTerm(),term.getRoom(),term.getDoctor(),term.getPatient());
 
                 } catch (MailException e) {
                     System.out.println("Error sending message.");
@@ -255,7 +235,8 @@ public class ClinicAdministratorController extends WebConfig {
 
 
    //obrada zahteva za godisnji odmor
-    @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
+   @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+   @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
     public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
                                                   @PathVariable("odobren") boolean odobren,
                                                   @PathVariable("razlog") String razlog){

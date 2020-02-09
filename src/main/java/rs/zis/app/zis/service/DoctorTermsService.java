@@ -1,5 +1,6 @@
 package rs.zis.app.zis.service;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +104,7 @@ public class DoctorTermsService {
         List<DoctorTerms> all = doctorTermsRepository.findAll();
         List<DoctorTerms> retVal = new ArrayList<>();
         for (DoctorTerms t: all) {
+            System.out.println(t.getDoctor().getClinic()+clinic.getName());
             if (t.getDoctor().getClinic().getName().equals(clinic.getName())) {
                 retVal.add(t);
             }
@@ -228,6 +230,7 @@ public class DoctorTermsService {
             doctorTerms.setTerm(term_def);
             doctorTerms.setExamination(examination);
             doctorTerms.setProcessedByAdmin(false);
+            doctorTerms.setPrice(doctor.getPrice());
             doctorTermsRepository.save(doctorTerms);
             // poslati mejl administratoru/ima klinike
             for (ClinicAdministrator clinicAdministrator : lista_cadmina) {
@@ -328,11 +331,11 @@ public class DoctorTermsService {
             lock.unlock();
         }
     }
-
-    public int reserveRoom(Long id,Long idr,long date) {
+    @Transactional(readOnly = false,propagation = Propagation.REQUIRES_NEW)
+    public int reserveRoom(Long id,Long idr,long date,boolean changed) {
         DoctorTerms term = doctorTermsRepository.findOneById(id);
         Room room = roomService.findOneById(idr);
-        if (date != -1) {
+        if (changed) {
             List<DoctorTerms> lista = doctorTermsRepository.findAllByDoctor(term.getDoctor());
             for (DoctorTerms t : lista) {
                 if (t.getDate() == date) {
