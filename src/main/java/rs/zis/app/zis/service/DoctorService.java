@@ -161,8 +161,10 @@ public class DoctorService {
     public List<DoctorDTO> findDoctor(List<DoctorDTO> lista_lekara, String ime, String prezime) {
         List<DoctorDTO> retList = new ArrayList<>();
         for (DoctorDTO doctorDTO: lista_lekara) {
-            if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
-                if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+            if((doctorDTO.getFirstName() == null ? "" : doctorDTO.getFirstName())
+                    .toLowerCase().contains(ime.toLowerCase())){
+                if((doctorDTO.getLastName() == null ? "" : doctorDTO.getLastName())
+                        .toLowerCase().contains(prezime.toLowerCase())){
                         retList.add(doctorDTO);
                 }
             }

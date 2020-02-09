@@ -63,8 +63,9 @@ class DoctorTermsServiceUnitTest {
     private Patient patient = new Patient();
     private Room room = new Room();
     private Room room2 = new Room();
-    private TipPregleda tipPregleda =  new TipPregleda();
     private DoctorTermsDTO doctorTermsDTOT = new DoctorTermsDTO();
+    private TipPregleda tipPregleda = new TipPregleda();
+    private Clinic clinic = new Clinic();
 
     @BeforeEach
     void setUp() {
@@ -105,11 +106,14 @@ class DoctorTermsServiceUnitTest {
                     add(doctorTerms);
                 }});
 
+        clinic.setId(500L);
+        clinic.setName("Neka klinika");
 
         doctor = new Doctor();
         doctor.setId(3L);
         doctor.setFirstName(DB_DOCTOR_FIRST_NAME);
         doctor.setLastName(DB_DOCTOR_LAST_NAME);
+        doctor.setClinic(clinic);
 
         doctorFail.setId(-2L);
         doctorFail.setFirstName("No first name");
