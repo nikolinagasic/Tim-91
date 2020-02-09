@@ -15,7 +15,7 @@ import pages.ReservePredefinedPage;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused", "IfStatementWithIdenticalBranches"})
-public class PredefinedTermE2ET {
+public class PredefinedTermTest {
 
     private WebDriver browser;
 
