@@ -9,7 +9,7 @@ addons:
 deploy:
   provider: heroku
   api-key:
-    secure: $HEROKU_API_KEY # ili da stavis sirovu vrednost kljuca
+    secure: "$HEROKU_API_KEY" # ili da stavis sirovu vrednost kljuca
   app: tim91 # naziv svoje aplikacije
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
