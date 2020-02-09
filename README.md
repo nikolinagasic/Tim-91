@@ -13,3 +13,6 @@
 3) Kucati sledeću komandu koja će pokrenuti frontend aplikaciju
     - npm start
 4) Aplikacija se otvara u browseru i omogućen je dalji rad
+
+** pre korišćenja npm start komande, neophodno je preuzeti, potom instalirati Node.js.
+Fajl je moguće preuzeti sa linka https://nodejs.org/en/download/
