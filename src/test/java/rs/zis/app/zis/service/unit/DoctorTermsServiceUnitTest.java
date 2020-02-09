@@ -65,6 +65,7 @@ class DoctorTermsServiceUnitTest {
     private Room room2 = new Room();
     private TipPregleda tipPregleda = new TipPregleda();
     private Clinic clinic = new Clinic();
+    private TipPregleda tipPregleda =  new TipPregleda();
 
     @BeforeEach
     void setUp() {
