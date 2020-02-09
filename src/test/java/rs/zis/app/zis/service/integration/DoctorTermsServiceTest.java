@@ -4,14 +4,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import rs.zis.app.zis.domain.Doctor;
-import rs.zis.app.zis.domain.DoctorTerms;
-import rs.zis.app.zis.domain.TipPregleda;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
+import rs.zis.app.zis.service.DoctorService;
 import rs.zis.app.zis.service.DoctorTermsService;
+import rs.zis.app.zis.service.PatientService;
+import rs.zis.app.zis.service.TermDefinitionService;
 
 import javax.persistence.Column;
 import javax.validation.constraints.Null;
@@ -30,6 +32,13 @@ public class DoctorTermsServiceTest {
 
     @Autowired
     DoctorTermsService doctorTermsService;
+
+    @Autowired
+    PatientService patientService;
+    @Autowired
+    DoctorService doctorService;
+    @Autowired
+    TermDefinitionService termDefinitionService;
 
     @Test
     public void testFindAll() {
@@ -273,6 +282,38 @@ public class DoctorTermsServiceTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    @Test()
+    public void testReserveRoom() {
+        Long doctor_id = 3L;
+        Doctor doctor = doctorService.findOneById(doctor_id);
+        Patient patient = patientService.findOneByMail("patient@gmail.com");
+        double price = 999.99;
+        int discount = 10;
+        long date = DB_DATE;
+        Long term_id = 13L;
+        TermDefinition term_def = termDefinitionService.findOneById(1L);
+        DoctorTermsDTO doctorTermsDTO = new DoctorTermsDTO();
+        doctorTermsDTO.setPrice(price);
+        doctorTermsDTO.setDate(date);
+        doctorTermsDTO.setFirstNameDoctor(doctor.getFirstName());
+        doctorTermsDTO.setLastNameDoctor(doctor.getLastName());
+        doctorTermsDTO.setPatient_id(patient.getId());
+        doctorTermsDTO.setStart_term(term_def.getStartTerm());
+        doctorTermsDTO.setEnd_term(term_def.getEndTerm());
+        doctorTermsDTO.setExamination(true);
+        doctorTermsDTO.setPrice(doctor.getPrice());
+        doctorTermsDTO.setDiscount(discount);
+
+        boolean db_before = doctorTermsService.reserveTerm("patient@gmail.com",doctorTermsDTO,true);
+
+
+        DoctorTerms term = doctorTermsService.findOneById(term_id);
+        int uspeo = doctorTermsService.reserveRoom(term_id,1L,date,false);
+        assertThat(uspeo).isNotNull();
+        assertThat(uspeo).isEqualTo(0);
+        DoctorTerms term1 = doctorTermsService.findOneById(term_id);
+        assertThat(term1.getRoom().getId()).isEqualTo(1L);
     }
 
 }

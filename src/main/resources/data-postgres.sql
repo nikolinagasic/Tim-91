@@ -160,6 +160,8 @@ insert into doctor_terms (active, date, examination, doctor_id, patient_id, proc
             price, discount, rate_clinic, rate_doctor)
              values (true, 1578441600000, false, 4, 2, true, 0, true, 6, 10, 4700.00, 0, false, false);
 
+
+
 insert into room_doctor_terms (room_id, doctor_terms_id) values (1, 1);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (3, 2);
 insert into room_doctor_terms (room_id, doctor_terms_id) values (1, 3);

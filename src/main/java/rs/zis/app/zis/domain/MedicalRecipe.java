@@ -33,6 +33,8 @@ public class MedicalRecipe {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Nurse nurse;  //koja je sestra overila recept
 
+    @Version
+    private Long version;
 
     public MedicalRecipe() {
     }
@@ -46,6 +48,14 @@ public class MedicalRecipe {
         this.overen = overen;
         this.doctor_name = doctor_name;
         this.nurse = nurse;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public Long getId() {

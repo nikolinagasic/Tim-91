@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static rs.zis.app.zis.constants.UserConstants.*;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DoctorTermsServiceUnitTest {
@@ -64,6 +64,7 @@ class DoctorTermsServiceUnitTest {
     private Room room = new Room();
     private Room room2 = new Room();
     private TipPregleda tipPregleda =  new TipPregleda();
+    private DoctorTermsDTO doctorTermsDTOT = new DoctorTermsDTO();
 
     @BeforeEach
     void setUp() {
@@ -118,6 +119,7 @@ class DoctorTermsServiceUnitTest {
         doctorTerms.setId(500L);
         doctorTerms.setDate(DB_DOCTOR_TERMS_DATE);
         doctorTerms.setDoctor(doctor);
+        doctorTermsDTOT.setExamination(true);
         Mockito.when(doctorService.findOneById(doctor.getId()))
                 .then(invocationOnMock -> doctor);
         Mockito.when(doctorService.findOneById(doctorFail.getId()))
@@ -138,6 +140,15 @@ class DoctorTermsServiceUnitTest {
                     clinicAdministrator.setLastName("Admin");
                 }});
         Mockito.when(doctorTermsRepository.save(any(DoctorTerms.class)))
+                .then(invocationOnMock -> doctorTerms);
+
+        doctorTermsDTOT.setId(18L);
+        doctorTermsDTOT.setFirstNameDoctor(DB_DOCTOR_FIRST_NAME);
+        doctorTermsDTOT.setLastNameDoctor(DB_DOCTOR_LAST_NAME);
+        doctorTermsDTOT.setStart_term(DB_DOCTOR_TERMS_START_TERM);
+        doctorTermsDTOT.setDate(DB_DOCTOR_TERMS_DATE);
+        doctorTermsDTOT.setPatient_id(DB_PATIENT_ID);
+        Mockito.when(doctorTermsRepository.findOneById(doctorTermsDTOT.getId()))
                 .then(invocationOnMock -> doctorTerms);
 
         termDefinition = new TermDefinition();
@@ -279,6 +290,15 @@ class DoctorTermsServiceUnitTest {
 
         assertThat(retVal).isNotNull();
         assertThat(retVal).isEqualTo(-2);        // soba zauzeta
+    }
+
+    @Test
+    void testReserveRoom() {
+
+        int uspeo = doctorTermsService.reserveRoom(doctorTermsDTOT.getId(),room.getId(),DB_DATE,false);
+        assertThat(uspeo).isNotNull();
+        assertThat(uspeo).isEqualTo(0);
+
     }
 
 }

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import rs.zis.app.zis.controller.ClinicCentreAdminController;
 import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicDTO;
@@ -17,13 +19,16 @@ import rs.zis.app.zis.dto.DoctorDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue", "RedundantIfStatement", "RedundantSuppression", "IfStatementMissingBreakInLoop"})
 @Service
 public class DoctorService {
     private Logger logger = LoggerFactory.getLogger(ClinicCentreAdminController.class);
+
 
     @Autowired
     private DoctorRepository doctorRepository;
@@ -314,6 +319,33 @@ public class DoctorService {
 
         return true;
 
+    }
+    @Transactional(propagation = Propagation.REQUIRES_NEW,readOnly = false)
+    public boolean createTermOperation(List<String> listaMejlovaLekara, Long id_term) {
+        DoctorTerms operation_term = doctorTermsService.findOneById(id_term); //imamo termin
+        if (operation_term.getRoom() == null) {
+            return false;
+        }
+        for (String mail : listaMejlovaLekara) {
+            Doctor doctor = findOneByMail(mail);
+            doctor.addTermin(operation_term);
+            operation_term.addDodatniLekari(doctor);
+            doctor = update(doctor);
+            //tom lekaru saljemo mejl
+            Date d = new Date(operation_term.getDate());
+            SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+            String dateText = df2.format(d);
+            String tb = "Postovani," + "\n" +
+                    "operacija ce se odrzati u sali: " + operation_term.getRoom().getName() + ".\n" +
+                    "Datum: " + dateText + "\nVreme: " +
+                    operation_term.getTerm().getStartTerm() + "-" +
+                    operation_term.getTerm().getEndTerm();
+            System.out.println(tb);
+            notificationService.SendNotification(doctor.getMail(), "billypiton43@gmail.com",
+                    "OBAVESTENJE", tb);
+        }
+        doctorTermsService.update(operation_term);
+        return true;
     }
 }
 

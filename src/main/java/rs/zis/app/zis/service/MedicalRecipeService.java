@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import rs.zis.app.zis.domain.MedicalRecipe;
 import rs.zis.app.zis.domain.Nurse;
 import rs.zis.app.zis.dto.MedicalRecipeDTO;
@@ -42,7 +44,7 @@ public class MedicalRecipeService {
         medicalRecipe = medicalRecipeRepository.save(medicalRecipe);
         return medicalRecipe;
     }
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
     public MedicalRecipe overi(MedicalRecipeDTO medicalRecipeDTO){
         System.out.println("USAO U OVERU");
         Nurse nurse = nurseService.findOneById(medicalRecipeDTO.getId_nurse());

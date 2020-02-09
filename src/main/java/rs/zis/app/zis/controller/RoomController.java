@@ -150,19 +150,22 @@ public class RoomController extends WebConfig {
     @PostMapping(produces = "application/json", value = "/reserveRoom/{id}/{idr}/{date}/{changed}")
     public ResponseEntity<?> reserveRoom(@PathVariable("id") Long id,@PathVariable("idr") Long idr,@PathVariable("date") long date,@PathVariable("changed") boolean changed) {
         DoctorTerms term = doctorTermsService.findOneById(id);
+        if (term==null) {
 
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        }
         int uspeo = doctorTermsService.reserveRoom(id,idr,date,changed);
         if (uspeo == 1) {
-            return new ResponseEntity<>(0, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(true, HttpStatus.CONFLICT);
         } else if (uspeo == 2) {
-            return new ResponseEntity<>(0, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(true, HttpStatus.NOT_FOUND);
         }
         DoctorTerms t = doctorTermsService.findOneById(id);
         System.out.println("procesuiran:"+t.isProcessedByAdmin());
         Room room = roomService.findOneById(idr);
         room.addDoctorTerms(t);
         roomService.update(room);
-        return new ResponseEntity<>(0, HttpStatus.OK);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping(produces = "application/json", value = "/getTerms/{name}")
