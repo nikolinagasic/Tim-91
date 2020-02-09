@@ -16,8 +16,6 @@ public class DiagnosisService {
     @Autowired
     private DiagnosisRepository diagnosisRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthorityService authService;

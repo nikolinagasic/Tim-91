@@ -2,7 +2,9 @@ package rs.zis.app.zis.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,10 +30,7 @@ public class CustomUserService implements UserDetailsService {
     private UserService userService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ApplicationContext applicationContext;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, UnknownFormatConversionException {
@@ -45,9 +44,10 @@ public class CustomUserService implements UserDetailsService {
     }
 
     public boolean changePassword(String username, String password){
-        if (authenticationManager != null) {
+        try {
+            applicationContext.getBean(AuthenticationManager.class);
             LOGGER.debug("Re-authenticating user '" + username + "' for password change request.");
-        } else {
+        } catch (BeansException e) {
             LOGGER.debug("No authentication manager set. can't change Password!");
             return false;
         }
@@ -57,7 +57,7 @@ public class CustomUserService implements UserDetailsService {
         Users users = (Users) loadUserByUsername(username);
 
         // hesovanje lozinke pre cuvanja u bazi
-        users.setPassword(passwordEncoder.encode(password));
+        users.setPassword(applicationContext.getBean(PasswordEncoder.class).encode(password));
         users.setFirstLogin(false);
         userRepository.save(users);
         return true;

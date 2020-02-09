@@ -1,6 +1,7 @@
 package rs.zis.app.zis.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,7 @@ public class ClinicCentreAdminService {
     @Autowired
     private ClinicCentreAdminRepository cc_adminRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ApplicationContext applicationContext;
 
     @Autowired
     private AuthorityService authService;
@@ -51,7 +52,7 @@ public class ClinicCentreAdminService {
     public ClinicCentreAdmin save(ClinicCentreAdminDTO clinicCentreAdminDTO) {
         ClinicCentreAdmin a = new ClinicCentreAdmin();
         a.setMail(clinicCentreAdminDTO.getMail());
-        a.setPassword(passwordEncoder.encode(clinicCentreAdminDTO.getPassword()));
+        a.setPassword(applicationContext.getBean(PasswordEncoder.class).encode(clinicCentreAdminDTO.getPassword()));
         a.setPredefined(false);
         a.setEnabled(true);
         List<Authority> auth = authService.findByname("ROLE_CLINIC_CENTRE_ADMINISTRATOR");

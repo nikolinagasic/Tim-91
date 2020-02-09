@@ -3,6 +3,7 @@ package rs.zis.app.zis.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class PatientService {
     private PatientRepository patientRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ApplicationContext applicationContext;
+
 
     @Autowired
     private AuthorityService authService;
@@ -45,6 +47,7 @@ public class PatientService {
     }
 
     public Patient save(PatientDTO patientDTO) {
+        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
         Patient p = new Patient();
         p.setMail(patientDTO.getMail());
         p.setPassword(passwordEncoder.encode(patientDTO.getPassword()));
