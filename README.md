@@ -5,6 +5,7 @@
 *Backend*
 1) Preuzeti projekat sa git repozitorijuma https://github.com/nikolinagasic/Tim-91
 2) Otvoriti IntelliJ, Eclipse ili alat slične namene
+2) Pronaći preuzeti projekat i otvoriti ga
 3) Otvoriti main klasu i pokrenuti projekat
 
 *Frontend*
