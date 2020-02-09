@@ -8,9 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.zis.app.zis.domain.Authority;
-import rs.zis.app.zis.domain.ClinicAdministrator;
-import rs.zis.app.zis.domain.Doctor;
+import rs.zis.app.zis.domain.*;
 import rs.zis.app.zis.dto.ClinicAdministratorDTO;
 import rs.zis.app.zis.repository.ClinicAdministratorRepository;
 
@@ -28,6 +26,12 @@ public class ClinicAdministratorService implements UserDetailsService {
 
     @Autowired
     private AuthorityService authService;
+    @Autowired
+    private ClinicService clinicService;
+    @Autowired
+    private DoctorTermsService doctorTermsService;
+    @Autowired
+    private NotificationService notificationService;
 
     public List<ClinicAdministrator> findAll() {
         return clinicAdministartorRepository.findAll();
@@ -37,16 +41,31 @@ public class ClinicAdministratorService implements UserDetailsService {
         return clinicAdministartorRepository.findAll(page);
     }
 
+    public List<ClinicAdministrator> findAllByClinic(Clinic clinic) {
+        return clinicAdministartorRepository.findAllByClinic(clinic);
+    }
+
     public ClinicAdministrator save(ClinicAdministratorDTO clinicAdministartorDTO) {
         ClinicAdministrator a = new ClinicAdministrator();
         a.setMail(clinicAdministartorDTO.getMail());
         a.setPassword(passwordEncoder.encode(clinicAdministartorDTO.getPassword()));
+        a.setFirstName(clinicAdministartorDTO.getFirstName());
+        a.setLastName(clinicAdministartorDTO.getLastName());
+        a.setAddress(clinicAdministartorDTO.getAddress());
+        a.setCity(clinicAdministartorDTO.getCity());
+        a.setCountry(clinicAdministartorDTO.getCountry());
+        a.setTelephone(clinicAdministartorDTO.getTelephone());
+        a.setClinic(clinicService.findOneByName(clinicAdministartorDTO.getClinic()));
         a.setEnabled(true);
-        List<Authority> auth = authService.findByname("ROLE_CLINIC_ADMINISTRATOR");
+        a.setFirstLogin(true);
+        List<Authority> auth = authService.findByname("ROLE_CADMIN");
         a.setAuthorities(auth);
 
         a = this.clinicAdministartorRepository.save(a);
         return a;
+    }
+    public ClinicAdministrator update(ClinicAdministrator clinicAdministrator){
+        return clinicAdministartorRepository.save(clinicAdministrator);
     }
 
     public void remove(Long id) {

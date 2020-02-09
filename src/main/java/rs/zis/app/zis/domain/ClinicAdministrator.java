@@ -7,7 +7,7 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "ClinicAdministrator")
-public class ClinicAdministrator extends User {
+public class ClinicAdministrator extends Users {
 
     @Column(name = "firstName")
     private String firstName;
@@ -25,7 +25,7 @@ public class ClinicAdministrator extends User {
     private String country;
 
     @Column(name = "telephone")
-    private long telephone;
+    private String telephone;
 
     @Column(name= "role")
     private String role;
@@ -37,11 +37,17 @@ public class ClinicAdministrator extends User {
         this.role = "cadmin";
     }
 
-    public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, Clinic clinic,Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password, true, lastPasswordResetDate, authorities);
+    public ClinicAdministrator(Long id, String mail, String password, String firstName, String lastName, String address,
+                               String city, String country, String telephone, Clinic clinic,
+                               Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+        super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.telephone = telephone;
         this.role = "cadmin";
     }
 
@@ -75,5 +81,37 @@ public class ClinicAdministrator extends User {
 
     public Clinic getClinic() {
         return clinic;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 }

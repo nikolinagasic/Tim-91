@@ -1,13 +1,17 @@
 package rs.zis.app.zis.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.sql.Timestamp;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @Entity
-public class Patient extends User {
+public class Patient extends Users {
 
     @Column(name = "firstName", nullable = false)
     private String firstName;
@@ -27,20 +31,26 @@ public class Patient extends User {
     @Column(name = "telephone")
     private String telephone;
 
-    @Column(name = "lbo", unique = true, nullable = false)
+    @Column(name = "lbo", nullable = false)
     private long lbo;       // jedinstveni(licni) broj osiguranika
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "patient")
+    private MedicalRecord medicalRecord;
 
     @Column(name= "role")
     private String role;
 
     public Patient() {
         this.role = "patient";
+        this.setActive(true);
     }
 
     public Patient(String mail, String password, String firstName, String lastName, String address,
                    String city, String country, String telephone, long lbo, boolean enabled,
-                   Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password, enabled, lastPasswordResetDate, authorities);
+                   Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin,
+                   MedicalRecord medicalRecord) {
+        super(mail, password, enabled, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -49,6 +59,7 @@ public class Patient extends User {
         this.telephone = telephone;
         this.lbo = lbo;
         this.role = "patient";
+        this.medicalRecord = medicalRecord;
     }
 
     public String getRole() {
@@ -111,5 +122,13 @@ public class Patient extends User {
 
     public void setLbo(long lbo) {
         this.lbo = lbo;
+    }
+
+    public MedicalRecord getMedicalRecord() {
+        return medicalRecord;
+    }
+
+    public void setMedicalRecord(MedicalRecord medicalRecord) {
+        this.medicalRecord = medicalRecord;
     }
 }

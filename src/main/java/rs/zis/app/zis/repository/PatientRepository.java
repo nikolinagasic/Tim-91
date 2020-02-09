@@ -18,7 +18,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     Page<Patient> findAll(Pageable pageable);
     Patient findOneById(long id);
     Patient findOneByMail(String mail);
-    Patient findOneByLbo(long lbo);
+    Patient findOneByLbo(Long lbo);
+    List<Patient> findAllByLbo(Long lbo);
 
     // ?1 uzima 1. parametar
     @Query("select p from Patient p where p.lastName = ?1")

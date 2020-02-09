@@ -13,8 +13,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.domain.Users;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "WeakerAccess"})
 @Component
 public class TokenUtils {
     @Value("zis")
@@ -84,7 +85,7 @@ public class TokenUtils {
     // Funkcija za validaciju JWT tokena
     public Boolean validateToken(String token, UserDetails userDetails) {
         System.out.println("userdet: "+userDetails.getUsername());
-        Patient user = (Patient) userDetails;
+        Users user = (Users) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
 

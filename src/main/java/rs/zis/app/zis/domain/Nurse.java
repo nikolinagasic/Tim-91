@@ -2,12 +2,13 @@ package rs.zis.app.zis.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "Nurse")
-public class Nurse extends User{
+public class Nurse extends Users {
 
     @Column(name = "firstName")
     private String firstName;
@@ -18,23 +19,34 @@ public class Nurse extends User{
     @Column(name= "role")
     private String role;
 
+    @Column(name= "work_shift")     // smena
+    private int workShift;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Clinic clinic;                     // klinika u kojoj je zaposlen
 
- //   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
- //   private Set<Godisnji_odmor> vacation;
+    //formiram medjutabelu sestre-recepti->sistem pamti koja sestra je overila recept
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<MedicalRecipe> medicalRecipes =  new HashSet<MedicalRecipe>();
+
+    @OneToMany(mappedBy = "nurse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Vacation> vacation = new HashSet<>();
+
 
     public Nurse() {
         this.role = "nurse";
-      //  vacation = new HashSet<Godisnji_odmor>();
+        this.setFirstLogin(true);
     }
 
-    public Nurse(String mail, String password, String firstName, String lastName, Clinic clinic, Set<Vacation> vacation, Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password,true, lastPasswordResetDate, authorities);
+    public Nurse(String mail, String password, String firstName, String lastName, int workShift, Clinic clinic, Set<Vacation> vacation,
+                 Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin, Set<MedicalRecipe> medicalRecipes) {
+        super(mail, password,true, lastPasswordResetDate, authorities, firstLogin);
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinic = clinic;
         this.role = "nurse";
+        this.workShift = workShift;
+        this.medicalRecipes = medicalRecipes;
       //  this.vacation = vacation;
     }
 
@@ -44,6 +56,14 @@ public class Nurse extends User{
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public int getWorkShift() {
+        return workShift;
+    }
+
+    public void setWorkShift(int workShift) {
+        this.workShift = workShift;
     }
 
     public String getFirstName() {
@@ -70,12 +90,21 @@ public class Nurse extends User{
         this.clinic = clinic;
     }
 
-  /*  public Set<Godisnji_odmor> getVacation() {
+    public Set<MedicalRecipe> getMedicalRecipes() {
+        return medicalRecipes;
+    }
+
+    public void addMedicalRecipe(MedicalRecipe medicalRecipe){
+        this.medicalRecipes.add(medicalRecipe);
+    }
+
+    public Set<Vacation> getVacation() {
         return vacation;
     }
 
-    public void setVacation(Set<Godisnji_odmor> vacation) {
+    public void setVacation(Set<Vacation> vacation) {
         this.vacation = vacation;
     }
-*/
+
+    public void addVacation(Vacation vacation) {this.vacation.add(vacation);}
 }

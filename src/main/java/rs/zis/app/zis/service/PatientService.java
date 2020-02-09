@@ -1,5 +1,6 @@
 package rs.zis.app.zis.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,15 +11,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import rs.zis.app.zis.domain.Authority;
 import rs.zis.app.zis.domain.Patient;
+import rs.zis.app.zis.domain.Users;
 import rs.zis.app.zis.dto.PatientDTO;
+import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "RedundantIfStatement"})
 @Service
 public class PatientService {
-
 
     @Autowired
     private PatientRepository patientRepository;
@@ -30,11 +33,15 @@ public class PatientService {
     private AuthorityService authService;
 
     public List<Patient> findAll() {
-        return patientRepository.findAll();
-    }
+        List<Patient> tmpList = patientRepository.findAll();
+        List<Patient> retList = new ArrayList<>();
+        for (Patient patient : tmpList) {
+            if(patient.isActive()){
+                retList.add(patient);
+            }
+        }
 
-    public Page<Patient> findAll(Pageable page) {
-        return patientRepository.findAll(page);
+        return retList;
     }
 
     public Patient save(PatientDTO patientDTO) {
@@ -48,7 +55,8 @@ public class PatientService {
         p.setCountry(patientDTO.getCountry());
         p.setTelephone(patientDTO.getTelephone());
         p.setLbo(patientDTO.getLbo());
-        p.setEnabled(true);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
+        p.setEnabled(false);                    // TREBA ADMIN DA ODOBRI/NE ODOBRI
+        p.setFirstLogin(true);
         List<Authority> auth = authService.findByname("ROLE_PATIENT");
         p.setAuthorities(auth);
 
@@ -68,12 +76,46 @@ public class PatientService {
         return patientRepository.findOneByLbo(lbo);
     }
 
+    public Patient findAllByLbo(long lbo) {
+        List<Patient> patientList = patientRepository.findAllByLbo(lbo);
+        for (Patient patient : patientList) {
+            if(patient.isActive()){
+                return patient;
+            }
+        }
+
+        return null;
+    }
+
+    public Patient findOneById(Long id){return patientRepository.findOneById(id); }
+
     public List<Patient> findPatientByLastName(String lastName) {
         return patientRepository.findPatientByLastName(lastName);
     }
 
     public Patient update(Patient patient){
         return patientRepository.save(patient);
+    }
+
+    public List<PatientDTO> findPatient(List<PatientDTO> lista, String ime, String prezime,String lbo,String city) {
+        List<PatientDTO> retList = new ArrayList<>();
+        for (PatientDTO patientDTO: lista) {
+            System.out.println("uso"+ime+prezime+lbo+city);
+            String strLbo = String.valueOf(patientDTO.getLbo());
+            if(patientDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+                if(patientDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+                    if(strLbo.contains(lbo)) {
+                        if (patientDTO.getCity().toLowerCase().contains(city.toLowerCase())) {
+                            System.out.println("moze");
+                            retList.add(patientDTO);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return retList;
     }
 
     public boolean checkFirstLastName(String mail, String firstName, String lastName) {
@@ -88,4 +130,22 @@ public class PatientService {
             return false;
         }
     }
+
+    public List<PatientDTO> sortPatientByLastName(List<PatientDTO> patientDTOList){
+        ArrayList<String> lista_prezimena = new ArrayList<>();
+        for(PatientDTO patientDTO: patientDTOList){
+            lista_prezimena.add(patientDTO.getLastName());
+        }
+        java.util.Collections.sort(lista_prezimena);
+        ArrayList<PatientDTO>retList = new ArrayList<>();
+        for (String prezime : lista_prezimena){
+            List<Patient>patientList = findPatientByLastName(prezime);
+            for(Patient patient:patientList) {
+                PatientDTO patientDTO = new PatientDTO(patient);
+                retList.add(patientDTO);
+            }
+        }
+        return retList;
+    }
+
 }

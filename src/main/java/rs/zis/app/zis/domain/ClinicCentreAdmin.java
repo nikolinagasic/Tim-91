@@ -7,7 +7,7 @@ import java.util.List;
 @SuppressWarnings("SpellCheckingInspection")
 @Entity
 @Table(name = "ClinicCentreAdmin")
-public class ClinicCentreAdmin extends User {
+public class ClinicCentreAdmin extends Users {
 
     @Column(name= "predefined")
     private boolean predefined;
@@ -23,10 +23,12 @@ public class ClinicCentreAdmin extends User {
 
     public ClinicCentreAdmin() {
         this.role = "ccadmin";
+        this.setFirstLogin(true);
     }
 
-    public ClinicCentreAdmin(Long id, String mail, String password, boolean predefined, String firstName, String lastName, Timestamp lastPasswordResetDate, List<Authority> authorities) {
-        super(mail, password, true, lastPasswordResetDate, authorities);
+    public ClinicCentreAdmin(Long id, String mail, String password, boolean predefined, String firstName, String lastName,
+                             Timestamp lastPasswordResetDate, List<Authority> authorities, boolean firstLogin) {
+        super(mail, password, true, lastPasswordResetDate, authorities, firstLogin);
         this.predefined = predefined;
         this.firstName = firstName;
         this.lastName = lastName;

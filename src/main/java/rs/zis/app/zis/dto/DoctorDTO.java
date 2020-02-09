@@ -4,19 +4,21 @@ import rs.zis.app.zis.domain.*;
 
 
 public class DoctorDTO {
-    private Long id;
-    private String mail;
-    private String password;
-    private String role;
+    private Long id;//
+    private String firstName;//
+    private String lastName;//
+    private double rating;//
+    private String mail;//
+    private String password;//
+    private  String clinic;//
+    private String tip;//
+    private String role;//
+    private boolean firstLogin;//
+    private int workShift;//
+    private int discount;//
+    private double price;
 
     public DoctorDTO() {
-    }
-
-    public DoctorDTO(Long id, String mail, String password, String role) {
-        this.id = id;
-        this.mail = mail;
-        this.password = password;
-        this.role = role;
     }
 
     public DoctorDTO(Doctor doctor) {
@@ -24,10 +26,40 @@ public class DoctorDTO {
         this.mail = doctor.getMail();
         this.password = doctor.getPassword();
         this.role = doctor.getRole();
+        if(doctor.getNumber_rating() != 0){
+            this.rating = doctor.getSum_ratings() / doctor.getNumber_rating();
+        }
+        else{
+            this.rating = 0;
+        }
+        this.firstName = doctor.getFirstName();
+        this.lastName = doctor.getLastName();
+        this.firstLogin = doctor.isFirstLogin();
+        this.workShift = doctor.getWorkShift();
+        this.discount = doctor.getDiscount();
+        this.clinic = doctor.getClinic().getName();
+        this.tip = doctor.getTip().getName();
+        this.price = doctor.getPrice();
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public double getRating() {
+        return rating;
     }
 
     public String getMail() {
@@ -38,7 +70,27 @@ public class DoctorDTO {
         return password;
     }
 
+    public String getClinic() {
+        return clinic;
+    }
+
+    public String getTip() {
+        return tip;
+    }
+
     public String getRole() {
         return role;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
+    }
+
+    public int getWorkShift() {
+        return workShift;
+    }
+
+    public int getDiscount() {
+        return discount;
     }
 }
