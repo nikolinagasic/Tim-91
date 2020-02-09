@@ -16,12 +16,10 @@ import rs.zis.app.zis.service.ClinicService;
 import rs.zis.app.zis.service.DoctorTermsService;
 import rs.zis.app.zis.service.RoomService;
 
+import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,10 +44,30 @@ public class RoomController extends WebConfig {
         ArrayList<RoomDTO> roomsDTO = new ArrayList<>();
         for (Room r: listRoom) {
             if (r.isActive()) {
-                roomsDTO.add(new RoomDTO(r));
+                RoomDTO roomDTO = new RoomDTO(r);
+                boolean free = false;
+                long today = Instant.now().toEpochMilli()+60*60*24*1000;
+                while(!free) {
+                    int num=0;
+                    for (DoctorTerms term :r.getDoctorTerms()) {
+                        if (today == term.getDate()) {
+                            num++;
+                        }
+                    }
+                    if (num<20) {
+                        free = true;
+                    } else {
+                        today = today+60*60*24*1000;
+                    }
+
+                }
+                roomDTO.setFirst_free_date(today);
+                roomsDTO.add(roomDTO);
+                System.out.println((new Date(today)));
             }
         }
-        System.out.println(roomsDTO);
+
+
         return new ResponseEntity<>(roomsDTO, HttpStatus.OK);
     }
     @PostMapping(consumes = "application/json", value = "/save")
@@ -62,15 +80,18 @@ public class RoomController extends WebConfig {
         }
         return new ResponseEntity<>(roomDTO, HttpStatus.CREATED);
     }
-    @PostMapping(value = "/changeAttribute/{changed}/{value}/{number}")
+
+    @PostMapping(value = "/changeAttribute/{changed}/{value}/{name}")
     // @PreAuthorize("hasRole('CADMIN')")
-    public ResponseEntity<?> changeAttribute(@PathVariable("changed") String changed,@PathVariable("value") String value,@PathVariable("number") String number) {
-        Room room = roomService.findOneByNumber(number);
-        if(room == null)
-            return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+    public ResponseEntity<?> changeAttribute(@PathVariable("changed") String changed,@PathVariable("value") String value,@PathVariable("name") String name) {
+        Room room = roomService.findOneByName(name);
         if (changed.equals("naziv")) {
-            room.setName(value);
-            System.out.println(room.getName());
+            Room r = roomService.findOneByName(value);
+            if (r!=null) {
+                return new ResponseEntity<>("greska", HttpStatus.CONFLICT);
+            } else {
+                room.setName(value);
+            }
         } else if (changed.equals("broj")) {
             room.setNumber(value);
             System.out.println(room.getNumber());
@@ -85,9 +106,23 @@ public class RoomController extends WebConfig {
         Clinic c = clinicService.findOneByName(clinic);
       
         Room room = roomService.findOneByName(name);
+        for (DoctorTerms term : doctorTermsService.findAllByClinic(c)) {
+            if (term.getRoom() == room) {
+                if (term.getDate() > Instant.now().toEpochMilli()) {
+                    List<Room> lista = roomService.findRoomByClinic(c);
+                    List<RoomDTO> listaDTO = new ArrayList<>();
+                    for (Room r : lista) {
+                        if (r.isActive()) {
+                            listaDTO.add(new RoomDTO(r));
+                        }
+                    }
+                    return new ResponseEntity<>(listaDTO, HttpStatus.CONFLICT);
+                }
+            }
+        }
         room.setActive(false);
         roomService.update(room);
-      
+
         List<Room> lista = roomService.findRoomByClinic(c);
         List<RoomDTO> listaDTO = new ArrayList<>();
         for (Room r: lista) {
@@ -130,5 +165,14 @@ public class RoomController extends WebConfig {
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
 
+    @GetMapping(produces = "application/json", value = "/getTerms/{name}")
+    public ResponseEntity<?> getTerms(@PathVariable("name") String name){
+        Room room = roomService.findOneByName(name);
+        ArrayList<DoctorTermsDTO> doctorTermsDTO = new ArrayList<>();
+        for (DoctorTerms term : room.getDoctorTerms()) {
+            doctorTermsDTO.add(new DoctorTermsDTO(term));
+        }
 
+        return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
+    }
 }

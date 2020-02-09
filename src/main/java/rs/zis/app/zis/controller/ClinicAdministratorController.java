@@ -1,5 +1,7 @@
 package rs.zis.app.zis.controller;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class ClinicAdministratorController extends WebConfig {
 
     @Autowired
     private DoctorTermsService doctorTermsService;
+
+    @Autowired
+    private VacationService vacationService;
 
     @Autowired
     private DoctorService doctorService;
@@ -119,6 +124,8 @@ public class ClinicAdministratorController extends WebConfig {
         ClinicAdministratorDTO clinicAdministratorDTO = new ClinicAdministratorDTO(clinicAdministrator);
         return new ResponseEntity<>(clinicAdministratorDTO, HttpStatus.OK);
     }
+
+    //vracam termine koje nije odobrio admin i koji su pregledi
     @GetMapping(produces = "application/json", value = "/getTerms/{clinic}")
     public ResponseEntity<?> getTerms(@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
@@ -127,13 +134,38 @@ public class ClinicAdministratorController extends WebConfig {
         System.out.println("ovde je");
         for (DoctorTerms t : terms) {
             System.out.println(t.getDate());
-            if (!t.isProcessedByAdmin() && t.isExamination())
+            if (!t.isProcessedByAdmin() && t.isExamination()) {
+                System.out.println(t.isProcessedByAdmin() + " " + t.isExamination());
+                termsDTO.add(new DoctorTermsDTO(t));
+            }
+            System.out.println("nije:"+t.getDate());
+        }
+        return new ResponseEntity<>(termsDTO, HttpStatus.OK);
+
+    }
+
+
+    //vracam termine koje admin nije odobrio i koji su operacije
+    @GetMapping(produces = "application/json", value = "/getTermsOperation/{clinic}")
+    public ResponseEntity<?> getTermsOperation(@PathVariable("clinic") String clinic) {
+        Clinic c = clinicService.findOneByName(clinic);
+        List<DoctorTerms> terms = doctorTermsService.findAllByClinic(c);
+        List<DoctorTermsDTO> termsDTO = new ArrayList<>();
+        System.out.println("ovde je");
+        for (DoctorTerms t : terms) {
+            System.out.println(t.getDate());
+            if (!t.isProcessedByAdmin() && !(t.isExamination()))
                 termsDTO.add(new DoctorTermsDTO(t));
             System.out.println("nije:"+t.getDate());
         }
         return new ResponseEntity<>(termsDTO, HttpStatus.OK);
 
     }
+
+
+
+
+
     @GetMapping(value = "/sendMail/{id}/{date}")
     public  ResponseEntity<?> sendMail(@PathVariable("id") Long id,@PathVariable("date") long date){
         try {       DoctorTerms doctorTerms = doctorTermsService.findOneById(id);
@@ -186,4 +218,63 @@ public class ClinicAdministratorController extends WebConfig {
                         doctor_id, price, discount), HttpStatus.OK);
     }
 
+    //ovde vracamo godisnje odmore lekara samo
+    @GetMapping(produces = "application/json", value = "/getVacation/{clinic}")
+    public ResponseEntity<?> getVacation(@PathVariable("clinic") String clinic){
+        List<VacationDTO> vacations = new ArrayList<>();
+        for (Vacation v: vacationService.findAll()) {
+            if(v.getDoctor_nurse().equals("doctor")) {
+                if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }
+        }
+         return new ResponseEntity<>(vacations,HttpStatus.OK);
+    }
+
+    //ovde vracam listu SVIH zahteva za godisnji odmor
+    @GetMapping(produces = "application/json", value = "/getAllVacation/{clinic}")
+    public ResponseEntity<?> getAllVacation(@PathVariable("clinic") String clinic){
+        List<VacationDTO> vacations = new ArrayList<>();
+        for (Vacation v: vacationService.findAll()) {
+            if(v.getDoctor_nurse().equals("doctor")) {
+                if (v.getDoctor().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }else{
+                if(v.getNurse().getClinic().getName().equals(clinic)) {
+                    if (!v.isEnabled() && v.isActive())
+                        vacations.add(new VacationDTO(v));
+                }
+            }
+        }
+        return new ResponseEntity<>(vacations,HttpStatus.OK);
+    }
+
+
+   //obrada zahteva za godisnji odmor
+    @PostMapping(value = "/obradiZahtev/{id}/{odobren}/{razlog}")
+    public ResponseEntity<?> obradiZahtev(@PathVariable("id") Long id,
+                                                  @PathVariable("odobren") boolean odobren,
+                                                  @PathVariable("razlog") String razlog){
+        String body;
+        Vacation vacation = vacationService.findOneById(id);
+        if (odobren) {
+            vacation.setEnabled(true);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odobren.";
+        } else {
+            vacation.setActive(false);
+            body = "Postovani,\nVas zahtev za godisnji odmor je odbijen.\nRazlog: "+razlog;
+        }
+
+        vacationService.update(vacation);
+        if(vacation.getDoctor_nurse().equals("doctor")) {
+            notificationService.SendNotification(vacation.getDoctor().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }else{
+            notificationService.SendNotification(vacation.getNurse().getMail(), "billypiton43@gmail.com", "OBAVESTENJE", body);
+        }
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
 }

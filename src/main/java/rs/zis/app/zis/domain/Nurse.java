@@ -29,13 +29,13 @@ public class Nurse extends Users {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<MedicalRecipe> medicalRecipes =  new HashSet<MedicalRecipe>();
 
+    @OneToMany(mappedBy = "nurse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Vacation> vacation = new HashSet<>();
 
- //   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
- //   private Set<Godisnji_odmor> vacation;
 
     public Nurse() {
         this.role = "nurse";
-      //  vacation = new HashSet<Godisnji_odmor>();
+        this.setFirstLogin(true);
     }
 
     public Nurse(String mail, String password, String firstName, String lastName, int workShift, Clinic clinic, Set<Vacation> vacation,
@@ -90,15 +90,6 @@ public class Nurse extends Users {
         this.clinic = clinic;
     }
 
-  /*  public Set<Godisnji_odmor> getVacation() {
-        return vacation;
-    }
-
-    public void setVacation(Set<Godisnji_odmor> vacation) {
-        this.vacation = vacation;
-    }
-*/
-
     public Set<MedicalRecipe> getMedicalRecipes() {
         return medicalRecipes;
     }
@@ -106,4 +97,14 @@ public class Nurse extends Users {
     public void addMedicalRecipe(MedicalRecipe medicalRecipe){
         this.medicalRecipes.add(medicalRecipe);
     }
+
+    public Set<Vacation> getVacation() {
+        return vacation;
+    }
+
+    public void setVacation(Set<Vacation> vacation) {
+        this.vacation = vacation;
+    }
+
+    public void addVacation(Vacation vacation) {this.vacation.add(vacation);}
 }

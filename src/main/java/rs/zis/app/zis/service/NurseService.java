@@ -51,6 +51,7 @@ import java.util.List;
             d.setWorkShift(nurseDTO.getWorkShift());
             d.setPassword(passwordEncoder.encode(nurseDTO.getPassword()));
             d.setEnabled(true);
+            d.setActive(true);
             d.setClinic(clinicService.findOneByName(nurseDTO.getClinic()));
             List<Authority> auth = authService.findByname("ROLE_NURSE");
             d.setAuthorities(auth);

@@ -12,7 +12,10 @@ import rs.zis.app.zis.security.TokenUtils;
 import rs.zis.app.zis.service.*;
 
 import javax.print.Doc;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "StringEquality"})
 @RestController
@@ -29,11 +32,15 @@ public class DoctorController extends WebConfig {
     @Autowired
     private PatientService patientService;
     @Autowired
+    private VacationService vacationService;
+    @Autowired
     private DoctorTermsService doctorTermsService;
     @Autowired
     private TipPregledaService tipPregledaService;
     @Autowired
     private TermDefinitionService termDefinitionService;
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping(produces = "application/json", value = "/getAll")
    // @PreAuthorize("hasRole('CADMIN')")
@@ -150,6 +157,7 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
     }
 
+    // TODO test 3.12
     @GetMapping(produces = "application/json", value = "/getTermini/{id}/{date}")
     public ResponseEntity<?> getTermine(@PathVariable("id") Long id,
                                         @PathVariable("date") long datum) {
@@ -158,7 +166,8 @@ public class DoctorController extends WebConfig {
         List<DoctorTermsDTO> listTerms = doctorTermsService.getTermine(datum, doctor);
         return new ResponseEntity<>(listTerms, HttpStatus.OK);
     }
-  
+
+    // TODO test 3.12
     @GetMapping(produces = "application/json", value = "/detailTermin/{id_doctor}/{date}/{start_term}")
     public ResponseEntity<?> getDetailTermin(@RequestHeader("Auth-Token") String token,
                                         @PathVariable("id_doctor") Long id_doctor,
@@ -170,32 +179,108 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
     }
 
+    // TODO test 3.10
     @PostMapping(consumes = "application/json", produces = "application/json", value = "/reserveTerm")
     public ResponseEntity<?> reserveTerm(@RequestHeader("Auth-Token") String token,
                                          @RequestBody DoctorTermsDTO doctorTermsDTO) {
 
         String mail = tokenUtils.getUsernameFromToken(token);
-        boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO,true);
+        boolean isReserved;
+        try {
+            isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO, true);
+        }catch (Exception e){
+            System.out.println("Okinut exception: " + e.getClass());
+            return new ResponseEntity<>(null, HttpStatus.LOCKED);
+        }
+
         if(isReserved){
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
+
+
     @PostMapping(consumes = "application/json", produces = "application/json", value = "/reserveTermDoctor/{mail}/{examination}")
     public ResponseEntity<?> reserveTermDoctor(@RequestHeader("Auth-Token") String token,
                                          @RequestBody DoctorTermsDTO doctorTermsDTO,@PathVariable("mail") String mail,@PathVariable("examination") boolean examination) {
 
         boolean isReserved = doctorTermsService.reserveTerm(mail, doctorTermsDTO,examination);
         if(isReserved){
-            doctorService.sendMailAdministrator(doctorTermsDTO);
             return new ResponseEntity<>(doctorTermsDTO, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
+
+
+
+    //za prosledjeni termin vratiti listu doktora na toj klinici koji su slobodni
+    @GetMapping(produces = "application/json", value = "/getFreeDoctors/{clinic}/{id_term}")
+    public ResponseEntity<?> getFreeDoctor(@PathVariable("clinic") String clinic,
+                                           @PathVariable("id_term") Long id_term ) {
+        DoctorTerms doctT = doctorTermsService.findOneById(id_term);
+        Clinic c = clinicService.findOneByName(clinic);
+        List<Doctor>doctors = doctorService.findAllByClinic(c);
+        List<DoctorDTO>ret = new ArrayList<>();
+        int zauzet = 0;
+        for(Doctor doctor: doctors){
+            List<DoctorTerms>doctorTerms = doctorTermsService.findAllByDoctor(doctor);
+            for(DoctorTerms dt : doctorTerms){
+                if(dt.getDate() == doctT.getDate()){
+                    TermDefinition termDefinition = dt.getTerm();
+                    if(termDefinition.getStartTerm() == doctT.getTerm().getStartTerm()){
+                        zauzet=1;
+                    }
+                }
+            }
+            if(zauzet==0){
+                DoctorDTO doctorDTO = new DoctorDTO(doctor);
+                ret.add(doctorDTO);
+            }else{
+                zauzet = 0; //restart
+            }
+        }
+        return new ResponseEntity<>(ret,HttpStatus.OK);
+
+    }
+
+
+    //saljem selectovane lekare, id termina
+   @PostMapping(consumes="application/json", value = "/createTermOperation/{id_term}")
+   public ResponseEntity<?> createTermOperation(@RequestBody List<String> listaMejlovaLekara,
+                                                @PathVariable("id_term") Long id_term){
+
+         System.out.println("USLAAAAA");
+         DoctorTerms operation_term = doctorTermsService.findOneById(id_term); //imamo termin
+          for(String mail : listaMejlovaLekara){
+              Doctor doctor = doctorService.findOneByMail(mail);
+              doctor.addTermin(operation_term);
+              operation_term.addDodatniLekari(doctor);
+              doctor = doctorService.update(doctor);
+              //tom lekaru saljemo mejl
+              Date d=new Date(operation_term.getDate());
+              SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+              String dateText = df2.format(d);
+              String tb="Postovani," + "\n" +
+                      "operacija ce se odrzati u sali: "+operation_term.getRoom().getName() +".\n"+
+                      "Datum: "+dateText+"\nVreme: "+
+                      operation_term.getTerm().getStartTerm() +"-"+
+                      operation_term.getTerm().getEndTerm();
+              System.out.println(tb);
+              notificationService.SendNotification(doctor.getMail(), "billypiton43@gmail.com",
+                      "OBAVESTENJE", tb);
+         }
+         doctorTermsService.update(operation_term);
+
+        return new ResponseEntity<>(0,HttpStatus.OK);
+   }
+
+
+
+
     @PostMapping(produces = "application/json", consumes = "application/json",
             value = "/expandedSearchDoctor/{ime}/{prezime}/{ocena}/{date}/{select}")
     public ResponseEntity<?> expandedSearchDoctor(@RequestBody List<DoctorDTO> listaLekara,
@@ -208,6 +293,7 @@ public class DoctorController extends WebConfig {
         return new ResponseEntity<>(doctorService.expandedSearchDoctor(ime, prezime, ocena, datum, tip, listaLekara)
                 , HttpStatus.OK);
     }
+
 
     @PostMapping(produces = "application/json", consumes = "application/json", value = "/find/{ime}/{prezime}")
     public ResponseEntity<?> findDoctor(@RequestBody List<DoctorDTO> listaLekara,
@@ -230,7 +316,17 @@ public class DoctorController extends WebConfig {
     public ResponseEntity<?> delete(@PathVariable("id") long id,@PathVariable("clinic") String clinic) {
         Clinic c = clinicService.findOneByName(clinic);
         Doctor doctor = doctorService.findOneById(id);
+        for (DoctorTerms term : doctorTermsService.findAllByDoctor(doctor))
+            if (term.getDate() > Instant.now().toEpochMilli()) {
+                List<Doctor> listaDoktora = doctorService.findAllByClinic(c);
+                List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
+                for (Doctor d: listaDoktora) {
+                    listaDoktoraDTO.add(new DoctorDTO(d));
+                }
+                return new ResponseEntity<>(listaDoktoraDTO, HttpStatus.OK);
+            }
         doctor.setEnabled(false);
+        doctor.setActive(false);
         doctorService.update(doctor);
         List<Doctor> listaDoktora = doctorService.findAllByClinic(c);
         List<DoctorDTO> listaDoktoraDTO = new ArrayList<>();
@@ -293,12 +389,27 @@ public class DoctorController extends WebConfig {
             scheduleTermDTO.setStartTime(sTime);
             scheduleTermDTO.setEndTime(eTime);
             Patient p = doctorTerms.getPatient();
-            scheduleTermDTO.setPatient_mail(p.getMail());
+            if(p != null) {
+                scheduleTermDTO.setPatient_mail(p.getMail());
+            }
+            else{
+                scheduleTermDTO.setPatient_mail("Nema pacijenta");
+            }
             scheduleTermDTOList.add(scheduleTermDTO);
             brojac++;
         }
         return new ResponseEntity<>(scheduleTermDTOList,HttpStatus.OK);
     }
 
+    @PostMapping(consumes="application/json", value = "/reserveVacation/{id}")
+    public ResponseEntity<?> reserveVacation(@RequestBody VacationDTO vacationDTO,@PathVariable("id") Long id) {
+        Doctor doctor = doctorService.findOneById(id);
+        vacationDTO.setFirstName(doctor.getFirstName());
+        vacationDTO.setLastName(doctor.getLastName());
+        Vacation vacation = vacationService.saveDoctorVocation(vacationDTO,doctor);
+        doctor.addVacation(vacation);
+        doctorService.update(doctor);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
 
+    }
 }

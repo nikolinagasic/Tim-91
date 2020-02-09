@@ -19,7 +19,7 @@ import rs.zis.app.zis.dto.PatientDTO;
 import rs.zis.app.zis.dto.RoomDTO;
 import rs.zis.app.zis.repository.PatientRepository;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "RedundantIfStatement"})
 @Service
 public class PatientService {
 
@@ -97,16 +97,18 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-    public List<PatientDTO> findPatient(List<PatientDTO> lista, String ime, String prezime,String lbo) {
+    public List<PatientDTO> findPatient(List<PatientDTO> lista, String ime, String prezime,String lbo,String city) {
         List<PatientDTO> retList = new ArrayList<>();
         for (PatientDTO patientDTO: lista) {
+            System.out.println("uso"+ime+prezime+lbo+city);
             String strLbo = String.valueOf(patientDTO.getLbo());
             if(patientDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
-
                 if(patientDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
                     if(strLbo.contains(lbo)) {
-                        retList.add(patientDTO);
-
+                        if (patientDTO.getCity().toLowerCase().contains(city.toLowerCase())) {
+                            System.out.println("moze");
+                            retList.add(patientDTO);
+                        }
                     }
 
                 }
@@ -128,7 +130,6 @@ public class PatientService {
             return false;
         }
     }
-
 
     public List<PatientDTO> sortPatientByLastName(List<PatientDTO> patientDTOList){
         ArrayList<String> lista_prezimena = new ArrayList<>();

@@ -67,12 +67,17 @@ public class DoctorService {
         d.setTip(tipPregledaService.findOneByName(doctorDTO.getTip()));
         d.setWorkShift(doctorDTO.getWorkShift());
         d.setEnabled(true);
+        d.setActive(true);
         List<Authority> auth = authService.findByname("ROLE_DOCTOR");
         d.setAuthorities(auth);
         d.setSum_ratings(0);
         d.setNumber_rating(0);
 
-        d = this.doctorRepository.save(d);
+        Clinic clinic = clinicService.findOneByName(doctorDTO.getClinic());
+        clinic.getDoctors().add(d);
+        clinicService.update(clinic);
+
+//        d = this.doctorRepository.save(d);
         return d;
     }
 
@@ -87,9 +92,11 @@ public class DoctorService {
     public List<Doctor> findDoctorByLastName(String lastName) {
         return doctorRepository.findDoctorByLastName(lastName);
     }
+
     public List<Doctor> findDoctorByClinic(Clinic clinic) {
         return doctorRepository.findDoctorByClinic(clinic);
     }
+
     public Doctor update(Doctor doctor){
         return doctorRepository.save(doctor);
     }
@@ -128,8 +135,10 @@ public class DoctorService {
     public List<DoctorDTO> searchDoctors(List<DoctorDTO> lista_lekara, String ime, String prezime, double ocena) {
         List<DoctorDTO> retList = new ArrayList<>();
         for (DoctorDTO doctorDTO: lista_lekara) {
-            if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
-                if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+            if((doctorDTO.getFirstName() == null ? "" : doctorDTO.getFirstName())
+                    .toLowerCase().contains(ime.toLowerCase())){
+                if((doctorDTO.getLastName() == null ? "" : doctorDTO.getLastName())
+                        .toLowerCase().contains(prezime.toLowerCase())){
                     if(ocena != -1) {
                         if (doctorDTO.getRating() == ocena) {
                             retList.add(doctorDTO);
@@ -147,8 +156,10 @@ public class DoctorService {
     public List<DoctorDTO> findDoctor(List<DoctorDTO> lista_lekara, String ime, String prezime) {
         List<DoctorDTO> retList = new ArrayList<>();
         for (DoctorDTO doctorDTO: lista_lekara) {
-            if(doctorDTO.getFirstName().toLowerCase().contains(ime.toLowerCase())){
-                if(doctorDTO.getLastName().toLowerCase().contains(prezime.toLowerCase())){
+            if((doctorDTO.getFirstName() == null ? "" : doctorDTO.getFirstName())
+                    .toLowerCase().contains(ime.toLowerCase())){
+                if((doctorDTO.getLastName() == null ? "" : doctorDTO.getLastName())
+                        .toLowerCase().contains(prezime.toLowerCase())){
                         retList.add(doctorDTO);
                 }
             }
@@ -168,6 +179,7 @@ public class DoctorService {
 
         return retList;
     }
+
     public Doctor findDoctorByFirstNameAndLastName(String ime, String prezime) {
         return doctorRepository.findDoctorByFirstNameAndLastName(ime, prezime);
     }
@@ -212,8 +224,10 @@ public class DoctorService {
             if(doctor.getTip().getName().toLowerCase().contains(tip.toLowerCase())){
                 if(doctor_free_at_date(doctor, datum) || datum == -1){
                     if((doctor.getSum_ratings()/doctor.getNumber_rating()) == ocena || ocena == -1){
-                        if(doctor.getLastName().toLowerCase().contains(prezime.toLowerCase())){
-                            if(doctor.getFirstName().toLowerCase().contains(ime.toLowerCase())){
+                        if((doctor.getLastName() == null ? "" : doctor.getLastName())
+                                .toLowerCase().contains(prezime.toLowerCase())){
+                            if((doctor.getFirstName() == null ? "" : doctor.getFirstName())
+                                    .toLowerCase().contains(ime.toLowerCase())){
                                 retList.add(doctorDTO);
                             }
                         }
@@ -225,12 +239,12 @@ public class DoctorService {
         return retList;
     }
 
-    private boolean doctor_free_at_date(Doctor doctor, long datum) {
-        List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor);
+    public boolean doctor_free_at_date(Doctor doctor, long datum) {
+        List<DoctorTerms> doctorTermsList = doctorTermsService.findAllByDoctor(doctor.getId());
 
         boolean godisnji = false;
         for (Vacation vacation : vacationService.findAllByDoctor(doctor)) {
-            if(vacation.isActive() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
+            if(vacation.isActive() && vacation.isEnabled() && datum >= vacation.getPocetak() && datum <= vacation.getKraj()){
                 godisnji = true;
             }
         }
@@ -253,23 +267,6 @@ public class DoctorService {
         return true;
     }
 
-    public void sendMailAdministrator(DoctorTermsDTO doctorTermsDTO) {
-
-        try {
-            Doctor doctor = findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),doctorTermsDTO.getLastNameDoctor());
-            String mail = doctor.getMail();
-            String tb="Postovani," + "\n" +
-                    "Imate novi zahev za rezervaciju sale.\n";
-            System.out.println(tb);
-            for (ClinicAdministrator admin : clinicAdministratorService.findAllByClinic(doctor.getClinic())) {
-                notificationService.SendNotification(admin.getMail(), "billypiton43@gmail.com",
-                        "OBAVESTENJE", tb);
-            }
-        } catch (MailException e) {
-            System.out.println("Error sending message.");
-            logger.info("Error Sending Mail:" + e.getMessage());
-        }
-    }
     // vrati sve doktore kod kojih je ovaj pacijent bio, a da ih nije pre toga ocenio
     public List<DoctorDTO> getPatientHistoryDoctors(Patient patient) {
         List<Doctor> tmpList = new ArrayList<>();
@@ -292,7 +289,7 @@ public class DoctorService {
     }
 
     public boolean oceniDoktora(Doctor doctor_param, double ocena, Patient patient) {
-        // TODO uradi zakljucavanje na findById
+        // TODOO uradi zakljucavanje na findById
         //  mora biti zakljucavanje (pesimistic) - zbog ucitavanja trenutne ocene i dodavanja na sum
         Doctor doctor;
         try {

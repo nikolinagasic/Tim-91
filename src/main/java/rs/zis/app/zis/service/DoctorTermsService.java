@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -20,16 +21,16 @@ import rs.zis.app.zis.dto.ClinicDTO;
 import rs.zis.app.zis.dto.DoctorTermsDTO;
 import rs.zis.app.zis.repository.DoctorTermsRepository;
 
+import javax.persistence.LockModeType;
 import javax.print.Doc;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection", "DefaultAnnotationParam", "NumberEquality", "UnusedAssignment", "RedundantIfStatement"})
 @Service
@@ -62,16 +63,7 @@ public class DoctorTermsService {
     private TipPregledaService tipPregledaService;
 
     @Autowired
-    private RoomService roomService;
-
-    @Autowired
     private VacationService vacationService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private ClinicAdministratorService clinicAdministratorService;
 
     @Transactional(readOnly = false)
     public List<DoctorTerms> findAll() {
@@ -107,8 +99,7 @@ public class DoctorTermsService {
     }
 
     @Transactional(readOnly = false)
-    public List<DoctorTerms> findAllByClinic(Clinic clinic)
-    {
+    public List<DoctorTerms> findAllByClinic(Clinic clinic) {
         List<DoctorTerms> all = doctorTermsRepository.findAll();
         List<DoctorTerms> retVal = new ArrayList<>();
         for (DoctorTerms t: all) {
@@ -119,10 +110,30 @@ public class DoctorTermsService {
         return retVal;
     }
 
-
     @Transactional(readOnly = false)
-    public List<DoctorTerms> findAllByDoctor(Doctor doctor){
-        return doctorTermsRepository.findAllByDoctor(doctor);
+    public List<DoctorTerms> findAllByDoctor(Long id) {
+        return doctorTermsRepository.findAllByDoctor(doctorService.findOneById(id));
+    }
+    
+    public List<DoctorTerms> findAllByDoctor(Doctor doctor)
+    {
+         List<DoctorTerms> all_terms = findAll();
+         List<DoctorTerms> ret = new ArrayList<>();
+         Set<Doctor> dodatni = new HashSet<>();
+         for(DoctorTerms d : all_terms){
+             if(d.getDoctor().getId()==doctor.getId()){
+                 ret.add(d);
+                 continue;
+             }
+             dodatni = d.getDodatni_lekari();
+             for(Doctor doctor1 : dodatni){
+                 if(doctor1.getId()==doctor.getId()){
+                     ret.add(d);
+                     break;
+                 }
+             }
+         }
+         return ret;
     }
 
     @Transactional(readOnly = false)
@@ -136,7 +147,7 @@ public class DoctorTermsService {
     @Transactional(readOnly = false)
     public List<DoctorTermsDTO> getTermine(long date, Doctor doctor){
         List<DoctorTermsDTO> retList = new ArrayList<>();
-        List<DoctorTerms> listaTermina = findAllByDoctor(doctor);           // lista termina mog doktora
+        List<DoctorTerms> listaTermina = doctorTermsRepository.findAllByDoctor(doctor);           // lista termina mog doktora
 
         // svi termini za tu smenu (prva/druga smena)
         List<TermDefinition> listaSvihTermina = termDefinitionService.findAllByWorkShift(doctor.getWorkShift());
@@ -166,32 +177,48 @@ public class DoctorTermsService {
         TermDefinition termDefinition = termDefinitionService.findOneByStart_term(start_term);
         Patient patient = patientService.findOneByMail(mail_patient);
 
+        if(doctor == null){
+            return null;
+        }
+        if(termDefinition == null){
+            return null;
+        }
+
         return new DoctorTermsDTO(date, termDefinition, doctor, new Patient());
     }
 
+    ReentrantLock lock = new ReentrantLock();
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public boolean reserveTerm(String mail_patient, DoctorTermsDTO doctorTermsDTO,boolean examination){
-        Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
-                doctorTermsDTO.getLastNameDoctor());
-        TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
-        Patient patient = patientService.findOneByMail(mail_patient);
+        lock.lock();
 
         DoctorTerms dt = new DoctorTerms();
         try {
+            Doctor doctor = doctorService.findDoctorByFirstNameAndLastName(doctorTermsDTO.getFirstNameDoctor(),
+                    doctorTermsDTO.getLastNameDoctor());
+            TermDefinition term_def = termDefinitionService.findOneByStart_term(doctorTermsDTO.getStart_term());
+            Patient patient = patientService.findOneByMail(mail_patient);
+
+            if(patient == null){
+                return false;
+            }
+            if(term_def == null){
+                return false;
+            }
+            if(doctor == null){
+                return false;
+            }
+
             dt = doctorTermsRepository.findOneByDateAndStartTermAndDoctorId(doctorTermsDTO.getDate(),
                     term_def,
                     doctor);
-        }catch (Exception e){
-            System.out.println("Okinut exception: " + e.getClass());
-            return false;
-        }
 
-        List<ClinicAdministrator> lista_cadmina = new ArrayList<>();
-        for (ClinicAdministrator clinicAdministrator : clinicAdministratorService.findAll()) {
-            if(clinicAdministrator.getClinic().getId() == doctor.getClinic().getId()){
-                lista_cadmina.add(clinicAdministrator);
+            List<ClinicAdministrator> lista_cadmina = new ArrayList<>();
+            for (ClinicAdministrator clinicAdministrator : clinicAdministratorService.findAll()) {
+                if(clinicAdministrator.getClinic().getId() == doctor.getClinic().getId()){
+                    lista_cadmina.add(clinicAdministrator);
+                }
             }
-        }
 
         if(dt == null) {
             DoctorTerms doctorTerms = new DoctorTerms();
@@ -210,6 +237,14 @@ public class DoctorTermsService {
                 notificationService.SendNotification(clinicAdministrator.getMail(), "billypiton43@gmail.com",
                         "Нови захтев за преглед", textBody);
             }
+            String textBody = "Поштовани,\n\n\tУспешно сте резервисали термин:\n" +
+                        "\tДоктор: " + doctor.getFirstName() + " " + doctor.getLastName() + "\n" +
+                        "\tКлиника: " + doctor.getClinic().getName() + "\n" +
+                        "\tЦена: " + doctor.getPrice() + "рсд\n" +
+                        "\n\nСвако добро";
+            notificationService.SendNotification(mail_patient, "billypiton43@gmail.com",
+                    "Успешна резервација термина", textBody);
+          
             Thread t = new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -259,11 +294,13 @@ public class DoctorTermsService {
                                     moze = true;
                                     date = date + (1000 * 60 * 60 * 24);
                                     List<DoctorTerms> doctors = findAllByDoctor(doctorTerms.getDoctor());
-                                    for (DoctorTerms t : doctors) {
-                                        if (t.getDate() == doctorTerms.getDate()) {
-                                            if (t.getTerm() == doctorTerms.getTerm()) {
-                                                moze = false;
-                                                break;
+                                    if (doctorService.doctor_free_at_date(doctorTerms.getDoctor(),date)){
+                                        for (DoctorTerms t : doctors) {
+                                            if (t.getDate() == doctorTerms.getDate()) {
+                                                if (t.getTerm() == doctorTerms.getTerm()) {
+                                                    moze = false;
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -286,6 +323,9 @@ public class DoctorTermsService {
         }
         else{
             return false ;      // vec postoji jedan takav kreiran termin
+        }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -318,9 +358,6 @@ public class DoctorTermsService {
         return 0;
     }
 
-    public List<DoctorTerms> findAllByRoom (Room room) {
-        return doctorTermsRepository.findAllByRoom(room);
-    }
     public List<DoctorTerms> findAllByProcessedByAdmin (boolean is) {
         return doctorTermsRepository.findAllByProcessedByAdmin(is);
     }
@@ -328,33 +365,33 @@ public class DoctorTermsService {
         DoctorTerms doctorTerms = findOneById(id);
         String pregled;
         if (!doctorTerms.isExamination()) {
-            pregled = "Operacija";
+            pregled = "Операција";
         }
         else {
-            pregled = "Pregled";
+            pregled = "Преглед";
         }
         Date d=new Date(doctorTerms.getDate());
         SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
         String dateText = df2.format(d);
         String napomena = "";
         if (date != -1) {
-            napomena = "*Napomena: Datum je promenjen na "+dateText+"\n";
+            napomena = "*Напомена: Датум је промењен на "+dateText+"\n";
         }
 
-        String tb="Postovani," + "\n" +
-                pregled+" ce se odrzati u sali: "+soba.getName() +".\n"+ napomena +
-                "Datum: "+dateText+"\nVreme: "+
+        String tb="Поштовани," + "\n" +
+                pregled+" ће се одржати у: "+soba.getName() +".\n"+ napomena +
+                "Датум: "+dateText+"\nВреме: "+
                 termin.getStartTerm() +"-"+
-                termin.getEndTerm()+"\nDoktor: "+
+                termin.getEndTerm()+"\nДоктор: "+
                 doktor.getFirstName()+" "+
                 doktor.getLastName() +
-                "\nPacijent: "+pacijent.getFirstName()+" "+
+                "\nПацијент: "+pacijent.getFirstName()+" "+
                 pacijent.getLastName();
         System.out.println(tb);
         notificationService.SendNotification(doktor.getMail(), "billypiton43@gmail.com",
-                "OBAVESTENJE", tb);
+                "Обавештење", tb);
         notificationService.SendNotification(pacijent.getMail(), "billypiton43@gmail.com",
-                "OBAVESTENJE", tb);
+                "Обавештење", tb);
     }
 
     @Transactional(readOnly = false)
@@ -388,7 +425,7 @@ public class DoctorTermsService {
     }
 
     private boolean checkDoctor(Doctor doctor, Long date, TermDefinition termDefinition){
-        for (DoctorTerms doctorTerm : findAllByDoctor(doctor)) {
+        for (DoctorTerms doctorTerm : findAllByDoctor(doctor.getId())) {
             if(doctorTerm.getDate() == date){
                 if(doctorTerm.getTerm().equals(termDefinition)){
                     return false;
@@ -406,7 +443,7 @@ public class DoctorTermsService {
     }
 
     private boolean checkRoom(Room room, Long date, TermDefinition termDefinition){
-        for (DoctorTerms doctorTerm : findAllByRoom(room)) {
+        for (DoctorTerms doctorTerm : doctorTermsRepository.findAllByRoom(room)) {
             if(doctorTerm.getDate() == date){
                 if(doctorTerm.getTerm().equals(termDefinition)){
                     return false;
@@ -422,7 +459,7 @@ public class DoctorTermsService {
         List<DoctorTermsDTO> dtoList = new ArrayList<>();
         for (DoctorTerms doctorTerms : findAll()) {
             if(doctorTerms.getPatient() != null){
-                if(doctorTerms.getPatient().equals(patient)){
+                if(doctorTerms.getPatient().equals(patient) && doctorTerms.isProcessedByAdmin()){
                     dtoList.add(new DoctorTermsDTO(doctorTerms));
                 }
             }
@@ -504,5 +541,9 @@ public class DoctorTermsService {
 
         return retList;
 
+    }
+
+    public DoctorTerms update (DoctorTerms doctorTerms){
+       return doctorTermsRepository.save(doctorTerms);
     }
 }

@@ -113,15 +113,16 @@ public class ClinicCentreAdminController extends WebConfig
                  u.setEnabled(true); //sada je registrovan
                  userService.save(u);
                  //kada registrujem novog pacijenta otvaram mu odmah i karton
-                 MedicalRecordDTO medicalRecordDTO =  new MedicalRecordDTO();
-                 medicalRecordDTO.setPatientMail(mail);
-                 medicalRecordDTO.setBloodGroup("");
-                 medicalRecordDTO.setAllergy("");
-                 MedicalRecord medicalRecord = medicalRecordService.save(medicalRecordDTO);
+                 MedicalRecord medicalRecord = new MedicalRecord();
+                 Patient p = patientService.findOneByMail(mail);
+                 medicalRecord.setPatient(p);
+                 medicalRecord.setBloodGroup("");
+                 medicalRecord.setAllergy("");
+                 medicalRecord = medicalRecordService.save(medicalRecord);
 
                  try {
-                     String tb="Postovani," + "\n" +
-                                "Vas zahtev za registraciju je prihvacen! Aktivirajte vas nalog prijavom na sledecem linku"+"\n"+
+                     String tb="Поштовани,\n\t" +
+                                "Ваш захтев за регистрацију је прихваћен! Активирајте Ваш налог кликом на следећи линк: "+
                                 "http://localhost:3000/#/login";
                      notificationService.SendNotification(mail, "billypiton43@gmail.com",
                              "PSW", tb);

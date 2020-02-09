@@ -8,7 +8,7 @@ public class RoomDTO {
     private String name;
     private String number;
     private String clinic;
-
+    private long first_free_date;
 
     public RoomDTO() {
 
@@ -27,7 +27,13 @@ public class RoomDTO {
         this.number = c.getNumber();
         this.clinic = c.getClinic().getName();
     }
+    public long getFirst_free_date() {
+        return first_free_date;
+    }
 
+    public void setFirst_free_date(long first_free_date) {
+        this.first_free_date = first_free_date;
+    }
     public long getId() {
         return id;
     }
