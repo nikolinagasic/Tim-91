@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 import pages.ReserveTermPage;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ReserveTermTest {
+public class ReserveTermE2ET {
 
     private WebDriver browser;
 

@@ -216,6 +216,7 @@ public class ClinicService implements UserDetailsService {
         if(naziv.equals("~")){
             naziv = "";
         }
+
         List<ClinicDTO> retList = new ArrayList<>();
         double prosecna_ocena_klinike;
         for (ClinicDTO clinicDTO : listaKlinika) {

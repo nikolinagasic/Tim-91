@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 import pages.ReserveRoomPage;
 import pages.ReserveTermPage;
 
-public class ReserveRoomTest {
+public class ReserveRoomE2ET {
     private WebDriver browser;
 
     private ReserveTermPage reserveTermPage;
