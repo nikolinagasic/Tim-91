@@ -28,6 +28,11 @@ public class ReserveTermPage {
 
     @FindBy(xpath = "/html/body/div/div/div/div/div[2]/div/form[2]/table/tbody/tr[1]/td[2]")
     private WebElement tdInTableClinics;
+    //za rezervaciju jos jednog pregleda
+    @FindBy(xpath = "/html/body/div/div/div/div/div[2]/div/div/form[2]/table/tbody/tr[2]/td[4]/button")
+    private WebElement prikazi;
+    @FindBy(xpath = "/html/body/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[2]/table/tbody/tr[1]/td[2]/button")
+    private WebElement izaberi;
 
     @FindBy(xpath = "/html/body/div/div/div/div/div[2]/div/div/form[2]/table")
     private WebElement tableDoctors;
@@ -70,7 +75,14 @@ public class ReserveTermPage {
         (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.visibilityOf(tableDoctors));
     }
-
+    public void ensureIsDisplayedPrikazi(){
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(prikazi));
+    }
+    public void ensureIsDisplayedIzaberi(){
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(izaberi));
+    }
     public void ensureIsDisplayedOdaberi(){
         (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.elementToBeClickable(btnOdaberi));
@@ -132,5 +144,13 @@ public class ReserveTermPage {
 
     public WebElement getBtnFinalReserve() {
         return btnFinalReserve;
+    }
+
+    public WebElement getPrikazi() {
+        return prikazi;
+    }
+
+    public WebElement getIzaberi() {
+        return izaberi;
     }
 }

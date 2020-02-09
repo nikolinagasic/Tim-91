@@ -147,11 +147,11 @@ public class RoomController extends WebConfig {
         List<RoomDTO> listaDTO = roomService.findRoom(lista, naziv, broj,date);
         return new ResponseEntity<>(listaDTO, HttpStatus.OK);
     }
-    @PostMapping(produces = "application/json", value = "/reserveRoom/{id}/{idr}/{date}")
-    public ResponseEntity<?> reserveRoom(@PathVariable("id") Long id,@PathVariable("idr") Long idr,@PathVariable("date") long date) {
+    @PostMapping(produces = "application/json", value = "/reserveRoom/{id}/{idr}/{date}/{changed}")
+    public ResponseEntity<?> reserveRoom(@PathVariable("id") Long id,@PathVariable("idr") Long idr,@PathVariable("date") long date,@PathVariable("changed") boolean changed) {
         DoctorTerms term = doctorTermsService.findOneById(id);
 
-        int uspeo = doctorTermsService.reserveRoom(id,idr,date);
+        int uspeo = doctorTermsService.reserveRoom(id,idr,date,changed);
         if (uspeo == 1) {
             return new ResponseEntity<>(0, HttpStatus.CONFLICT);
         } else if (uspeo == 2) {

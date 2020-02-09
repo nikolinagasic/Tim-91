@@ -29,6 +29,8 @@ public class Vacation {
     private boolean active;
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
+    @Version
+    private Long version;
 
     public Vacation() {
     }
@@ -42,6 +44,13 @@ public class Vacation {
         this.enabled = enabled;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     public boolean isEnabled() {
         return enabled;
